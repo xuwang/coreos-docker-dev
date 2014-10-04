@@ -1,29 +1,17 @@
 {
     "nodes": {
         "core-01": {
-            "cloud_init":"cloud-init/skydns.yaml",
-            "domain": "docker.local",
-            "host": "core-01",
-            "ip": "172.17.8.101",
-            "ip_mask": "172.17.8",
-            "memory": 2048,
-            "ports": [
-                {
-                    "guest": 22,
-                    "host": 2201,
-                    "id": "ssh"
-                },
-                {
-                    "guest": 4001,
-                    "host": 4001,
-                    "id": "etcd"
-                },
-                {
-                    "guest": 53,
-                    "host": 53,
-                    "id": "skydns"
-                }
-            ]
+            "description":      "This is a node with etcd, fleet, and skydns",
+            "cloud_init":       "cloud-init/skydns.yaml",
+            "domain":           "docker.local",
+            "ip":               "172.17.8.101",
+            "ip_mask":          "172.17.8",
+            "memory":           2048,
+            "ports":            [
+                                {"guest": 22,   "host": 2201,   "id": "ssh"     },
+                                {"guest": 4001, "host": 4001,   "id": "etcd"    },
+                                {"guest": 53,   "host": 53,     "id": "skydns"  }
+                                ]
         }
     }
 }
