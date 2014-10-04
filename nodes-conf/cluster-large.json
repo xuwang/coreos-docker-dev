@@ -1,0 +1,75 @@
+{
+    "nodes": {
+        "etcd-01": {
+            "description":      "This is a dedicated etcd and dns node, and gateway for etcdctl/fleetctl/dns, should always up!",
+            "cloud_init":       "cloud-init/etcd-skydns.yaml",
+            "domain":           "docker.local",
+            "ip":               "172.17.8.101",
+            "ip_mask":          "172.17.8",
+            "memory":           512,
+            "ports":            [
+                                {"guest": 22,   "host": 2201,   "id": "ssh"     },
+                                {"guest": 4001, "host": 4001,   "id": "etcd"    },
+                                {"guest": 53,   "host": 53,     "id": "skydns"  }
+                                ]
+        },
+        "etcd-02": {
+            "description":      "This is a dedicated etcd and dns node, should always up!",
+            "cloud_init":       "cloud-init/etcd-skydns-cluster.yaml",
+            "domain":           "docker.local",
+            "ip":               "172.17.8.102",
+            "ip_mask":          "172.17.8",
+            "memory":           512,
+            "ports":            [
+                                {"guest": 22,   "host": 2202,   "id": "ssh"     }
+                                ]
+        },
+        "etcd-03": {
+            "description":      "This is a dedicated etcd and dns node, should always up!",
+            "cloud_init":       "cloud-init/etcd-skydns-cluster.yaml",
+            "domain":           "docker.local",
+            "ip":               "172.17.8.103",
+            "ip_mask":          "172.17.8",
+            "memory":           512,
+            "ports":            [
+                                {"guest": 22,   "host": 2203,   "id": "ssh"     }
+                                ]
+        },
+        "fleet-01": {
+            "description":      "This is a dedicated fleet node, not part of etcd quorum.",
+            "cloud_init":       "cloud-init/fleet-skydns.yaml",
+            "domain":           "docker.local",
+            "etcd-envvars":     "nodes-conf/etcd-envvars-large.sh",
+            "ip":               "172.17.8.201",
+            "ip_mask":          "172.17.8",
+            "memory":           1024,
+            "ports":            [
+                                {"guest": 22,   "host": 2211,   "id": "ssh"     }
+                                ]
+        },
+        "fleet-02": {
+            "description":      "This is a dedicated fleet node, not part of etcd quorum.",
+            "cloud_init":       "cloud-init/fleet-skydns.yaml",
+            "domain":           "docker.local",
+            "etcd-envvars":     "nodes-conf/etcd-envvars-large.sh",
+            "ip":               "172.17.8.202",
+            "ip_mask":          "172.17.8",
+            "memory":           1024,
+            "ports":            [
+                                {"guest": 22,   "host": 2212,   "id": "ssh"     }
+                                ]
+        },
+        "fleet-03": {
+            "description":      "This is a dedicated fleet node, not part of etcd quorum.",
+            "cloud_init":       "cloud-init/fleet-skydns.yaml",
+            "domain":           "docker.local",
+            "etcd-envvars":     "nodes-conf/etcd-envvars-large.sh",
+            "ip":               "172.17.8.203",
+            "ip_mask":          "172.17.8",
+            "memory":           1024,
+            "ports":            [
+                                {"guest": 22,   "host": 2213,   "id": "ssh"     }
+                                ]
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "nodes": {
+        "core-01": {
+            "description":      "This is a node in a 3-node-cluster",
+            "cloud_init":       "cloud-init/skydns.yaml",
+            "domain":           "docker.local",
+            "ip":               "172.17.8.101",
+            "ip_mask":          "172.17.8",
+            "memory":           2048,
+            "ports":            [
+                                {"guest": 22,   "host": 2201,   "id": "ssh"     },
+                                {"guest": 4001, "host": 4001,   "id": "etcd"    },
+                                {"guest": 53,   "host": 53,     "id": "skydns"  }
+                                ]
+        },
+        "core-02": {
+            "description":      "This is a node in a 3-node-cluster",
+            "cloud_init":       "cloud-init/skydns-cluster.yaml",
+            "domain":           "docker.local",
+            "ip":               "172.17.8.102",
+            "ip_mask":          "172.17.8",
+            "memory":           2048,
+            "ports":            [
+                                {"guest": 22,   "host": 2202,   "id": "ssh"     }
+                                ]
+        }
+        "core-03": {
+            "description":      "This is a node in a 3-node-cluster",
+            "cloud_init":       "cloud-init/skydns-cluster.yaml",
+            "domain":           "docker.local",
+            "ip":               "172.17.8.103",
+            "ip_mask":          "172.17.8",
+            "memory":           2048,
+            "ports":            [
+                                {"guest": 22,   "host": 2203,   "id": "ssh"     }
+                                ]
+        }
+    }
+}

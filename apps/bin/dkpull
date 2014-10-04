@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]
+    then echo "Usage: $0 <image_1> [<image_2>]"
+fi
+
+# if not already pulled, try local first then remote
+docker history ${DOCKER_IMAGE} > /dev/null 2>&1 || docker pull $1 || docker pull $2

@@ -1,0 +1,5 @@
+#!/bin/bash
+ETCD="127.0.0.1:4001"
+CONFD_DIR=${CONFD_DIR:-/var/lib/apps/confd}
+${CONFD_DIR}/bin/confd -onetime -verbose=true -node $ETCD -confdir $CONFD_DIR
+exit 0

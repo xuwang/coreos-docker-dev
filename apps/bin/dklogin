@@ -1,0 +1,4 @@
+#!/bin/sh
+
+source /var/lib/apps/bin/.registryrc
+docker login $LOGIN_OPTS $REGISTRY_URL

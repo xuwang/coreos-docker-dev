@@ -1,0 +1,13 @@
+[Unit]
+Description=Hello Demo Timer
+Documentation=man:systemd.timer(5) systemd.time(7)
+
+[Timer]
+OnCalendar=*:*:00
+#Unit=hello.service
+
+[Install]
+WantedBy=timers.target
+
+[X-Fleet]
+X-ConditionMachineOf=hello.service

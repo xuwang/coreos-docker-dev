@@ -1,0 +1,23 @@
+global
+    maxconn 256
+
+defaults
+    mode http
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+frontend http-in
+    bind *:80
+    default_backend nodeapp
+
+backend nodeapp
+    mode http
+    balance roundrobin
+{{ range $server := .confd_prod_service_nodeapp }}
+    server {{ $server.Value }} maxconn 32
+{{ end }}
+
+listen admin
+    bind *:8080
+    stats enable

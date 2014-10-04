@@ -1,0 +1,15 @@
+[Unit]
+Description=confd
+Requires=confd-install.service
+After=confd-install.service
+Wants=etcd.service
+After=etcd.service
+
+[Service]
+EnvironmentFile=/var/lib/confd/envvars
+ExecStart=/bin/bash -c $CONFD_CMD $CONFD_OPTS
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+Global=true

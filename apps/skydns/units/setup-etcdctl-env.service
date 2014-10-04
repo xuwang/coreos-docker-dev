@@ -1,0 +1,13 @@
+[Unit]
+Description=Setup etcdctl env vars
+Wants=coreos-setup-environment.service
+After=coreos-setup-environment.service
+ConditionPathExists=/var/lib/apps/bin/setup-etcdctl-env
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/var/lib/apps/bin/setup-etcdctl-env /etc/environment
+
+[Install]
+WantedBy=multi-user.target

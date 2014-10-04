@@ -1,0 +1,32 @@
+#! /bin/bash -e
+
+case "$1" in
+  -h|--help)
+    echo -e "Run cmd on all nodes of this cluster.\nUsage: $0 cmd"
+    exit 0
+    ;;
+esac
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 cmd"
+  exit 1
+fi
+ 
+tmpdir=${TMPDIR:-/tmp}/clusterdo.$$
+mkdir -p $tmpdir
+count=0
+nodes=`fleetctl  list-machines --fields=ip --no-legend`
+for node in $nodes; do
+	echo "ssh -n -o BatchMode=yes ${node} $* > ${tmpdir}/${node} 2>&1"
+    ssh -n -o BatchMode=yes ${node} $* > ${tmpdir}/${node} 2>&1 &
+    count=`expr $count + 1`
+done
+
+while [ $count -gt 0 ]; do
+	set +e
+    wait $pids
+    count=`expr $count - 1`
+done
+
+cat $tmpdir/*
+echo "Output for hosts are in $tmpdir"

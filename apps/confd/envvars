@@ -1,0 +1,10 @@
+# env file for confd
+        
+CONFD_HOME=/var/lib/confd      
+CONFD_CMD=/var/lib/confd/bin/confd
+CONFD_CMD_REPO=https://github.com/kelseyhightower/confd/releases/download/v0.5.0/confd-0.5.0-linux-amd64
+CONFD_OPTS="--debug \
+        -verbose=true \
+        -interval=10 \
+        -node '127.0.0.1:4001' \
+        -confdir /var/lib/confd"

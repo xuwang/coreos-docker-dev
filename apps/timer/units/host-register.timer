@@ -1,0 +1,12 @@
+[Unit]
+Description=Host DNS Register Timer
+Documentation=man:systemd.timer(5) systemd.time(7)
+
+[Timer]
+OnUnitActiveSec=45
+
+[Install]
+WantedBy=timers.target
+
+[X-Fleet]
+Global=true

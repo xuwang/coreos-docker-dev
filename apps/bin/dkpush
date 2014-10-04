@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+if [ -z $1 ]
+    then echo "Usage: $0 <image> [<tag>]"
+fi
+id=`docker inspect --format "{{ .Id }}" $1`
+docker tag $id $2
+docker push $2

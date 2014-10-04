@@ -1,0 +1,21 @@
+[Unit]
+Description=gitlab-db
+Requires=gitlab-redis.service
+After=gitlab-redis.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/skydns/envvars
+EnvironmentFile=/var/lib/apps/gitlab/envvars
+TimeoutStartSec=0
+ExecStartPre=/var/lib/apps/bin/dkpull ${DB_LOCAL_IMAGE} ${DB_IMAGE}
+ExecStartPre=/usr/bin/mkdir ${DB_DATA}
+ExecStartPre=/usr/bin/etcdctl set "${LOCAL_DOMAIN_PATH}/${DNS_DB_PATH}" '{"host": "${COREOS_PRIVATE_IPV4}"}'
+ExecStart=/usr/bin/sh -c "docker run --rm --name %n ${DB_OPTS} ${DB_IMAGE}"
+ExecStopPost=/usr/bin/etcdctl rm "${LOCAL_DOMAIN_PATH}/${DNS_DB_PATH}" --with-value '{"host": "${COREOS_PRIVATE_IPV4}"}'
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+MachineOf=gitlab-redis.service
+

@@ -1,0 +1,27 @@
+#!/bin/bash 
+
+if [ "$#" -le 0 ]; then 
+	echo "For all units in current dir:" 
+	echo "Usage $0 <start|stop|destroy|status|load|unload>" 
+	 exit 1 
+fi
+
+count=0
+for s in `ls *.service`; do
+	fleetctl $* $s  2>&1 &
+    count=`expr $count + 1`
+done
+
+# wait for all children process finish
+while [ $count -gt 0 ]; do
+	set +e
+    wait $pids
+    count=`expr $count - 1`
+done
+
+# this really need to be done on all machines of the cluster, otherwise 
+# systemd may still use catched staled units
+echo $*  | grep "destroy" > /dev/null
+[ $? -eq 0 ] &&  ( echo "Reload systemd daemon:" && sudo systemctl daemon-reload )
+
+exit 0

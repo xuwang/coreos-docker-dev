@@ -1,0 +1,13 @@
+[Unit]
+Description=auto-build
+Wants=etcd.service
+After=etcd.service
+
+[Service]
+EnvironmentFile=/var/lib/apps/auto-build/envvars
+ExecStart=/bin/bash -c "/var/lib/apps/auto-build/bin/watcher.sh %m"
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+#MachineOf=<auto-build-cluster>

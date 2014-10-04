@@ -1,0 +1,10 @@
+AB_REQ_QUE=/auto-build/prod/reqs
+AB_JOB_QUE=/auto-build/prod/jobs
+AB_STG_QUE=/auto-build/prod/stage
+AB_ERR_QUE=/auto-build/prod/error
+AB_WORK_DIR=/tmp
+AB_WATCHER_CMD=/var/lib/apps/auto-build/bin/watcher.sh
+AB_BUILD_CMD=/var/lib/apps/auto-build/bin/git-builder.sh
+
+# the bash debug flag
+#DEBUG=true

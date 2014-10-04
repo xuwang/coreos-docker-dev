@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+ENV="$1"
+ETCD_ENV="/etc/profile.d/etcd-envvars.sh"
+
+if [ -z "$ENV" ]; then
+        echo usage: $0 /etc/environment
+        exit 1
+fi
+
+if [[ -f $ETCD_ENV ]] && [[ -f $ENV ]]; then
+    sed -i -e '$a\' $ENV;       # append a newline to $ENV
+    source $ETCD_ENV; 
+    env | grep ETCD >> $ENV
+fi

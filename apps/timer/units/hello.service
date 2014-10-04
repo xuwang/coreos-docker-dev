@@ -1,0 +1,7 @@
+[Unit]
+Description=Hello Demo
+
+[Service]
+Type=oneshot
+EnvironmentFile=/var/lib/apps/timer/envvars
+ExecStart=/usr/bin/echo $HELLO

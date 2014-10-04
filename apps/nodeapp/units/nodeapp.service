@@ -1,0 +1,20 @@
+[Unit]
+Description=NodeJS App
+Requires=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/home/core/share/apps/registry/docker-login.env
+TimeoutStartSec=20min
+ExecStartPre=/usr/bin/docker login -u test -p test -e "test@docker.local" https://registry.docker.local > /dev/null
+ExecStartPre=/usr/bin/sh -c "docker history registry.docker.local/test/nodeapp:latest >/dev/null || \
+                docker pull registry.docker.local/test/nodeapp:latest""
+ExecStartPre=/usr/bin/etcdctl set /confd/prod/service/nodeapp/%m_%i "${COREOS_PRIVATE_IPV4}:%i"
+ExecStart=/usr/bin/docker run --rm --name nodeapp-%i -p ${COREOS_PRIVATE_IPV4}:%i:8000 registry.docker.local/test/nodeapp
+ExecStopPost=/usr/bin/etcdctl rm /confd/prod/service/nodeapp/%m_%i
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+X-Conflicts=nodeapp@%i.service

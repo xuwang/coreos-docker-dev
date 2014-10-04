@@ -1,0 +1,53 @@
+upstream registry {
+    
+    server 172.17.8.101:5000;
+    
+}
+
+server {
+    listen 443;
+    server_name registry.docker.local;
+    server_tokens off; ## Don't show the nginx version number, a security best practice
+
+    ssl on;
+    ssl_certificate /etc/nginx/certs/site.crt;
+    ssl_certificate_key /etc/nginx/certs/site.key;
+    
+    proxy_set_header Host             $http_host;   # required for docker client's sake
+    proxy_set_header X-Real-IP        $remote_addr; # pass on real client's IP
+
+    client_max_body_size 0; # disable any limits to avoid HTTP 413 for large image uploads
+
+    # required to avoid HTTP 411: see Issue #1486 (https://github.com/dotcloud/docker/issues/1486)
+    chunked_transfer_encoding on;
+    
+    location / {
+        auth_basic            "Restricted";
+        auth_basic_user_file  /etc/nginx/certs/registry.htpasswd;
+        proxy_pass http://registry;
+    }
+    
+    # protect user specific repo 
+    location /v1/repositories/test {
+        auth_basic            "Restricted";
+        auth_basic_user_file  /etc/nginx/certs/test.htpasswd;
+        proxy_pass http://registry;
+    }
+    
+    location /v1/repositories/demo {
+        auth_basic            "Restricted";
+        auth_basic_user_file  /etc/nginx/certs/demo.htpasswd;
+        proxy_pass http://registry;
+    }
+    
+    # open to all for docker client to work
+    location /_ping {
+        auth_basic off;
+        proxy_pass http://registry;
+    }
+    
+    location /v1/_ping {
+        auth_basic off;
+        proxy_pass http://registry;
+    }
+}

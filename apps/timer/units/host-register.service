@@ -1,0 +1,11 @@
+[Unit]
+Description=Host DNS Register
+After=etcd.service
+Wants=etcd.service
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/skydns/envvars
+ExecStart=/usr/bin/etcdctl set --ttl 60 "${LOCAL_DOMAIN_PATH}/%H" "{\"host\":\"${COREOS_PRIVATE_IPV4}\"}"
+
+[X-Fleet]
+Global=true

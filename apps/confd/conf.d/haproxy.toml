@@ -1,0 +1,7 @@
+[template]
+src 		    = "haproxy.tmpl"
+dest 		    = "/var/lib/apps/haproxy/haproxy.cfg"
+keys 		    = [ "/confd/prod/service/nodeapp" ]
+
+# should have used fleetctl start/stop
+reload_cmd  	= "/usr/bin/docker kill haproxy.service"

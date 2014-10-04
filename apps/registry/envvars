@@ -1,0 +1,13 @@
+# this is a unit env file for docker registry
+
+DOCKER_IMAGE='registry:latest'
+DOCKER_OPTS="-p 5000:5000 \
+    -v /var/lib/apps-data/registry:/data \
+    -v /var/lib/apps/registry:/registry-conf \
+    -e DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml -e SETTINGS_FLAVOR=prod"
+    
+REGISTRY_PORT=5000
+    
+DNS_PATH=/service/registry
+CONFD_KEY=/confd/prod/service/registry/endpoint
+

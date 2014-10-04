@@ -1,0 +1,20 @@
+[Unit]
+Description=gitlab
+Requires=gitlab-db.service
+After=gitlab-db.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/skydns/envvars
+EnvironmentFile=/var/lib/apps/gitlab/envvars
+TimeoutStartSec=0
+ExecStartPre=/var/lib/apps/bin/dkpull ${DOCKER_LOCAL_IMAGE} ${DOCKER_IMAGE}
+ExecStartPre=/usr/bin/mkdir ${DATA_VOL}
+ExecStartPre=/usr/bin/etcdctl set "${LOCAL_DOMAIN_PATH}/${DNS_PATH}" '{"host": "${COREOS_PRIVATE_IPV4}"}'
+ExecStart=/usr/bin/sh -c "docker run --rm --name %n ${DOCKER_OPTS} ${DOCKER_IMAGE}"
+ExecStopPost=/usr/bin/etcdctl rm "${LOCAL_DOMAIN_PATH}/${DNS_PATH}" --with-value '{"host": "${COREOS_PRIVATE_IPV4}"}'
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+MachineOf=gitlab-db.service

@@ -1,0 +1,2 @@
+LOGIN_OPTS='-u admin -p admin -e admin@regisrty.docker.local'
+REGISTRY_URL='https://registry.docker.local'

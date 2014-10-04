@@ -1,0 +1,18 @@
+[Unit]
+Description=Haproxy
+Requires=docker.service
+After=dokcer.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/skydns/config
+Environment="CONF_DIR=/home/core/share/apps/haproxy"
+# It may take long time to pull the image, set start timeout to 30 min
+TimeoutStartSec=30min
+ExecStartPre=/bin/sh -c "docker history dockerfile/haproxy:latest >/dev/null || docker pull dockerfile/haproxy:latest"
+# Registering the DNS name
+ExecStartPre=/usr/bin/etcdctl set /skydns/${LOCAL_DOMAIN_PATH}/nodeapp '{"host":"${COREOS_PRIVATE_IPV4}", "port":"8080"}'
+ExecStart=/usr/bin/docker run --rm --name %n -p 8080:80 -p 8888:8080 -v ${CONF_DIR}:/haproxy-override dockerfile/haproxy
+ExecStopPost=/usr/bin/etcdctl rm /skydns/${LOCAL_DOMAIN_PATH}/nodeapp
+RestartSec=3
+Restart=always

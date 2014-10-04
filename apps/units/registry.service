@@ -1,0 +1,24 @@
+[Unit]
+Description=Docker Registry
+Requires=docker.service
+After=docker.service
+Wants=skydns.service
+After=skydns.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/registry/envvars
+EnvironmentFile=/var/lib/skydns/envvars
+TimeoutStartSec=0
+ExecStartPre=/var/lib/apps/bin/dkpull ${DOCKER_IMAGE}
+# Registering the DNS name
+ExecStartPre=/usr/bin/etcdctl set "${LOCAL_DOMAIN_PATH}/${DNS_PATH}" '{"host": "${COREOS_PRIVATE_IPV4}"}'
+# Registering the confd key
+ExecStartPre=/usr/bin/etcdctl set "${CONFD_KEY}/%H" "${COREOS_PRIVATE_IPV4}:${REGISTRY_PORT}"
+# Run registry container
+ExecStart=/usr/bin/sh -c "docker run --rm --name %n ${DOCKER_OPTS} ${DOCKER_IMAGE}"
+# Clean up
+ExecStopPost=/usr/bin/etcdctl rm "${LOCAL_DOMAIN_PATH}/${DNS_PATH}" --with-value '{"host": "${COREOS_PRIVATE_IPV4}"}'
+ExecStopPost=/usr/bin/etcdctl rm "${CONFD_KEY}/%H" --with-value "${COREOS_PRIVATE_IPV4}:${REGISTRY_PORT}"
+RestartSec=5
+Restart=always
