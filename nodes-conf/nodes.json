@@ -1,6 +1,6 @@
 {
     "nodes": {
-        "core-01": {
+        "n1": {
             "description":      "This is a node with etcd, fleet, and skydns",
             "cloud_init":       "cloud-init/skydns.yaml",
             "domain":           "docker.local",

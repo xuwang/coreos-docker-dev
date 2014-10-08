@@ -1,6 +1,6 @@
 {
     "nodes": {
-        "core-01": {
+        "n1": {
             "description":      "This is a node in a 3-node-cluster",
             "cloud_init":       "cloud-init/skydns.yaml",
             "domain":           "docker.local",
@@ -13,7 +13,7 @@
                                 {"guest": 53,   "host": 53,     "id": "skydns"  }
                                 ]
         },
-        "core-02": {
+        "n2": {
             "description":      "This is a node in a 3-node-cluster",
             "cloud_init":       "cloud-init/skydns-cluster.yaml",
             "domain":           "docker.local",
@@ -23,8 +23,8 @@
             "ports":            [
                                 {"guest": 22,   "host": 2202,   "id": "ssh"     }
                                 ]
-        }
-        "core-03": {
+        },
+        "n3": {
             "description":      "This is a node in a 3-node-cluster",
             "cloud_init":       "cloud-init/skydns-cluster.yaml",
             "domain":           "docker.local",

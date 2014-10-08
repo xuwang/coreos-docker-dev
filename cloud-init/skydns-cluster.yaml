@@ -13,6 +13,9 @@ coreos:
         # generate a new token for each unique cluster from https://discovery.etcd.io/new
         # WARNING: replace each time you 'vagrant destroy'
         #discovery: https://discovery.etcd.io/<token>
+        # or use the first node as the poor-man's discovery server
+        #discovery: http://172.17.8.101:4001/v2/keys/_etcd/registry/local-cluster
+        peers: "172.17.8.101:7001,172.17.8.102:7001,172.17.8.103:7001"
     fleet:
         public-ip: $private_ipv4
         # if etcd is not running locally, set etcd servers:
