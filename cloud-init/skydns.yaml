@@ -45,30 +45,13 @@ coreos:
               
               [Install] 
               WantedBy=sockets.target
-        
-        - name: setup-etcdctl-env.service
-          command: start
-          content: |       
-              [Unit]
-              Description=Setup etcdctl env vars
-              Wants=coreos-setup-environment.service
-              After=coreos-setup-environment.service
-              ConditionPathExists=/var/lib/apps/bin/setup-etcdctl-env
-              
-              [Service]
-              Type=oneshot
-              RemainAfterExit=true
-              ExecStart=/var/lib/apps/bin/setup-etcdctl-env /etc/environment
-              
-              [Install]
-              WantedBy=multi-user.target
         - name: skydns-install.service
           command: start
           content: |
               [Unit]
               Description=SkyDNS Installer
-              Requires=setup-etcdctl-env.service
-              After=setup-etcdctl-env.service
+              Requires=docker.service
+              After=docker.service
               
               [Service]
               Type=oneshot
@@ -77,9 +60,6 @@ coreos:
               ExecStart=-/bin/mkdir -p ${SKYDNS_HOME}/bin
               ExecStart=/bin/bash -c "[[ -x ${SKYDNS_CMD} ]] || \
                       curl -L -o ${SKYDNS_CMD} ${SKYDNS_CMD_REPO} && chmod 755 ${SKYDNS_CMD}; echo ok" 
-              # append ETCD envvars to skydns envvars
-              ExecStart=/bin/bash -c "[[ -f /etc/profile.d/etcd-envvars.sh ]] && \
-                     (source /etc/profile.d/etcd-envvars.sh; env | grep ETCD >> /var/lib/apps/skydns/envvars); echo ok"
         - name: skydns.service
           command: start
           content: |
@@ -87,8 +67,6 @@ coreos:
               Description=skydns
               Requires=skydns-install.service
               After=skydns-install.service
-              Requires=setup-etcdctl-env.service
-              After=setup-etcdctl-env.service
               
               [Service]  
               Type=simple
@@ -96,11 +74,10 @@ coreos:
               RestartSec=5
               EnvironmentFile=/etc/environment
               EnvironmentFile=/var/lib/skydns/envvars
-              ExecStartPre=source /etc/profile.d/etcd-envvars.sh; 
-              ExecStartPre=/usr/bin/etcdctl set "${DNS_NAMESERVER_PATH}/%m" "${COREOS_PRIVATE_IPV4}"
               # Set skydns configuration in etcd
               ExecStartPre=/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
               ExecStart=/bin/sh -c "${SKYDNS_CMD}"
+              ExecStartPost=/usr/bin/etcdctl set "${DNS_NAMESERVER_PATH}/%m" "${COREOS_PRIVATE_IPV4}"
               ExecStopPost=-/usr/bin/etcdctl rm /skydns/config
               ExecStopPost=/usr/bin/etcdctl rm "${DNS_NAMESERVER_PATH}/%m"
         - name: host-register.service
@@ -108,14 +85,15 @@ coreos:
           content: |             
               [Unit]
               Description=Host DNS Register
-              Requires=setup-etcdctl-env.service
-              After=setup-etcdctl-env.service
+              Requires=skydns.service
+              After=skydns.service
               
               [Service]
               EnvironmentFile=/etc/environment
               EnvironmentFile=/var/lib/apps/skydns/envvars
               ExecStart=/var/lib/apps/skydns/bin/host-register.sh %H ${COREOS_PRIVATE_IPV4}
               ExecStop=/usr/bin/etcdctl rm "${LOCAL_DOMAIN_PATH}/%H"
+
 write_files:
   - path: /var/lib/skydns/envvars
     permissions: 0644
@@ -124,7 +102,7 @@ write_files:
         LOCAL_DOMAIN=docker.local
         LOCAL_DOMAIN_PATH=/skydns/local/docker
         DNS_NAMESERVER_PATH=/skydns/ns
-        SKYDNS_CONFIG='{"domain":"docker.local", "dns_addr":"0.0.0.0:53", "ttl":3600, "nameservers": ["8.8.8.8:53","8.8.4.4:53"]}'
+        SKYDNS_CONFIG='{"domain":"docker.local", "dns_addr":"0.0.0.0:53", "ttl":3600, "nameservers": ["8.8.8.8","8.8.4.4"]}'
         SKYDNS_CMD_REPO=https://github.com/xuwang/skydns-docker/releases/download/skydns-7025dba3834f/skydns
         SKYDNS_HOME=/var/lib/skydns
         SKYDNS_CMD=/var/lib/skydns/bin/skydns

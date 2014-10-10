@@ -1,19 +1,22 @@
 #cloud-config
 
-## This is a cloud-config for nodes in the dedicated fleet cluster
-## it is not running etcd
+## This is a cloud-config for a 1st node in the dedicated etcd cluster
+## it is not running fleet deamon
+## it install and runs a skydns server 
 
 coreos:
-    fleet:
-        public-ip: $private_ipv4
-        # if etcd is not running locally, set etcd servers:
-        etcd_servers: "http://172.17.8.101:4001,http://172.17.8.102:4001,http://172.17.8.103:4001"
-        #etcd_servers: "http://172.17.8.101:4001"
+    etcd:
+        addr: $private_ipv4:4001
+        peer-addr: $private_ipv4:7001
+        # runing a multi-node cluster with discovery mode:
+        # generate a new token for each unique cluster from https://discovery.etcd.io/new
+        # WARNING: replace each time you 'vagrant destroy'
+        #discovery: https://discovery.etcd.io/<token>
     units:
         - name: etcd.service
-          mask: true
-        - name: fleet.service
           command: start
+        - name: fleet.service
+          mask: true
         - name: docker.service
           command: start
           content: |
@@ -37,30 +40,49 @@ coreos:
               BindIPv6Only=both
               
               [Install] 
-              WantedBy=sockets.target        
-        - name: setup-etcdctl-env.service
+              WantedBy=sockets.target
+        - name: skydns-install.service
           command: start
-          content: |       
+          content: |
               [Unit]
-              Description=Setup etcdctl env vars
-              Wants=coreos-setup-environment.service
-              After=coreos-setup-environment.service
-              ConditionPathExists=/var/lib/apps/bin/setup-etcdctl-env
+              Description=SkyDNS Installer
+              Requires=docker.service
+              After=docker.service
               
               [Service]
               Type=oneshot
               RemainAfterExit=true
-              ExecStart=/var/lib/apps/bin/setup-etcdctl-env /etc/environment
+              EnvironmentFile=/var/lib/skydns/envvars
+              ExecStart=-/bin/mkdir -p ${SKYDNS_HOME}/bin
+              ExecStart=/bin/bash -c "[[ -x ${SKYDNS_CMD} ]] || \
+                      curl -L -o ${SKYDNS_CMD} ${SKYDNS_CMD_REPO} && chmod 755 ${SKYDNS_CMD}; echo ok" 
+        - name: skydns.service
+          command: start
+          content: |
+              [Unit]
+              Description=skydns
+              Requires=skydns-install.service
+              After=skydns-install.service
               
-              [Install]
-              WantedBy=multi-user.target
+              [Service]  
+              Type=simple
+              Restart=always
+              RestartSec=5
+              EnvironmentFile=/etc/environment
+              EnvironmentFile=/var/lib/skydns/envvars
+              # Set skydns configuration in etcd
+              ExecStartPre=/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
+              ExecStart=/bin/sh -c "${SKYDNS_CMD}"
+              ExecStartPost=/usr/bin/etcdctl set "${DNS_NAMESERVER_PATH}/%m" "${COREOS_PRIVATE_IPV4}"
+              ExecStopPost=-/usr/bin/etcdctl rm /skydns/config
+              ExecStopPost=/usr/bin/etcdctl rm "${DNS_NAMESERVER_PATH}/%m"
         - name: host-register.service
           command: start
           content: |             
               [Unit]
               Description=Host DNS Register
-              Requires=setup-etcdctl-env.service
-              After=setup-etcdctl-env.service
+              Requires=skydns.service
+              After=skydns.service
               
               [Service]
               EnvironmentFile=/etc/environment
@@ -75,7 +97,7 @@ write_files:
         LOCAL_DOMAIN=docker.local
         LOCAL_DOMAIN_PATH=/skydns/local/docker
         DNS_NAMESERVER_PATH=/skydns/ns
-        SKYDNS_CONFIG='{"domain":"docker.local", "dns_addr":"0.0.0.0:53", "ttl":3600, "nameservers": ["8.8.8.8:53","8.8.4.4:53"]}'
+        SKYDNS_CONFIG='{"domain":"docker.local", "dns_addr":"0.0.0.0:53", "ttl":3600, "nameservers": ["8.8.8.8","8.8.4.4"]}'
         SKYDNS_CMD_REPO=https://github.com/xuwang/skydns-docker/releases/download/skydns-7025dba3834f/skydns
         SKYDNS_HOME=/var/lib/skydns
         SKYDNS_CMD=/var/lib/skydns/bin/skydns
@@ -84,7 +106,7 @@ write_files:
     owner: root
     content: |
       domain docker.local
-      nameserver 172.17.8.101
+      nameserver 127.0.0.1
       nameserver 8.8.8.8
   - path: /etc/profile.d/alias.sh
     content: |

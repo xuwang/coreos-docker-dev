@@ -1,24 +1,19 @@
 #cloud-config
 
-## This is a cloud-config for a 2ed and 3rd node in 3-nodes etcd cluster
-## the only differnence from etcd-skydns.yaml used by 1st node 
-## is that it sets etcd peers for 2ed and 3rd node
-## presuming etcd discovery is not used.
+## This is a cloud-config for nodes in the dedicated fleet cluster
+## it is not running etcd
 
 coreos:
-    etcd:
-        addr: $private_ipv4:4001
-        peer-addr: $private_ipv4:7001
-        # runing a multi-node cluster with discovery mode:
-        # generate a new token for each unique cluster from https://discovery.etcd.io/new
-        # WARNING: replace each time you 'vagrant destroy'
-        #discovery: https://discovery.etcd.io/<token>
-        peers: "172.17.8.101:4001,172.17.8.102:4001,172.17.8.103:4001"
+    fleet:
+        public-ip: $private_ipv4
+        # if etcd is not running locally, set etcd servers:
+        etcd_servers: "http://172.17.8.101:4001,http://172.17.8.102:4001,http://172.17.8.103:4001"
+        #etcd_servers: "http://172.17.8.101:4001"
     units:
         - name: etcd.service
-          command: start
-        - name: fleet.service
           mask: true
+        - name: fleet.service
+          command: start
         - name: docker.service
           command: start
           content: |
@@ -42,8 +37,7 @@ coreos:
               BindIPv6Only=both
               
               [Install] 
-              WantedBy=sockets.target
-        
+              WantedBy=sockets.target        
         - name: setup-etcdctl-env.service
           command: start
           content: |       
@@ -51,56 +45,17 @@ coreos:
               Description=Setup etcdctl env vars
               Wants=coreos-setup-environment.service
               After=coreos-setup-environment.service
-              ConditionPathExists=/var/lib/apps/bin/setup-etcdctl-env
               
               [Service]
               Type=oneshot
               RemainAfterExit=true
-              ExecStart=/var/lib/apps/bin/setup-etcdctl-env /etc/environment
+              ExecStart=/bin/bash -c source /etc/profile.d/etcd-envvars.sh: \
+                  echo " " >>  /etc/environment; \
+                  env | grep ETCDCTL >> /etc/environment; \
+                  env | grep FLEETCTL >> /etc/environment
               
               [Install]
               WantedBy=multi-user.target
-        - name: skydns-install.service
-          command: start
-          content: |
-              [Unit]
-              Description=SkyDNS Installer
-              Requires=setup-etcdctl-env.service
-              After=setup-etcdctl-env.service
-              
-              [Service]
-              Type=oneshot
-              RemainAfterExit=true
-              EnvironmentFile=/var/lib/skydns/envvars
-              ExecStart=-/bin/mkdir -p ${SKYDNS_HOME}/bin
-              ExecStart=/bin/bash -c "[[ -x ${SKYDNS_CMD} ]] || \
-                      curl -L -o ${SKYDNS_CMD} ${SKYDNS_CMD_REPO} && chmod 755 ${SKYDNS_CMD}; echo ok" 
-              # append ETCD envvars to skydns envvars
-              ExecStart=/bin/bash -c "[[ -f /etc/profile.d/etcd-envvars.sh ]] && \
-                     (source /etc/profile.d/etcd-envvars.sh; env | grep ETCD >> /var/lib/apps/skydns/envvars); echo ok"
-        - name: skydns.service
-          command: start
-          content: |
-              [Unit]
-              Description=skydns
-              Requires=skydns-install.service
-              After=skydns-install.service
-              Requires=setup-etcdctl-env.service
-              After=setup-etcdctl-env.service
-              
-              [Service]  
-              Type=simple
-              Restart=always
-              RestartSec=5
-              EnvironmentFile=/etc/environment
-              EnvironmentFile=/var/lib/skydns/envvars
-              ExecStartPre=source /etc/profile.d/etcd-envvars.sh; 
-              ExecStartPre=/usr/bin/etcdctl set "${DNS_NAMESERVER_PATH}/%m" "${COREOS_PRIVATE_IPV4}"
-              # Set skydns configuration in etcd
-              ExecStartPre=/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
-              ExecStart=/bin/sh -c "${SKYDNS_CMD}"
-              ExecStopPost=-/usr/bin/etcdctl rm /skydns/config
-              ExecStopPost=/usr/bin/etcdctl rm "${DNS_NAMESERVER_PATH}/%m"
         - name: host-register.service
           command: start
           content: |             
@@ -115,23 +70,25 @@ coreos:
               ExecStart=/var/lib/apps/skydns/bin/host-register.sh %H ${COREOS_PRIVATE_IPV4}
               ExecStop=/usr/bin/etcdctl rm "${LOCAL_DOMAIN_PATH}/%H"
 write_files:
+  - path: /etc/profile.d/etcd-envvars.sh
+    permissions: 0644
+    owner: root
+    content: |
+        # set etcd endpoint for etcdctl and fleetctl
+        export ETCDCTL_PEERS="http://172.17.8.101:4001"
+        export FLEETCTL_ENDPOINT="http://172.17.8.101:4001"
   - path: /var/lib/skydns/envvars
     permissions: 0644
     owner: root
     content: |
         LOCAL_DOMAIN=docker.local
         LOCAL_DOMAIN_PATH=/skydns/local/docker
-        DNS_NAMESERVER_PATH=/skydns/ns
-        SKYDNS_CONFIG='{"domain":"docker.local", "dns_addr":"0.0.0.0:53", "ttl":3600, "nameservers": ["8.8.8.8:53","8.8.4.4:53"]}'
-        SKYDNS_CMD_REPO=https://github.com/xuwang/skydns-docker/releases/download/skydns-7025dba3834f/skydns
-        SKYDNS_HOME=/var/lib/skydns
-        SKYDNS_CMD=/var/lib/skydns/bin/skydns
   - path: /etc/resolv.conf
     permissions: 0644
     owner: root
     content: |
       domain docker.local
-      nameserver 127.0.0.1
+      nameserver 172.17.8.101
       nameserver 8.8.8.8
   - path: /etc/profile.d/alias.sh
     content: |
