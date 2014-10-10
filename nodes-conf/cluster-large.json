@@ -1,11 +1,11 @@
 {
     "nodes": {
-        "etcd-01": {
-            "description":      "This is a dedicated etcd and dns node, and gateway for etcdctl/fleetctl/dns, should always up!",
+        "etcd-101": {
+            "description":      "This is the first dedicated etcd and dns node, and gateway for etcdctl/fleetctl/dns, should always up!",
             "cloud_init":       "cloud-init/etcd-only.yaml",
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
-            "ip_mask":          "172.17.8",
+            "subnet":           "172.17.8",
             "memory":           512,
             "ports":            [
                                 {"guest": 22,   "host": 2201,   "id": "ssh"     },
@@ -13,59 +13,37 @@
                                 {"guest": 53,   "host": 53,     "id": "skydns"  }
                                 ]
         },
-        "etcd-02": {
-            "description":      "This is a dedicated etcd and dns node, should always up!",
+        "etcd": {
+            "description":      "Defines 2ed and 3rd dedicated etcd and dns nodes.",
             "cloud_init":       "cloud-init/etcd-cluster.yaml",
             "domain":           "docker.local",
-            "ip":               "172.17.8.102",
-            "ip_mask":          "172.17.8",
+            "ids":              [102,103],
+            "subnet":           "172.17.8",
             "memory":           512,
             "ports":            [
-                                {"guest": 22,   "host": 2202,   "id": "ssh"     }
+                                {"guest": 22,   "host": 2100,   "id": "ssh"     }
                                 ]
         },
-        "etcd-03": {
-            "description":      "This is a dedicated etcd and dns node, should always up!",
-            "cloud_init":       "cloud-init/etcd-cluster.yaml",
-            "domain":           "docker.local",
-            "ip":               "172.17.8.103",
-            "ip_mask":          "172.17.8",
-            "memory":           512,
-            "ports":            [
-                                {"guest": 22,   "host": 2203,   "id": "ssh"     }
-                                ]
-        },
-        "fleet-01": {
-            "description":      "This is a dedicated fleet node, not part of etcd quorum.",
+        "fleet-104": {
+            "description":      "This is the first fleet node, not part of etcd quorum.",
             "cloud_init":       "cloud-init/fleet-only.yaml",
             "domain":           "docker.local",
-            "ip":               "172.17.8.201",
-            "ip_mask":          "172.17.8",
+            "ip":               "172.17.8.104",
+            "subnet":           "172.17.8",
             "memory":           1024,
             "ports":            [
-                                {"guest": 22,   "host": 2211,   "id": "ssh"     }
+                                {"guest": 22,   "host": 2100,   "id": "ssh"     }
                                 ]
         },
-        "fleet-02": {
-            "description":      "This is a dedicated fleet node, not part of etcd quorum.",
+        "fleet": {
+            "description":      "Defines 2ed and 3rd dedicated fleet nodes.",
             "cloud_init":       "cloud-init/fleet-only.yaml",
             "domain":           "docker.local",
-            "ip":               "172.17.8.202",
-            "ip_mask":          "172.17.8",
+            "ids":              [105,106],
+            "subnet":           "172.17.8",
             "memory":           1024,
             "ports":            [
-                                {"guest": 22,   "host": 2212,   "id": "ssh"     }
-                                ]
-        },
-        "fleet-03": {
-            "description":      "This is a dedicated fleet node, not part of etcd quorum.",
-            "cloud_init":       "cloud-init/fleet-only.yaml",
-            "domain":           "docker.local",
-            "ip":               "172.17.8.203",
-            "ip_mask":          "172.17.8",
-            "memory":           1024,
-            "ports":            [
-                                {"guest": 22,   "host": 2213,   "id": "ssh"     }
+                                {"guest": 22,   "host": 2100,   "id": "ssh"     }
                                 ]
         }
     }

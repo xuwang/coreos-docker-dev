@@ -5,7 +5,7 @@
             "cloud_init":       "cloud-init/skydns.yaml",
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
-            "ip_mask":          "172.17.8",
+            "subnet":          "172.17.8",
             "memory":           2048,
             "ports":            [
                                 {"guest": 22,   "host": 2201,   "id": "ssh"     },

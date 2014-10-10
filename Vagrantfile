@@ -6,11 +6,14 @@ require 'fileutils'
 Vagrant.require_version ">= 1.6.0"
 
 MY_PATH = File.dirname(__FILE__)
-NODES_CONF = File.join(MY_PATH, "nodes.json")
+
+# Define the vm nodes in json
+NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
+#NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster.json")
+#NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-large.json")
+
+
 TEST_ROOT_CA_PATH = File.join(MY_PATH, "apps", "certs", "rootCA.pem")
-ETCD_ENVVARS = File.join(MY_PATH, "nodes-conf", "etcd-envvars.sh")
-
-
 UPDATE_CHANNE = "alpha"
 
 Vagrant.configure("2") do |config|
@@ -41,60 +44,72 @@ Vagrant.configure("2") do |config|
   if Vagrant.has_plugin?("vagrant-vbguest") then
     config.vbguest.auto_update = false
   end
-
-  # read vm and chef configurations from JSON files
-  nodes_config = (JSON.parse(File.read(NODES_CONF)))['nodes']
-
-  nodes_config.each do |node|
-    node_name   = node[0] # name of node
-    node_values = node[1] # content of node
-    
+  
+  
+  # config vm with the data from node_conf
+  def config_vm(config, node_name, node_id, node_conf, index)
     config.vm.define vm_name = node_name do |config|
+      config.vm.network :private_network, ip: node_id
       config.vm.hostname = node_name
-      config.vm.network :private_network, ip: node_values['ip']
-
+    
       # configures all forwarding ports in JSON array
-      ports = node_values['ports']
+      ports = node_conf['ports']
       ports.each do |port|
         config.vm.network :forwarded_port,
-          host:  port['host'],
+          host:  port['host'] + index,
           guest: port['guest'],
           id:    port['id']
       end
 
       config.vm.provider :virtualbox do |vb|
-        if node_values['memory']
-          vb.memory = node_values['memory']
+        if node_conf['memory']
+          vb.memory = node_conf['memory']
         end
-        if node_values['cpu']
-          vb.cpus = node_values['cpu']
+        if node_conf['cpu']
+          vb.cpus = node_conf['cpu']
         end
       end
 
       # enable NFS for sharing the host machine into the coreos-vagrant VM.
       config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
       config.vm.provision :shell, :inline => "ln -sf /home/core/share/apps /var/lib/apps && ln -sf /home/core/share/data /var/lib/apps-data", :privileged => true
-  
+
       # To make the self-signed certs truesed for clients in docker, update the system bundled certs with the test rootCA.
       # This should be done before docker.service starts so it can pick up the testing rootCA.
       config.vm.provision :file, :source => "#{TEST_ROOT_CA_PATH}", :destination => "/tmp/XXX-Dockerage.pem"
       config.vm.provision :shell, :inline => "cd /etc/ssl/certs && ([[ -f XXX-Dockerage.pem ]] || (mv /tmp/XXX-Dockerage.pem . && update-ca-certificates))", :privileged => true
 
-      if node_values['etcd-envvars'] && File.exist?(node_values['etcd-envvars'])
-        config.vm.provision :shell, :inline => "/bin/mkdir -p /etc/profile.d", :privileged => true
-        config.vm.provision :file, :source => "#{node_values['etcd-envvars']}", :destination => "/tmp/etcd-envvars.sh"
-        config.vm.provision :shell, :inline => "mv /tmp/etcd-envvars.sh /etc/profile.d/", :privileged => true
-      end
-  
       # enable ssh-agent forwarding in coreos-vagrant VM.
       config.vm.provision \
         :shell, \
-        :inline => "echo -e 'Host #{node_values['ip_mask']}.* *.#{node_values['dns_domain']}\n  StrictHostKeyChecking no\n  ForwardAgent yes' > .ssh/config; chmod 600 .ssh/config", \
+        :inline => "echo -e 'Host #{node_conf['subnet']}.* *.#{node_conf['dns_domain']}\n  StrictHostKeyChecking no\n  ForwardAgent yes' > .ssh/config; chmod 600 .ssh/config", \
         :privileged => false
 
-      if node_values['cloud_init'] && File.exist?(node_values['cloud_init'])
-        config.vm.provision :file, :source => "#{node_values['cloud_init']}", :destination => "/tmp/vagrantfile-user-data"
+      if node_conf['cloud_init'] && File.exist?(node_conf['cloud_init'])
+        config.vm.provision :file, :source => "#{node_conf['cloud_init']}", :destination => "/tmp/vagrantfile-user-data"
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+      end
+    end
+  end
+
+  # read vm configurations from JSON files
+  nodes_config = (JSON.parse(File.read(NODES_CONF)))['nodes']
+  
+  if nodes_config then
+    nodes_config.each do |node|
+      node_name   =   node[0]         # name of node
+      node_conf   =   node[1]         # content of node
+      # if this cluster, get all the node ids, must be in range of 1-254
+      node_ids =   node_conf['ids']
+      if node_ids then
+        node_ids.each do | id |
+          name = "#{node_name}-%3d" % id
+          node_ip = "#{node_conf['subnet']}.#{id}"
+          config_vm(config, name, node_ip, node_conf, id)
+        end
+      else
+        node_ip = node_conf['ip']
+        config_vm(config, node_name, node_ip, node_conf, 0)
       end
     end
   end

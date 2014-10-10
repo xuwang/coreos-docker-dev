@@ -49,10 +49,7 @@ coreos:
               [Service]
               Type=oneshot
               RemainAfterExit=true
-              ExecStart=/bin/bash -c source /etc/profile.d/etcd-envvars.sh: \
-                  echo " " >>  /etc/environment; \
-                  env | grep ETCDCTL >> /etc/environment; \
-                  env | grep FLEETCTL >> /etc/environment
+              ExecStart=/bin/bash -c "source /etc/profile.d/etcd-envvars.sh; env | grep -E 'ETCDCTL|FLEETCTL' >> /etc/environment"
               
               [Install]
               WantedBy=multi-user.target
