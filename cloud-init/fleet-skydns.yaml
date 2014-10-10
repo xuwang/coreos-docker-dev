@@ -7,8 +7,8 @@ coreos:
     fleet:
         public-ip: $private_ipv4
         # if etcd is not running locally, set etcd servers:
-        #etcd_servers: "http://172.17.8.101:4001,http://172.17.8.102:4001,http://172.17.8.103:4001"
-        etcd_servers: "http://172.17.8.101:4001"
+        etcd_servers: "http://172.17.8.101:4001,http://172.17.8.102:4001,http://172.17.8.103:4001"
+        #etcd_servers: "http://172.17.8.101:4001"
     units:
         - name: etcd.service
           mask: true

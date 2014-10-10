@@ -1,7 +1,13 @@
 #!/bin/bash -e
 
 ENV="$1"
+
 ETCD_ENV="/etc/profile.d/etcd-envvars.sh"
+# If the etcd is not running on this notes, we need a way 
+# to setup etcd envvars all login shell as well as 
+# for scripts running in units.
+# ETCD_ENV file must be created by node provisoning process
+# i.e. cloud-init or vagrant provision
 
 if [ -z "$ENV" ]; then
         echo usage: $0 /etc/environment
