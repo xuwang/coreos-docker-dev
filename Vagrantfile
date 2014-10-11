@@ -8,9 +8,10 @@ Vagrant.require_version ">= 1.6.0"
 MY_PATH = File.dirname(__FILE__)
 
 # Define the vm nodes in json
-NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
+#NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster.json")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-large.json")
+NODES_CONF = File.join(MY_PATH, "nodes-conf", "kube.json")
 
 
 TEST_ROOT_CA_PATH = File.join(MY_PATH, "apps", "certs", "rootCA.pem")
