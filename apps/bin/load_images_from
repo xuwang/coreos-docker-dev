@@ -1,0 +1,27 @@
+#!/bin/bash
+
+case "$1" in
+  -h|--help)
+    echo -e "Load image from a remote node.\nUsage: $0 <remote_machine> <image> <image> ..."
+    exit 0
+    ;;
+esac
+
+if [ $# -le 2 ]; then
+  echo "Usage: $0 <remote_machine> <image> <image> ..."
+  exit 1
+fi
+
+source=$1
+shift
+
+for im in $*; do
+	# load the image only if it's NOT already loaded
+	docker images | awk '{ printf "%s:%s\n", $1,$2 }' | grep $im > /dev/null
+	if [ $? -ne 0 ]; then
+		echo "Load image $im from remote host $source"
+		ssh $source docker save $im | docker load
+	else
+		echo "The image $m has already loaded"
+	fi
+done

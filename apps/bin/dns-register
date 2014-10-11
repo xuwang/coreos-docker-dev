@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ $# -lt 2 ];then 
+	echo "Usage: `basename $0` <NAME> <IP or A NAME>"
+	echo "	e.g `basename $0`    registry.service  10.42.2.101"
+	echo "	    `basename $0`    registry          registry.service.docker.local"
+	exit 1
+fi
+
+SCRIPT_HOME="$( cd "$( dirname "$0" )" && pwd )"
+source /var/lib/apps/skydns/envvars
+
+while true; do 
+	$SCRIPT_HOME/dns-set $*
+    sleep $SKYDNS_REGISTER_SLEEP
+done

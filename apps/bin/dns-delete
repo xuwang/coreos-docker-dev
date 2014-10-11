@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ $# -lt 2 ];then 
+	echo "Usage: `basename $0` <NAME>"
+	echo "	e.g `basename $0`    registry.service"
+	exit 1
+fi
+
+source /var/lib/apps/skydns/envvars
+
+[[ -f /etc/profile.d/etcd-envvars.sh ]] && source /etc/profile.d/etcd-envvars.sh || true
+
+# translate name, e.g. regsitry.service to skydns path, e.g. service/registry
+p=`echo "${1}." | tac -s '.' | sed -e ':a;N;$!ba;s/\n//g' -e 's/.$//' -e 's/\./\//g'`
+
+echo skydns rm "${LOCAL_DOMAIN_PATH}/$p"
+etcdctl rm "${LOCAL_DOMAIN_PATH}/$p" --recursive

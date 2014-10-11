@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker top $1  &> /dev/null
+    
