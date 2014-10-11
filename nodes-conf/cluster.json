@@ -17,7 +17,7 @@
             "description":      "This is a node in a 3-node-cluster",
             "cloud_init":       "cloud-init/skydns-cluster.yaml",
             "domain":           "docker.local",
-            "ids":              [102, 103],
+            "ip":               "172.17.8.102",
             "subnet":           "172.17.8",
             "memory":           2048,
             "ports":            [
@@ -29,7 +29,7 @@
             "cloud_init":       "cloud-init/skydns-cluster.yaml",
             "domain":           "docker.local",
             "ip":               "172.17.8.103",
-            "subnet":          "172.17.8",
+            "subnet":           "172.17.8",
             "memory":           2048,
             "ports":            [
                                 {"guest": 22,   "host": 2203,   "id": "ssh"     }
