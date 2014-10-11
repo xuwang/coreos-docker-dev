@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#docker images | awk '{print $1":"$2}' | grep "^${1}$" &> /dev/null
+    
+docker history ${DOCKER_IMAGE} > /dev/null 2>&1

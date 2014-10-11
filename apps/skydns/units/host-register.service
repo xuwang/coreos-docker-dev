@@ -1,12 +1,12 @@
 [Unit]
 Description=Host DNS Register
-Wants=etcd.service
-After=etcd.service
-Wants=skydns.service
+Requires=skydns.service
 After=skydns.service
 
 [Service]
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/skydns/envvars
-ExecStart=/var/lib/apps/skydns/bin/host-register.sh %H "${COREOS_PRIVATE_IPV4}"
-ExecStop=/usr/bin/etcdctl rm "${LOCAL_DOMAIN_PATH}/%H"
+ExecStart=/var/lib/apps/bin/dns-register %H ${COREOS_PRIVATE_IPV4}
+ExecStop=/var/lib/apps/bin/dns-delete %H
+Restart=always
+RestartSec=5

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ -z $1 ]
+    then echo "Usage: $0 <image> ..."
+fi
+
+TARBALL_PATH="/var/lib/apps-data/images/tarballs"
+
+for f in $*
+do
+	echo "gzip -c -d $TARBALL_PATH/$f | docker load"
+	gzip -c -d $TARBALL_PATH/$f | docker load
+done
+

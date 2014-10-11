@@ -2,12 +2,7 @@
 LOCAL_DOMAIN=docker.local
 LOCAL_DOMAIN_PATH=/skydns/local/docker
 DNS_NAMESERVER_PATH=/skydns/ns
-#DNS_NAMESERVER_PATH=/skydns/local/docker/dns/ns
 SKYDNS_CONFIG='{"domain":"docker.local", "dns_addr":"0.0.0.0:53", "ttl":3600, "nameservers": ["8.8.8.8:53","8.8.4.4:53"]}'
 SKYDNS_CMD_REPO='https://github.com/xuwang/skydns-docker/releases/download/skydns-7025dba3834f/skydns'
-SKYDNS_PATH=/var/lib/apps/skydns
-SKYDNS_CMD=/var/lib/apps/skydns/bin/skydns
-HOST_TTL=60 
-HOST_REGISTER_SLEEP=45
-ETCDCTL_PEERS=http://172.17.8.101:4001
-ETCD_MACHINES=http://172.17.8.101:4001
+SKYDNS_TTL=60 
+SKYDNS_REGISTER_SLEEP=45

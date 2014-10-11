@@ -1,9 +1,8 @@
 #cloud-config
 
-## This is a cloud-config for a 2ed and 3rd node in 3-nodes cluster
-## the only differnence from skydns.yaml used by 1st node 
-## is that it sets etcd peers for 2ed and 3rd node
-## presuming etcd discovery is not used.
+##
+## This is a cloud-config for singal node with skydns and registry service
+##
 
 coreos:
     etcd:
@@ -13,10 +12,6 @@ coreos:
         # generate a new token for each unique cluster from https://discovery.etcd.io/new
         # WARNING: replace each time you 'vagrant destroy'
         #discovery: https://discovery.etcd.io/<token>
-        # or use the first node as the poor-man's discovery server
-        #discovery: http://172.17.8.101:4001/v2/keys/_etcd/registry/local-cluster
-        peers: "172.17.8.101:7001,172.17.8.102:7001,172.17.8.103:7001"
-        #peers: "172.17.8.101:7001"
     fleet:
         public-ip: $private_ipv4
         # if etcd is not running locally, set etcd servers:
@@ -62,9 +57,9 @@ coreos:
               Type=oneshot
               RemainAfterExit=true
               EnvironmentFile=/var/lib/skydns/envvars
-              ExecStart=-/bin/mkdir -p ${SKYDNS_HOME}/bin
-              ExecStart=/bin/bash -c "[[ -x ${SKYDNS_CMD} ]] || \
-                      curl -L -o ${SKYDNS_CMD} ${SKYDNS_CMD_REPO} && chmod 755 ${SKYDNS_CMD}; echo ok" 
+              ExecStartPre=-/bin/mkdir -p /opt/bin
+              ExecStart=/bin/bash -c "[[ -x /opt/bin/skydns ]] || \
+                      curl -L -o /opt/bin/skydns ${SKYDNS_CMD_REPO} && chmod 755 /opt/bin/skydns; echo installed /opt/bin/skydns" 
         - name: skydns.service
           command: start
           content: |
@@ -81,10 +76,10 @@ coreos:
               EnvironmentFile=/var/lib/skydns/envvars
               # Set skydns configuration in etcd
               ExecStartPre=/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
-              ExecStart=/bin/sh -c "${SKYDNS_CMD}"
+              ExecStart=/opt/bin/skydns
               ExecStartPost=/usr/bin/etcdctl set "${DNS_NAMESERVER_PATH}/%m" "${COREOS_PRIVATE_IPV4}"
               ExecStopPost=-/usr/bin/etcdctl rm /skydns/config
-              ExecStopPost=/usr/bin/etcdctl rm "${DNS_NAMESERVER_PATH}/%m"
+              ExecStopPost=-/usr/bin/etcdctl rm "${DNS_NAMESERVER_PATH}/%m"
         - name: host-register.service
           command: start
           content: |             
@@ -97,9 +92,30 @@ coreos:
               EnvironmentFile=/etc/environment
               EnvironmentFile=/var/lib/apps/skydns/envvars
               ExecStart=/var/lib/apps/bin/dns-register %H ${COREOS_PRIVATE_IPV4}
-              ExecStop=/var/lib/apps/bin/dns-delete %H
+              ExecStop=-/var/lib/apps/bin/dns-delete %H
               Restart=always
               RestartSec=5
+        - name: registry.service
+          command: start
+          content: |             
+              [Unit]
+              Description=Host DNS Register
+              Requires=docker.service
+              After=docker.service
+              
+              [Service]
+              EnvironmentFile=/etc/environment
+              EnvironmentFile=/var/lib/apps/skydns/envvars
+              TimeoutStartSec=300
+              ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:latest || /var/lib/apps/bin/dkload registry-latest.tgz"
+              ExecStartPre=-/usr/bin/docker rm -f %n
+              ExecStart=/usr/bin/bash -c "docker run --rm --name %n -p 80:5000 -v /var/lib/apps-data/registry:/data -v /var/lib/apps/registry:/registry-conf \
+                      -e DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml -e SETTINGS_FLAVOR=prod registry:latest"
+              ExecStartPost=/var/lib/apps/bin/dns-set 'registry' "%H.${LOCAL_DOMAIN}"
+              ExecStopPost=-/var/lib/apps/bin/dns-delete 'registry'
+              RestartSec=5
+              Restart=always
+
 write_files:
   - path: /var/lib/skydns/envvars
     permissions: 0644
@@ -119,6 +135,9 @@ write_files:
       domain docker.local
       nameserver 127.0.0.1
       nameserver 8.8.8.8
+  - path: /etc/profile.d/path.sh
+    content: |
+        export PATH=$PATH:/var/lib/apps/bin
   - path: /etc/profile.d/alias.sh
     content: |
         alias lal="ls -al"

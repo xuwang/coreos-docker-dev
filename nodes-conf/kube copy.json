@@ -1,11 +1,11 @@
 {
     "nodes": {
-        "n1": {
-            "description":      "This is a node in a 3-node-cluster",
+        "kube-1": {
+            "description":      "This is Master on 10.120.0.1",
             "cloud_init":       "cloud-init/skydns.yaml",
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
-            "subnet":          "172.17.8",
+            "subnet":           "172.17.8",
             "memory":           2048,
             "ports":            [
                                 {"guest": 22,   "host": 2201,   "id": "ssh"     },
@@ -13,24 +13,24 @@
                                 {"guest": 53,   "host": 53,     "id": "skydns"  }
                                 ]
         },
-        "n2": {
-            "description":      "This is a node in a 3-node-cluster",
+        "kube-2": {
+            "description":      "This is Minion 1 on 10.120.0.2",
             "cloud_init":       "cloud-init/skydns-cluster.yaml",
             "domain":           "docker.local",
             "ip":               "172.17.8.102",
             "subnet":           "172.17.8",
-            "memory":           2048,
+            "memory":           1024,
             "ports":            [
                                 {"guest": 22,   "host": 2202,   "id": "ssh"     }
                                 ]
         },
-        "n3": {
-            "description":      "This is a node in a 3-node-cluster",
+        "kube-3": {
+            "description":      "This is Minion 2 on 10.120.0.3",
             "cloud_init":       "cloud-init/skydns-cluster.yaml",
             "domain":           "docker.local",
             "ip":               "172.17.8.103",
             "subnet":           "172.17.8",
-            "memory":           2048,
+            "memory":           1024,
             "ports":            [
                                 {"guest": 22,   "host": 2203,   "id": "ssh"     }
                                 ]

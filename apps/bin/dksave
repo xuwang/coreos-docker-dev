@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ -z $1 ]
+    then echo "Usage: $0 <file.tgz> ..."
+fi
+
+TARBALL_PATH="/var/lib/apps-data/images/tarballs"
+
+mkdir -p $TARBALL_PATH
+
+for f in $*
+do
+	fn=`echo $f | sed 's/\//-/g' | sed 's/:/-/g'`
+    echo "docker save ${f} | gzip -f > $TARBALL_PATH/${fn}.tgz"
+    docker save ${f} | gzip -f > $TARBALL_PATH/${fn}.tgz
+done

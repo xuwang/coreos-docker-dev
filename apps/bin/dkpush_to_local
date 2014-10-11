@@ -1,0 +1,13 @@
+#!/bin/bash -e
+
+if [ -z $1 ]
+    then echo "Usage: $0 <image_name:tag>"
+fi
+
+source /var/lib/apps/skydns/envvars
+
+id=`docker inspect --format "{{ .Id }}" $1`
+echo docker tag $id "registry.${LOCAL_DOMAIN}/$1"
+docker tag $id "registry.${LOCAL_DOMAIN}/$1"
+echo docker push "registry.${LOCAL_DOMAIN}/$1"
+docker push "registry.${LOCAL_DOMAIN}/$1"

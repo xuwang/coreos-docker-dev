@@ -87,8 +87,10 @@ coreos:
               [Service]
               EnvironmentFile=/etc/environment
               EnvironmentFile=/var/lib/apps/skydns/envvars
-              ExecStart=/var/lib/apps/skydns/bin/host-register.sh %H ${COREOS_PRIVATE_IPV4}
-              ExecStop=/usr/bin/etcdctl rm "${LOCAL_DOMAIN_PATH}/%H"
+              ExecStart=/var/lib/apps/bin/dns-register %H ${COREOS_PRIVATE_IPV4}
+              ExecStop=/var/lib/apps/bin/dns-delete %H
+              Restart=always
+              RestartSec=5
 write_files:
   - path: /var/lib/skydns/envvars
     permissions: 0644
@@ -97,7 +99,7 @@ write_files:
         LOCAL_DOMAIN=docker.local
         LOCAL_DOMAIN_PATH=/skydns/local/docker
         DNS_NAMESERVER_PATH=/skydns/ns
-        SKYDNS_CONFIG='{"domain":"docker.local", "dns_addr":"0.0.0.0:53", "ttl":3600, "nameservers": ["8.8.8.8","8.8.4.4"]}'
+        SKYDNS_CONFIG='{"domain":"docker.local", "dns_addr":"0.0.0.0:53", "ttl":3600, "nameservers": ["8.8.8.8:53","8.8.4.4:53"]}'
         SKYDNS_CMD_REPO=https://github.com/xuwang/skydns-docker/releases/download/skydns-7025dba3834f/skydns
         SKYDNS_HOME=/var/lib/skydns
         SKYDNS_CMD=/var/lib/skydns/bin/skydns
