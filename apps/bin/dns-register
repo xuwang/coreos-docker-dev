@@ -11,6 +11,6 @@ SCRIPT_HOME="$( cd "$( dirname "$0" )" && pwd )"
 source /var/lib/apps/skydns/envvars
 
 while true; do 
-	$SCRIPT_HOME/dns-set $*
+	$SCRIPT_HOME/dns-set $1 $2 $SKYDNS_TTL
     sleep $SKYDNS_REGISTER_SLEEP
 done

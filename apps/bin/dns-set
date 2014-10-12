@@ -1,18 +1,21 @@
 #!/bin/bash
 
 if [ $# -lt 2 ];then 
-	echo "Usage: `basename $0` <NAME> <IP or A NAME>"
+	echo "Usage: `basename $0` <NAME> <IP or A NAME> <ttl>"
 	echo "	e.g `basename $0`    registry.service  10.42.2.101"
-	echo "	    `basename $0`    registry          registry.service.docker.local"
+	echo "	    `basename $0`    registry          registry.service.docker.local  3600"
 	exit 1
 fi
 
 source /var/lib/apps/skydns/envvars
-
 [[ -f /etc/profile.d/etcd-envvars.sh ]] && source /etc/profile.d/etcd-envvars.sh || true
 
 # translate name, e.g. regsitry.service to skydns path, e.g. service/registry
 p=`echo "${1}." | tac -s '.' | sed -e ':a;N;$!ba;s/\n//g' -e 's/.$//' -e 's/\./\//g'`
 
-echo skydns set  $1 => $2,  ttl=$SKYDNS_TTL
-etcdctl set --ttl $SKYDNS_TTL "${LOCAL_DOMAIN_PATH}/$p" "{\"host\":\"$2\"}"
+echo skydns set  $1 => $2,  ttl=$3
+if [ -z $3 ]; then
+	etcdctl set "${LOCAL_DOMAIN_PATH}/$p" "{\"host\":\"$2\"}"
+else
+	etcdctl set --ttl "$3" "${LOCAL_DOMAIN_PATH}/$p" "{\"host\":\"$2\"}"
+fi

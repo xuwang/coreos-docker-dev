@@ -8,7 +8,7 @@ EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/skydns/envvars
 EnvironmentFile=/var/lib/apps/nginx/envvars
 TimeoutStartSec=0
-ExecStartPre=/var/lib/apps/bin/dkpull ${DOCKER_LOCAL_IMAGE} ${DOCKER_IMAGE}
+ExecStartPre=/var/lib/apps/bin/dkpull ${DOCKER_IMAGE}
 ExecStartPre=/var/lib/apps/bin/call-confd
 # Registering the DNS name
 ExecStartPre=/usr/bin/etcdctl set "${LOCAL_DOMAIN_PATH}/${DNS_PATH}" '{"host": "${COREOS_PRIVATE_IPV4}"}'

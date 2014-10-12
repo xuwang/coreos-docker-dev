@@ -10,7 +10,6 @@ EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/registry/envvars
 EnvironmentFile=/var/lib/skydns/envvars
 TimeoutStartSec=0
-ExecStartPre=/var/lib/apps/bin/dkpull ${DOCKER_IMAGE}
 # Registering the DNS name
 ExecStartPre=/usr/bin/etcdctl set "${LOCAL_DOMAIN_PATH}/${DNS_PATH}" '{"host": "${COREOS_PRIVATE_IPV4}"}'
 # Registering the confd key

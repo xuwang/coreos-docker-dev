@@ -1,33 +1,24 @@
 # See https://github.com/sameersbn/docker-gitlab
 # env for gitlab-db.service
-DB_DATA='/var/lib/apps-data/gitlab/db'
 
+DB_DATA='/var/lib/apps-data/gitlab/db'
+GIT_DATA='/var/lib/apps-data/gitlab/data'
+
+DB_IMAGE='sameersbn/postgresql:latest'
 DB_OPTS="-e 'DB_NAME=gitlabhq_production' \
     -e 'DB_USER=gitlab' \
     -e 'DB_PASS=gitlab' \
-    -v /var/lib/apps-data/gitlab/db:/var/lib/postgresql"
-
-DB_IMAGE='sameersbn/postgresql:latest'
-DB_LOCAL_IMAGE='registry.docker.local/postgresql:latest'
-DNS_DB_PATH='/skydns/local/docker/service/gitlab-db.service'
+    -v ${DB_DATA}:/var/lib/postgresql \
+	--privileged"
 
 # env for gitlab-redis.service
-REDIS_VOL=/var/lib/apps-data/gitlab/redis
-
-REDIS_OPTS=''
 REDIS_IMAGE='sameersbn/redis:latest'
-REDIS_LOCAL_IMAGE='registry.docker.local/redis:latest'
-DNS_REDIS_PATH='/skydns/local/docker/service/gitlab-redis.service'
+REDIS_VOL=/var/lib/apps-data/gitlab/redis
+REDIS_OPTS=''
 
 # env for gitlab
-DATA_VOL='/var/lib/apps-data/gitlab/data'
-
+DOCKER_IMAGE='sameersbn/gitlab:7.3.1-3'
 DOCKER_OPTS="-p 10080:80 -p 10433:443 -p 10022:22 \
     --link postgresql:postgresql \
     --link redis:redisio \
-    -v /var/lib/apps-data/gitlab/data:/home/git/data"
-
-DOCKER_IMAGE='sameersbn/gitlab:7.3.1-3'
-DOCKER_LOCAL_IMAGE='registry.docker.local/gitlab:7.3.1-3'
-DNS_PATH='/skydns/local/docker/service/gitlab.service'
-#DNS_PATH='/skydns/local/docker/service/git'
+    -v ${GIT_DAT}:/home/git/data"
