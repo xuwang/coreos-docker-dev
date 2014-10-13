@@ -1,15 +1,18 @@
-# Pull from base Ubuntu image
-FROM ubuntu:14.04
+# Pulled from https://github.com/drone/drone/blob/master/Dockerfile
+#
+# This is a Docker image for the Drone CI system.
+# Use the following command to start the container:
+#    docker run -p 127.0.0.1:80:80 -t drone/drone
 
-# Do system updates and install dependencies
+FROM google/golang
+
 RUN apt-get update
-RUN apt-get -y upgrade
-RUN sudo apt-get -y install git wget
-RUN apt-get clean
+RUN apt-get -y install zip libsqlite3-dev sqlite3 1> /dev/null 2> /dev/null
 
-# Download Drone.io
-RUN wget http://downloads.drone.io/latest/drone.deb
-RUN dpkg -i drone.deb
+ADD . /gopath/src/github.com/drone/drone/
+WORKDIR /gopath/src/github.com/drone/drone
+
+RUN make deps build embed install
 
 VOLUME /data
 

@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# Build and push a docker image with drone
+#
+
+image_tag=$1
+build_dir=$2
+if [ -z $image_tag ] || [ ! -d $build_dir ] 
+then
+	echo "Usage: 
+		$0 <registry/user/image_name> </var/cache/drone/src/domain/owner/name>"
+	exit 1
+fi
+
+
+# turn -x on if DEBUG is set to a non-empty string
+[ -n "$DEBUG" ] && set -x
+
+# Exit on error
+set -e
+
+function cleanup() {
+	# clean up loopback devices !!!
+	start-stop-daemon --stop --pidfile "/var/run/docker.pid" > /dev/null
+}
+trap cleanup EXIT
+
+cd $build_dir
+        
+# get git rev and construct the image name:rev
+if [ -d .git ]
+then
+	img_rev=$(git rev-parse --short=12 HEAD)
+else
+	img_rev=latest
+fi
+
+img="${image_tag}:${img_rev}"
+img_latest="${image_tag}:latest"
+
+# start docker-in-docker
+wrapdocker &  
+sleep 5  
+
+# build and tag as latest
+docker build --force-rm -t $img .  
+docker tag $img $img_latest
+
+[[ -f ./dklogin ]] && ./dklogin
+# push to registry
+docker push $img
+docker push $img_latest
+
+exit 0

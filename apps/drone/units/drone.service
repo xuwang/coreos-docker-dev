@@ -7,7 +7,7 @@ After=docker.service
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/skydns/envvars
 TimeoutStartSec=300
-ExecStartPre=/var/lib/apps/bin/dkpull drone
+ExecStartPre=-/var/lib/apps/bin/dkpull drone
 ExecStartPre=-/usr/bin/docker rm -f %n
 ExecStart=/usr/bin/bash -c "docker run --rm --name %n -p 8080:8080 \
     -v /var/run/docker.sock:/var/run/docker.sock \
