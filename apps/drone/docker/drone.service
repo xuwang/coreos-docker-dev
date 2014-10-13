@@ -8,12 +8,16 @@ EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/skydns/envvars
 EnvironmentFile=/var/lib/apps/drone/envvars
 TimeoutStartSec=300
-ExecStartPre=-/var/lib/apps/bin/dkpull drone
+ExecStartPre=-/var/lib/apps/bin/dkpull test/drone
 ExecStartPre=-/usr/bin/docker rm -f %n
-ExecStart=/usr/bin/bash -c "docker run --rm --name %n -p 8080:8080 \
+ExecStart=/usr/bin/bash -c "docker run --rm --name %n -p 8080:80 \
     -v /var/run/docker.sock:/var/run/docker.sock \
 	-v /var/lib/apps-data/drone:/data \
-	drone"
+	-e DRONE_GITHUB_CLIENT=$DRONE_GITHUB_CLIENT \
+	-e DRONE_GITHUB_SECRET=$DRONE_GITHUB_SECRET \
+	-e DRONE_SERVER_PORT=$DRONE_SERVER_PORT \
+	-e DRONE_DATABASE_DATASOURCE=$DRONE_DATABASE_DATASOURCE \
+	test/drone"
 ExecStartPost=/var/lib/apps/bin/dns-set 'drone' "%H.${LOCAL_DOMAIN}"
 ExecStop=-/usr/bin/docker stop %n
 ExecStopPost=-/var/lib/apps/bin/dns-delete 'drone'
