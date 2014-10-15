@@ -1,21 +1,17 @@
 [Unit]
-Description=Host DNS Register
+Description=Drone
 Requires=docker.service
 After=docker.service
 
 [Service]
-EnvironmentFile=/etc/environment
-EnvironmentFile=/var/lib/apps/skydns/envvars
-EnvironmentFile=/var/lib/apps/drone/envvars
 TimeoutStartSec=300
-ExecStartPre=-/var/lib/apps/bin/dkpull drone
+ExecStartPre=-/var/lib/apps/bin/dkpull test/drone
 ExecStartPre=-/usr/bin/docker rm -f %n
-ExecStart=/usr/bin/bash -c "docker run --rm --name %n -p 8080:8080 \
+ExecStart=/usr/bin/bash -c "docker run --rm --name %n -p 8080:80 \
     -v /var/run/docker.sock:/var/run/docker.sock \
-	-v /var/lib/apps-data/drone:/data \
-	drone"
-ExecStartPost=/var/lib/apps/bin/dns-set 'drone' "%H.${LOCAL_DOMAIN}"
+	-v /var/lib/apps-data/drone:/var/lib/apps-data/drone \
+	-v /var/lib/apps/drone:/etc/drone \
+	test/drone --config=/etc/drone/config.toml "
 ExecStop=-/usr/bin/docker stop %n
-ExecStopPost=-/var/lib/apps/bin/dns-delete 'drone'
 RestartSec=5
 Restart=always

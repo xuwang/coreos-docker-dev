@@ -19,7 +19,7 @@ port="0.0.0.0:80"
 
 [database]
 driver="sqlite3"
-datasource="/data/drone.sqlite"
+datasource="/var/lib/apps-data/drone/drone.sqlite"
 
 
 #####################################################################
@@ -31,11 +31,11 @@ datasource="/data/drone.sqlite"
 # users to Drone through the admin screens.
 #
 # [registration]
-open=true
+# open=true
 
-# [github]
-#client=""
-# secret=""
+[github]
+client="edbfbb24c70df47d7cd1"
+secret="8b15146271aa8e98da38e78821ab04bb5b5f0520"
 
 # [github_enterprise]
 # client=""
@@ -63,8 +63,8 @@ open=true
 # user=""
 # pass=""
 
-# [worker]
-# nodes=[
+#[worker]
+#nodes=[
 #   "unix:///var/run/docker.sock",
 #   "unix:///var/run/docker.sock"
-# ]
+#]

@@ -6,14 +6,16 @@
 
 FROM google/golang:stable
 
+ENV DRONE_SERVER_PORT :80
+
 RUN apt-get update
 RUN apt-get -y install zip libsqlite3-dev sqlite3 1> /dev/null 2> /dev/null
 
 RUN git clone https://github.com/drone/drone /gopath/src/github.com/drone/drone && \
 	cd /gopath/src/github.com/drone/drone && \
-	make deps build embed install
+	make deps build test embed install
 
-ADD ./drone.toml /etc/drone/drone.toml
+ADD ./config.toml /etc/drone/config.toml
 
 VOLUME /data
 VOLUME /etc/drone
@@ -21,5 +23,8 @@ VOLUME /etc/drone
 # Expose the Drone.io port
 EXPOSE 80
 
-# The command we'll be running when the container starts
-CMD /usr/local/bin/droned --config=/etc/drone/drone.toml
+ENTRYPOINT ["/usr/local/bin/droned"]
+
+CMD ["--config=/etc/drone/config.toml "]
+
+RUN  apt-get -y install procps lsof 
