@@ -17,6 +17,8 @@ RUN git clone https://github.com/drone/drone /gopath/src/github.com/drone/drone 
 
 ADD ./config.toml /etc/drone/config.toml
 
+RUN  apt-get -y install procps lsof 
+
 VOLUME /data
 VOLUME /etc/drone
 
@@ -26,5 +28,3 @@ EXPOSE 80
 ENTRYPOINT ["/usr/local/bin/droned"]
 
 CMD ["--config=/etc/drone/config.toml "]
-
-RUN  apt-get -y install procps lsof 
