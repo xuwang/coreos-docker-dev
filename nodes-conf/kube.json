@@ -2,7 +2,14 @@
     "nodes": {
         "kube-1": {
             "description":      "This is Master on 10.120.0.1",
-            "cloud_init":       "cloud-init/registry.yaml",
+            "cloud_init":       [
+                                "00-etcd.yaml",
+                                "01-fleet.yaml",
+                                "02-docker.yaml",
+                                "03-skydns.yaml",
+                                "04-registry.yaml",
+                                "10-files.yaml"
+                                ],
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
             "subnet":           "172.17.8",

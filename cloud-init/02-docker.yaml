@@ -1,0 +1,48 @@
+#cloud-config
+
+## This is a cloud-config for docker service and host-register service
+
+coreos:
+    units:
+        - name: docker.service
+          command: start
+          content: |
+              .include /usr/lib/systemd/system/docker.service
+            
+              [Service]
+              # Use our own dns, instead of the host's.
+              EnvironmentFile=/var/lib/skydns/envvars
+              ExecStart=
+              ExecStart=/usr/bin/docker -d -s=btrfs -r=false -H fd:// --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN}
+        - name: docker-tcp.socket
+          command: start
+          enable: true
+          content: |
+              [Unit]
+              Description=Docker Socket for the API
+              
+              [Socket]
+              ListenStream=2375
+              Service=docker.service
+              BindIPv6Only=both
+              
+              [Install] 
+              WantedBy=sockets.target
+        - name: host-register.service
+          command: start
+          content: |
+              # this unit keep host registered with dns very TTL defined in /var/lib/apps/skydns/envvars
+              # used as the basic health check of the vm
+              [Unit]
+              Description=Host DNS Register
+              Requires=docker.service
+              After=docker.service
+              
+              [Service]
+              EnvironmentFile=/etc/environment
+              EnvironmentFile=/var/lib/apps/skydns/envvars
+              ExecStart=/var/lib/apps/bin/dns-register %H ${COREOS_PRIVATE_IPV4}
+              ExecStop=/var/lib/apps/bin/dns-delete %H
+              Restart=always
+              RestartSec=5
+# end of cloud-config docker

@@ -14,7 +14,7 @@ EnvironmentFile=/var/lib/apps/skydns/envvars
 ExecStartPre=/var/lib/apps/bin/dns-set x%m.ns.dns "${COREOS_PRIVATE_IPV4}"
 # Set skydns configuration in etcd
 ExecStartPre=/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
-ExecStart=/bin/sh -c ${SKYDNS_CMD}
+ExecStart=/opt/bin/skydns
 ExecStopPost=-/usr/bin/etcdctl rm /skydns/config
 ExecStartPre=/var/lib/apps/bin/dns-delete x%m.ns.dns
 

@@ -13,8 +13,12 @@ Start the cluster and login:
 ### Build nadeapp image
     cd share/apps/nodeapp
     docker build -t <user>/nodeapp docker
-    docker push <user>/nodeapp
-    
+    docker push <user>/nodeapp:latest
+
+Tell units which image should be used in this app:
+
+    echo "IMAGE=<user>/nodeapp:latest" >> ./envvars
+
 ### Run nodeapp on 3 machines
 Make sure the machines are available:
    

@@ -1,0 +1,31 @@
+#cloud-config
+# Don't run etcd on this node but use 172.17.8.101 as the etcd endpoint
+coreos:
+    units:
+        - name: etcd.service
+          mask: true        
+        - name: setup-etcdctl-env.service
+          command: start
+          content: |       
+              [Unit]
+              Description=Setup etcdctl env vars
+              Wants=coreos-setup-environment.service
+              After=coreos-setup-environment.service
+              
+              [Service]
+              Type=oneshot
+              RemainAfterExit=true
+              ExecStart=/bin/bash -c "source /etc/profile.d/etcd-envvars.sh; env | grep -E 'ETCDCTL|FLEETCTL' >> /etc/environment"
+              
+              [Install]
+              WantedBy=multi-user.target
+write_files:
+  - path: /etc/profile.d/etcd-envvars.sh
+    permissions: 0644
+    owner: root
+    content: |
+        # set etcd endpoint for etcdctl and fleetctl
+        export ETCDCTL_PEERS="http://172.17.8.101:4001"
+        export FLEETCTL_ENDPOINT="http://172.17.8.101:4001"
+
+# end of cloud-config no-etcd

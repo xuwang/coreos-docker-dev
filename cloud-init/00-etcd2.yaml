@@ -1,0 +1,21 @@
+#cloud-config
+
+## This is a cloud-config for a 2ed and 3rd node in 3-nodes etcd cluster
+## the only differnence from etcd-skydns.yaml used by 1st node 
+## is that it sets etcd peers for 2ed and 3rd node
+## presuming etcd discovery is not used.
+
+coreos:
+    etcd:
+        addr: $private_ipv4:4001
+        peer-addr: $private_ipv4:7001
+        # runing a multi-node cluster with discovery mode:
+        # generate a new token for each unique cluster from https://discovery.etcd.io/new
+        # WARNING: replace each time you 'vagrant destroy'
+        #discovery: https://discovery.etcd.io/<token>
+        peers: "172.17.8.101:7001,172.17.8.102:7001,172.17.8.103:7001"
+    units:
+        - name: etcd.service
+          command: start
+          
+# end of cloud-config etcd cluster
