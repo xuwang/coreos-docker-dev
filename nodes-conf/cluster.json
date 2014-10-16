@@ -2,7 +2,7 @@
     "nodes": {
         "n1": {
             "description":      "This is a node in a 3-node-cluster",
-            "cloud_init":       "cloud-init/skydns.yaml",
+            "cloud_init":       "cloud-init/register.yaml",
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
             "subnet":          "172.17.8",
