@@ -77,9 +77,9 @@ coreos:
               # Set skydns configuration in etcd
               ExecStartPre=/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
               ExecStart=/opt/bin/skydns
-              ExecStartPost=/usr/bin/etcdctl set "${DNS_NAMESERVER_PATH}/%m" "${COREOS_PRIVATE_IPV4}"
+              ExecStartPost=/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
               ExecStopPost=-/usr/bin/etcdctl rm /skydns/config
-              ExecStopPost=-/usr/bin/etcdctl rm "${DNS_NAMESERVER_PATH}/%m"
+              ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
         - name: host-register.service
           command: start
           content: |             
