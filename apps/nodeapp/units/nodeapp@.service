@@ -1,0 +1,19 @@
+[Unit]
+Description=NodeJS App
+Requires=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+TimeoutStartSec=20min
+ExecStartPre=/var/lib/apps/bin/dkpull xuwang/nodeapp:latest
+# dns register: round-robin-load-balanced CNAME
+ExecStartPre=/var/lib/apps/bin/dns-set x%i.nodeapp %H
+ExecStart=/usr/bin/docker run --rm --name %n -p 8000:8000 test/nodeapp:latest
+ExecStopPre=-/var/lib/apps/bin/dns-delete x%i.nodeapp 
+ExecStop=-/usr/bin/docker stop %n
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+X-Conflicts=nodeapp@%i.service
