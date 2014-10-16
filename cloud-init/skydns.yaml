@@ -111,9 +111,16 @@ write_files:
     permissions: 0644
     owner: root
     content: |
-      domain docker.local
-      nameserver 127.0.0.1
-      nameserver 8.8.8.8
+        domain docker.local
+        nameserver 127.0.0.1
+        nameserver 8.8.8.8
+  - path: /etc//etc/sysctl.d/overcommit_memory.conf
+    permissions: 0644
+    owner: root
+    content: |
+        # see http://www.redhat.com/magazine/001nov04/features/vm/
+        # may be needed for memory based datastore, e.g. redis
+        vm.overcommit_memory = 1
   - path: /etc/profile.d/alias.sh
     content: |
         alias lal="ls -al"
