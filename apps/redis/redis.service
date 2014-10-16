@@ -1,5 +1,5 @@
 [Unit]
-Description=gitlab-redis
+Description=redis
 Requires=docker.service
 After=docker.service
 Wants=etcd.service
@@ -7,7 +7,7 @@ After=etcd.service
 
 [Service]
 EnvironmentFile=/etc/environment
-EnvironmentFile=/var/lib/apps/gitlab/envvars
+EnvironmentFile=/var/lib/apps/redis/envvars
 TimeoutStartSec=0
 ExecStartPre=/var/lib/apps/bin/dkpull ${REDIS_IMAGE}
 ExecStart=/usr/bin/bash -c "docker run --rm --name %n ${REDIS_OPTS} ${REDIS_IMAGE}"

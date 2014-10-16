@@ -59,7 +59,7 @@ coreos:
               EnvironmentFile=/var/lib/skydns/envvars
               ExecStart=-/bin/mkdir -p ${SKYDNS_HOME}/bin
               ExecStart=/bin/bash -c "[[ -x ${SKYDNS_CMD} ]] || \
-                      curl -L -o ${SKYDNS_CMD} ${SKYDNS_CMD_REPO} && chmod 755 ${SKYDNS_CMD}; echo ok" 
+                      curl -L -o ${SKYDNS_CMD} ${SKYDNS_CMD_REPO} && chmod 755 ${SKYDNS_CMD}; echo ok"
         - name: skydns.service
           command: start
           content: |
@@ -76,10 +76,10 @@ coreos:
               EnvironmentFile=/var/lib/skydns/envvars
               # Set skydns configuration in etcd
               ExecStartPre=/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
-              ExecStart=/bin/sh -c "${SKYDNS_CMD}"
-              ExecStartPost=/usr/bin/etcdctl set "${DNS_NAMESERVER_PATH}/%m" "${COREOS_PRIVATE_IPV4}"
+              ExecStart=/opt/bin/skydns
+              ExecStartPost=/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
               ExecStopPost=-/usr/bin/etcdctl rm /skydns/config
-              ExecStopPost=/usr/bin/etcdctl rm "${DNS_NAMESERVER_PATH}/%m"
+              ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
         - name: host-register.service
           command: start
           content: |             
