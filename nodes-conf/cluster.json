@@ -2,7 +2,7 @@
     "nodes": {
         "n1": {
             "description":      "This is a node in a 3-node-cluster",
-            "cloud_init":       "cloud-init/register.yaml",
+            "cloud_init":       ["00-etcd.yaml","01-fleet.yaml","02-docker.yaml","03-skydns.yaml","04-registry.yaml","10-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
             "subnet":          "172.17.8",
@@ -18,7 +18,7 @@
         },
         "n2": {
             "description":      "This is a node in a 3-node-cluster",
-            "cloud_init":       "cloud-init/skydns-cluster.yaml",
+            "cloud_init":       ["00-etcd.yaml","01-fleet.yaml","02-docker.yaml","03-skydns.yaml","10-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.102",
             "subnet":           "172.17.8",
@@ -29,7 +29,7 @@
         },
         "n3": {
             "description":      "This is a node in a 3-node-cluster",
-            "cloud_init":       "cloud-init/skydns-cluster.yaml",
+            "cloud_init":       ["00-etcd.yaml","01-fleet.yaml","02-docker.yaml","03-skydns.yaml","10-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.103",
             "subnet":           "172.17.8",

@@ -1,27 +1,20 @@
 {
     "nodes": {
-        "n1": {
+        "node": {
             "description":      "This is a node with etcd, fleet, and skydns",
-            "cloud_init":       [
-                                "00-etcd.yaml",
-                                "01-fleet.yaml",
-                                "02-docker.yaml",
-                                "03-skydns.yaml",
-                                "04-registry.yaml",
-                                "10-files.yaml"
-                                ],
+            "cloud_init":       ["00-etcd.yaml","01-fleet.yaml","02-docker.yaml","03-skydns.yaml","04-registry.yaml","10-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
             "subnet":          "172.17.8",
             "memory":           2048,
             "ports":            [
-                {"guest": 22,	"host": 2201,	"id": "ssh"     },
-                {"guest": 443,	"host": 8443,	"id": "https"	},
-                {"guest": 80,   "host": 8080,	"id": "http"	},
-                {"guest": 53,   "host": 5353,	"id": "dns"     },
-                {"guest": 4001, "host": 4001,	"id": "etcd"	},
-                {"guest": 8888, "host": 8888,	"id": "app"     }
-                ]
+                                {"guest": 22,	"host": 2201,	"id": "ssh"     },
+                                {"guest": 443,	"host": 8443,	"id": "https"	},
+                                {"guest": 80,   "host": 8080,	"id": "http"	},
+                                {"guest": 53,   "host": 5353,	"id": "dns"     },
+                                {"guest": 4001, "host": 4001,	"id": "etcd"	},
+                                {"guest": 8888, "host": 8888,	"id": "app"     }
+                                ]
         }
     }
 }
