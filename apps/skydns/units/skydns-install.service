@@ -8,6 +8,4 @@ EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/skydns/envvars
 ExecStart=-/bin/mkdir -p /opt/bin
 ExecStart=/bin/bash -c "[ -x /opt/bin/skydns ] || (curl -L -o /opt/bin/skydns ${SKYDNS_CMD_REPO} && chmod 755 /opt/bin/skydns)"
-            
-[X-Fleet]
-Global=true
+     

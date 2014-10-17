@@ -35,9 +35,11 @@ coreos:
               EnvironmentFile=/etc/environment
               EnvironmentFile=/var/lib/skydns/envvars
               # Set skydns configuration in etcd
-              ExecStartPre=/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
+              ExecStartPre=-/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
               ExecStart=/opt/bin/skydns
-              ExecStartPost=/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
+              ExecStartPost=-/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
               ExecStopPost=-/usr/bin/etcdctl rm /skydns/config
               ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
+              RestartSec=5
+              Restart=always
 # end of cloud-config skydns

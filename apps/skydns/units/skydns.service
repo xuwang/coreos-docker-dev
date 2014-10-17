@@ -1,9 +1,7 @@
 [Unit]
 Description=skydns
 Requires=skydns-install.service
-Requires=etcd.service
 After=skydns-install.service
-After=etcd.service
 
 [Service]  
 Type=simple
@@ -11,12 +9,10 @@ Restart=always
 RestartSec=5
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/skydns/envvars
-ExecStartPre=/var/lib/apps/bin/dns-set x%m.ns.dns "${COREOS_PRIVATE_IPV4}"
+ExecStartPre=-/var/lib/apps/bin/dns-set x%m.ns.dns "${COREOS_PRIVATE_IPV4}"
 # Set skydns configuration in etcd
-ExecStartPre=/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
+ExecStartPre=-/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"
 ExecStart=/opt/bin/skydns
 ExecStopPost=-/usr/bin/etcdctl rm /skydns/config
-ExecStartPre=/var/lib/apps/bin/dns-delete x%m.ns.dns
-
-[X-Fleet]
-Global=true
+ExecStopPost=/var/lib/apps/bin/dns-delete x%m.ns.dns
+ 
