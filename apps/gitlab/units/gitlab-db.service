@@ -8,8 +8,8 @@ EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/gitlab/envvars
 TimeoutStartSec=0
 ExecStartPre=/var/lib/apps/bin/dkpull ${DB_IMAGE}
-ExecStart=/usr/bin/sh -c "docker run --rm --name %n ${DB_OPTS} ${DB_IMAGE}"
-ExecStop=/usr/bin/docker kill %n
+ExecStart=/usr/bin/sh -c "docker start --rm --name %n ${DB_OPTS} ${DB_IMAGE}"
+ExecStop=/usr/bin/docker stop %n
 RestartSec=5
 Restart=always
 

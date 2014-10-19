@@ -4,4 +4,4 @@ dest 		    = "/var/lib/apps/haproxy/haproxy.cfg"
 keys 		    = [ "/confd/prod/service/nodeapp" ]
 
 # should have used fleetctl start/stop
-reload_cmd  	= "/usr/bin/docker kill haproxy.service"
+reload_cmd  	= "/usr/bin/docker stop haproxy.service"

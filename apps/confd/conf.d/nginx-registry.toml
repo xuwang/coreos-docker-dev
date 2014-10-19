@@ -2,4 +2,4 @@
 src             = "nginx-registry.tmpl"
 dest            = "/var/lib/apps/nginx/sites-enabled/registry"
 keys            = ["/confd/prod/service/registry/endpoint"]
-reload_cmd      = "docker kill nginx.service"
+reload_cmd      = "docker stop nginx.service"
