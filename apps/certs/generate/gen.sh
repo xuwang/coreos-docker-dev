@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -e
+#!/bin/bash -e
 
 echo "creating rootCA.key and rootCA.pem ..."
 openssl req -x509 -new -nodes -days 9999 -config rootCA.cnf -out rootCA.pem

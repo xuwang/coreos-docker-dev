@@ -2,12 +2,7 @@
 
 ###Generate a self-signed multi-domain certs:
 
-    cd generate && ./gen.sh    
-
-###Make ther cert/key abvailable to nginx:
-
-    ln -s generate/site.crt site.crt
-    ln -s generate/site.key site.key
+    cd generate && ./gen.sh
 
 ###To entrust this self-signed certs on a test vbox:
    
