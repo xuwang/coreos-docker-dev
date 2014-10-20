@@ -15,7 +15,7 @@ ExecStartPre=/usr/bin/etcdctl set "${LOCAL_DOMAIN_PATH}/${DNS_PATH}" '{"host": "
 # Registering the confd key
 ExecStartPre=/usr/bin/etcdctl set "${CONFD_KEY}/%H" "${COREOS_PRIVATE_IPV4}:${REGISTRY_PORT}"
 # Run registry container
-ExecStart=/usr/bin/sh -c "docker start --rm --name %n ${DOCKER_OPTS} ${DOCKER_IMAGE}"
+ExecStart=/usr/bin/docker start -a --rm --name %n ${DOCKER_OPTS} ${DOCKER_IMAGE}
 ExecStop=-/usr/bin/docker stop %n
 # Clean up
 ExecStopPost=/usr/bin/etcdctl rm "${LOCAL_DOMAIN_PATH}/${DNS_PATH}" --with-value '{"host": "${COREOS_PRIVATE_IPV4}"}'
