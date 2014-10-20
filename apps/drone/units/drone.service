@@ -7,7 +7,7 @@ After=docker.service
 TimeoutStartSec=300
 ExecStartPre=-/var/lib/apps/bin/dkpull test/drone
 ExecStartPre=-/usr/bin/docker rm -f %n
-ExecStart=/usr/bin/docker start -a --rm --name %n -p 8080:80 \
+ExecStart=/usr/bin/docker run  --rm --name %n -p 8080:80 \
     -v /var/run/docker.sock:/var/run/docker.sock \
 	-v /var/lib/apps-data/drone:/var/lib/apps-data/drone \
 	-v /var/lib/apps/drone:/etc/drone \

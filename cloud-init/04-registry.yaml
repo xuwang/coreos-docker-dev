@@ -20,7 +20,7 @@ coreos:
               TimeoutStartSec=300
               ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:latest || /var/lib/apps/bin/dkload registry-latest.tgz"
               ExecStartPre=-/usr/bin/docker rm -f %n
-              ExecStart=/usr/bin/docker start -a --rm --name %n -p 80:5000 \
+              ExecStart=/usr/bin/docker run  --rm --name %n -p 80:5000 \
                       -v /var/lib/apps-data/registry:/data -v /var/lib/apps/registry:/registry-conf \
                       -e DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml \
                       -e SETTINGS_FLAVOR=prod registry:latest

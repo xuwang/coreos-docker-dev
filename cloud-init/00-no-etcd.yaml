@@ -1,52 +1,8 @@
 #cloud-config
 # Don't run etcd on this node but use 172.17.8.101 as the etcd endpoint
 coreos:
-    fleet:
-        # if etcd is not running locally, set etcd servers:
-        etcd_servers: "http://172.17.8.101:4001,http://172.17.8.102:4001,http://172.17.8.103:4001"
     units:
         - name: etcd.service
-          mask: true        
-        - name: setup-etcdctl-env.service
-          command: start
-          content: |       
-              [Unit]
-              Description=Setup etcdctl env vars
-              Wants=coreos-setup-environment.service
-              After=coreos-setup-environment.service
-              
-              [Service]
-              Type=oneshot
-              RemainAfterExit=true
-              ExecStart=/bin/bash -c "source /etc/profile.d/etcd-envvars.sh; env | grep -E 'ETCD|FLEETCTL' >> /etc/environment"
-              
-              [Install]
-              WantedBy=multi-user.target
-write_files:
-  - path: /etc/profile.d/etcd-envvars.sh
-    permissions: 0644
-    owner: root
-    content: |
-        ##########################################################
-        # If etcd is not reachable at localhost (127.0.0.0:4001),
-        # these env vars are necessary for tools that talk to etcd
-        # 
-        # make sure this file has the right values and drop it
-        # under the /etc/profile.d
-        
-        # for etcdctl
-        export ETCDCTL_PEERS="http://172.17.8.101:4001,http://172.17.8.102:4001,http://172.17.8.103:4001"
-        
-        # for fleetctl. Note: FLEETCTL_ENDPOINT only take one url
-        export FLEETCTL_ENDPOINT="http://172.17.8.101:4001"
-        #export ETCD_CAFILE=    - etcd CA file authentication
-        #export ETCD_CERTFILE=	- etcd cert file authentication
-        #export ETCD_KEYFILE=	- etcd key file authentication
-        
-        # for skydns
-        export ETCD_MACHINES=$ETCDCTL_PEERS
-        #export ETCD_TLSKEY= - path of TLS client certificate - private key.
-        #export ETCD_TLSPEM= - path of TLS client certificate - public key.
-        #export ETCD_CACERT= - path of TLS certificate authority public key.
+          mask: true
         
 # end of cloud-config no-etcd
