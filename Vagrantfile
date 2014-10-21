@@ -12,7 +12,7 @@ CLOUD_INIT_PATH =  File.join(MY_PATH, "cloud-init")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster.json")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-large.json")
-NODES_CONF = File.join(MY_PATH, "nodes-conf", "kube.json")
+NODES_CONF = File.join(MY_PATH, "nodes-conf", "secured-cluster.json")
 
 
 TEST_ROOT_CA_PATH = File.join(MY_PATH, "apps", "certs", "rootCA.pem")
