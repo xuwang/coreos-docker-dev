@@ -15,7 +15,11 @@ p=`echo "${1}." | tac -s '.' | sed -e ':a;N;$!ba;s/\n//g' -e 's/.$//' -e 's/\./\
 
 echo skydns set  $1 => $2,  ttl=$3
 if [ -z $3 ]; then
-	etcdctl set "${LOCAL_DOMAIN_PATH}/$p" "{\"host\":\"$2\"}"
+	etcdctl set "${LOCAL_DOMAIN_PATH}/$p" "{\"host\":\"$2\"}" || 
+	curl --cacert $ETCD_CAFILE --cert $ETCD_CERTFILE --key $ETCD_KEYFILE \
+	            https://172.17.8.101:4001/v2/keys${LOCAL_DOMAIN_PATH}/$p -XPUT -d value="{\"host\":\"$2\"}"
 else
-	etcdctl set --ttl "$3" "${LOCAL_DOMAIN_PATH}/$p" "{\"host\":\"$2\"}"
+	etcdctl set --ttl "$3" "${LOCAL_DOMAIN_PATH}/$p" "{\"host\":\"$2\"}" ||
+	curl --cacert $ETCD_CAFILE --cert $ETCD_CERTFILE --key $ETCD_KEYFILE \
+	            https://172.17.8.101:4001/v2/keys${LOCAL_DOMAIN_PATH}/$p -XPUT -d value="{\"host\":\"$2\"}" -d ttl="$3"
 fi

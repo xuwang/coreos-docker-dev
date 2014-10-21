@@ -1,0 +1,7 @@
+#!/bin/bash
+
+source /etc/environment
+
+etcdctl set /skydns/config "$1" || \
+	curl --cacert $ETCD_CACERT --cert $ETCD_TLSPEM --key $ETCD_TLSKEY \
+		https://172.17.8.101:4001/v2/keys/skydns/config -XPUT -d value="$1"

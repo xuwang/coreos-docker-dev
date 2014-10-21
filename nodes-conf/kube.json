@@ -5,9 +5,10 @@
             "cloud_init":       [
                                 "00-etcd.yaml",
                                 "01-fleet.yaml",
-                                "02-docker.yaml",
-                                "03-skydns.yaml",
-                                "04-registry.yaml",
+                                "02-unsecure-etcd.yaml",
+                                "03-docker.yaml",
+                                "04-skydns.yaml",
+                                "05-registry.yaml",
                                 "10-files.yaml"
                                 ],
             "domain":           "docker.local",

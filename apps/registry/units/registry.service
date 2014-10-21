@@ -8,17 +8,16 @@ After=skydns.service
 [Service]
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/registry/envvars
-EnvironmentFile=/var/lib/skydns/envvars
-TimeoutStartSec=0
+ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:latest || /var/lib/apps/bin/dkload registry-latest.tgz"
 # Registering the DNS name
-ExecStartPre=/usr/bin/etcdctl set "${LOCAL_DOMAIN_PATH}/${DNS_PATH}" '{"host": "${COREOS_PRIVATE_IPV4}"}'
-# Registering the confd key
-ExecStartPre=/usr/bin/etcdctl set "${CONFD_KEY}/%H" "${COREOS_PRIVATE_IPV4}:${REGISTRY_PORT}"
+ExecStartPost=/var/lib/apps/bin/dns-set 'registry' "${COREOS_PRIVATE_IPV4}"
 # Run registry container
-ExecStart=/usr/bin/docker run  --rm --name %n ${DOCKER_OPTS} ${DOCKER_IMAGE}
+ExecStart=/usr/bin/docker run  --rm --name %n -p 80:5000 \
+        -v /var/lib/apps-data/registry:/data -v /var/lib/apps/registry:/registry-conf \
+        -e DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml \
+        -e SETTINGS_FLAVOR=prod registry:latest
 ExecStop=-/usr/bin/docker stop %n
 # Clean up
-ExecStopPost=/usr/bin/etcdctl rm "${LOCAL_DOMAIN_PATH}/${DNS_PATH}" --with-value '{"host": "${COREOS_PRIVATE_IPV4}"}'
-ExecStopPost=/usr/bin/etcdctl rm "${CONFD_KEY}/%H" --with-value "${COREOS_PRIVATE_IPV4}:${REGISTRY_PORT}"
+ExecStopPost=-/var/lib/apps/bin/dns-delete 'registry'
 RestartSec=5
 Restart=always

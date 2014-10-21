@@ -37,7 +37,7 @@ write_files:
       export ETCDCTL_PEERS="http://127.0.0.1:4001,http://172.17.8.101:4001,http://172.17.8.102:4001,http://172.17.8.103:4001"
       
       # for fleetctl. Note: FLEETCTL_ENDPOINT only take one url
-      export FLEETCTL_ENDPOINT="https://172.17.8.101:4001"
+      export FLEETCTL_ENDPOINT="http://172.17.8.101:4001"
       
       # for skydns
       export ETCD_MACHINES=$ETCDCTL_PEERS

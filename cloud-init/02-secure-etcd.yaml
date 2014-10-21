@@ -1,8 +1,19 @@
 #cloud-config
 
+#
+# stage this one because etcdclt is not support ssl yet: see https://github.com/coreos/etcdctl/issues/33
+# Curl is ok:
+# curl --cacert /var/lib/apps/certs/rootCA.pem \
+#   --cert /var/lib/apps/certs/etcd-client.crt \
+#   --key#/var/lib/apps/certs/etcd-client.key \
+#   https://127.0.0.1:4001/v2/keys/foo -XPUT -d value=bar -v
+
 coreos:
     fleet:
         etcd_servers: "https://127.0.0.1:4001,https://172.17.8.101:4001,https://172.17.8.102:4001,https://172.17.8.103:4001"
+        etcd_ca_file: "/var/lib/apps/certs/rootCA.pem"
+        etcd_certfile: "/var/lib/apps/certs/etcd-client.crt"
+        etcd_keyfile: "/var/lib/apps/certs/etcd-client.key"
     units:    
         - name: setup-etcdctl-env.service
           command: start
@@ -34,6 +45,18 @@ write_files:
       Environment=ETCD_PEER_CA_FILE=/var/lib/apps/certs/rootCA.pem
       Environment=ETCD_PEER_CERT_FILE=/var/lib/apps/certs/etcd.crt
       Environment=ETCD_PEER_KEY_FILE=/var/lib/apps/certs/etcd.key
+
+write_files:
+  - path: /run/systemd/system/skydns.service.d/30-certificates.conf
+    permissions: 0644
+    content: |
+      [Service]
+      # ETCD certs
+      Environment=ETCD_TLSPEM=/var/lib/apps/certs/etcd-client.crt
+      Environment=ETCD_TLSKEY=/var/lib/apps/certs/etcd-client.key
+      Environment=ETCD_CACERT=/var/lib/apps/certs/rootCA.pem
+      # ETCD endpoints
+      Environment="ETCD_MACHINES=https://127.0.0.1:4001,https://172.17.8.101:4001"
       
   - path: /etc/profile.d/etcd-envvars.sh
     permissions: 0644
@@ -46,18 +69,19 @@ write_files:
       # make sure this file has the right values and drop it
       # under the /etc/profile.d
       
+      # ETCD Client certs
+      export ETCD_CERTFILE=/var/lib/apps/certs/etcd-client.crt
+      export ETCD_KEYFILE=/var/lib/apps/certs/etcd-client.key
+      # this one is not necessary if it is already in system ca roots
+      export ETCD_CAFILE=/var/lib/apps/certs/rootCA.pem
+      
       # for etcdctl
-      export ETCDCTL_PEERS="https://127.0.0.1:4001,https://172.17.8.101:4001,https://172.17.8.102:4001,https://172.17.8.103:4001"
+      #  etcdclt is not support ssl yet: see https://github.com/coreos/etcdctl/issues/33
+      #  export ETCDCTL_PEERS="https://127.0.0.1:4001,https://172.17.8.101:4001"
       
       # for fleetctl. Note: FLEETCTL_ENDPOINT only take one url
       export FLEETCTL_ENDPOINT="https://172.17.8.101:4001"
-      export ETCD_CAFILE=/var/lib/apps/certs/rootCA.pem
-      export ETCD_CERTFILE=/var/lib/apps/certs/etcd-client.crt
-      export ETCD_KEYFILE=/var/lib/apps/certs/etcd-client.key
-      
-      # for skydns
-      export ETCD_MACHINES=$ETCDCTL_PEERS
-      export ETCD_CACERT=/var/lib/apps/certs/rootCA.pem
-      export ETCD_TLSPEM=/var/lib/apps/certs/etcd-client.crt
-      export ETCD_TLSKEY=/var/lib/apps/certs/etcd-client.key
+      export FLEETCTL_ETCD_CERTFILE=$ETCD_CERTFILE
+      export FLEETCTL_ETCD_KEYFILE=$ETCD_KEYFILE
+      export FLEETCTL_ETCD_CA_FILE=$ETCD_CAFILE
 

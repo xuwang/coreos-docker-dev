@@ -14,4 +14,6 @@ source /var/lib/apps/skydns/envvars
 p=`echo "${1}." | tac -s '.' | sed -e ':a;N;$!ba;s/\n//g' -e 's/.$//' -e 's/\./\//g'`
 
 echo skydns rm "${LOCAL_DOMAIN_PATH}/$p"
-etcdctl rm "${LOCAL_DOMAIN_PATH}/$p" --recursive
+etcdctl rm "${LOCAL_DOMAIN_PATH}/$p" --recursive ||
+	curl --cacert $ETCD_CAFILE --cert $ETCD_CERTFILE --key $ETCD_KEYFILE \
+            https://172.17.8.101:4001/v2/keys${LOCAL_DOMAIN_PATH}/$p?recursive=true -XDELETE
