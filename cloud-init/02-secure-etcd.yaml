@@ -63,7 +63,7 @@ write_files:
     owner: root
     content: |
       ##########################################################
-      # Use secure etcd service
+      # For using secure etcd service
       # these env vars are necessary for tools that talk to etcd
       # 
       # make sure this file has the right values and drop it
@@ -75,9 +75,17 @@ write_files:
       # this one is not necessary if it is already in system ca roots
       export ETCD_CAFILE=/var/lib/apps/certs/rootCA.pem
       
+      #  export ETCDCTL_PEERS="https://127.0.0.1:4001,https://172.17.8.101:4001"
+      
       # for etcdctl
       #  etcdclt is not support ssl yet: see https://github.com/coreos/etcdctl/issues/33
-      #  export ETCDCTL_PEERS="https://127.0.0.1:4001,https://172.17.8.101:4001"
+      #  use curletcd instead see alias below.
+      
+      alias curletcd=curl --cacert $ETCD_CAFILE --cert $ETCD_CERTFILE --key $ETCD_KEYFILE
+      # Usage: 
+      # curletcd https://172.17.8.101:4001/v2/keys/foo -XPUT -d value="bar" -d ttl="60"
+      # curletcd  -XGET https://172.17.8.101:4001/v2/keys/foo
+      
       
       # for fleetctl. Note: FLEETCTL_ENDPOINT only take one url
       export FLEETCTL_ENDPOINT="https://172.17.8.101:4001"
