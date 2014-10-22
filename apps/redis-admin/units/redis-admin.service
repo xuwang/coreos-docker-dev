@@ -1,0 +1,16 @@
+[Unit]
+Description=redis-admin
+Requires=docker.service
+After=docker.service
+Wants=redis.service
+After=redis.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/redis-admin/envvars
+TimeoutStartSec=0
+ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
+ExecStart=/usr/bin/docker run  --rm --name %n $OPTS $IMAGE
+ExecStop=/usr/bin/docker stop %n
+RestartSec=5
+Restart=always

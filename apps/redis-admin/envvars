@@ -1,0 +1,2 @@
+IMAGE="xuwang/redis-admin:latest"
+OPTS="--link redis.service:redis -p 8080:80 "
