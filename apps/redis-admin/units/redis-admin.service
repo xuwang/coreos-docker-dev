@@ -8,9 +8,10 @@ After=redis.service
 [Service]
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/redis-admin/envvars
-TimeoutStartSec=0
+TimeoutStartSec=5min
 ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
+ExecStartPre=-/usr/bin/docker rm -f %n
 ExecStart=/usr/bin/docker run  --rm --name %n $OPTS $IMAGE
-ExecStop=/usr/bin/docker stop %n
+ExecStop=-/usr/bin/docker stop %n
 RestartSec=5
 Restart=always
