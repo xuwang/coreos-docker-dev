@@ -2,7 +2,7 @@
 $config = array(
 	'servers' => array(
 		array(
-			'name' => 'redis.servcie',
+			'name' => 'redis.service',
 			'host' => getenv('REDIS_PORT_6379_TCP_ADDR'),
 			'port' => 6379,
 			'filter' => '*',

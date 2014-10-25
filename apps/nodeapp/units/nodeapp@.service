@@ -5,15 +5,15 @@ After=docker.service
 
 [Service]
 EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/nodeapp/envvars
 TimeoutStartSec=20min
-ExecStartPre=/var/lib/apps/nodeapp/envvars
 ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
 # dns register: round-robin-load-balanced CNAME
 ExecStartPre=/var/lib/apps/bin/dns-set x%i.nodeapp "%H.docker.local"
 ExecStart=/usr/bin/docker run  --rm --name %p-%i.service \
 		--env-file=/etc/environment \
 		-p 8000:8000 $IMAGE
-ExecStopPre=-/var/lib/apps/bin/dns-delete x%i.nodeapp 
+ExecStopPost=-/var/lib/apps/bin/dns-delete x%i.nodeapp 
 ExecStop=-/usr/bin/docker stop %p-%i.service
 RestartSec=5
 Restart=always

@@ -1,0 +1,26 @@
+[Unit]
+Description=Logstash
+Requires=docker.service
+After=docker.service
+Wants=elasticsearch@%i.service
+After=elasticsearch@%i.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/logstash/envvars
+TimeoutStartSec=20min
+ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
+# dns register: round-robin-load-balanced CNAME
+ExecStartPre=-/usr/bin/docker rm  %p-%i.service
+ExecStartPre=/var/lib/apps/bin/dns-set x%i.logstash "%H.docker.local"
+ExecStart=/usr/bin/docker run  --rm --name %p-%i.service -p 5000:5000  \
+	--link elasticsearch-%i.service:eslasticsearh \
+	-v /var/lib/apps/logstash/config:/var/lib/logstash/config \
+	$IMAGE logstash -f /var/lib/logstash/config/default.conf
+ExecStopPost=-/var/lib/apps/bin/dns-delete x%i.logstash 
+ExecStop=-/usr/bin/docker stop %p-%i.service
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+MachineOf=elasticsearch@%i.service

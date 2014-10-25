@@ -1,0 +1,21 @@
+[Unit]
+Description=Elasticsearch
+Requires=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/elasticsearch/envvars
+TimeoutStartSec=20min
+ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
+ExecStartPre=-/usr/bin/docker rm  %p-%i.service
+# dns register: round-robin-load-balanced CNAME
+ExecStartPre=/var/lib/apps/bin/dns-set x%i.elasticsearch "%H.docker.local"
+ExecStart=/usr/bin/docker run  --rm --name %p-%i.service $OPTS $IMAGE
+ExecStopPost=-/var/lib/apps/bin/dns-delete x%i.elasticsearch 
+ExecStop=-/usr/bin/docker stop %p-%i.service
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+X-Conflicts=elasticsearch@*.service

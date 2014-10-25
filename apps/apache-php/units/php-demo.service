@@ -11,7 +11,7 @@ ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
 # dns register: round-robin-load-balanced CNAME
 ExecStartPre=/var/lib/apps/bin/dns-set %p "%H.docker.local"
 ExecStart=/usr/bin/docker run  --rm --name %p -p 8080:80 $IMAGE
-ExecStopPre=-/var/lib/apps/bin/dns-delete %p
+ExecStopPost=-/var/lib/apps/bin/dns-delete %p
 ExecStop=-/usr/bin/docker stop %p
 RestartSec=5
 Restart=always

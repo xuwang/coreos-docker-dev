@@ -1,0 +1,2 @@
+IMAGE="xuwang/elasticsearch:latest"
+OPTS="-v /var/lib/apps-data/elasticsearch:/var/lib/elasticsearch -p 9200:9200 -p 9300:9300"

@@ -1,0 +1,21 @@
+[Unit]
+Description=Kibana
+Requires=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/kibana/envvars
+TimeoutStartSec=20min
+ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
+# dns register: round-robin-load-balanced CNAME
+ExecStartPre=/var/lib/apps/bin/dns-set kibana "%H.docker.local"
+ExecStart=/usr/bin/docker run  --rm --name  %n -p 8080:8080 \
+			-v /var/lib/apps/kibana/config:/config $IMAGE
+ExecStopPost=-/var/lib/apps/bin/dns-delete kibana 
+ExecStop=-/usr/bin/docker stop %n
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+#MachineOf=elasticsearch@*.service

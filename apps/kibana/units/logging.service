@@ -1,0 +1,10 @@
+[Unit]
+Description=Push Journals to Logstash
+
+[Service]
+ExecStart=/bin/bash -c "journalctl -f | ncat logstash.docker.local 5000"
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+#Global=true
