@@ -9,14 +9,15 @@ After=skydns.service
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/registry/envvars
 ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:latest || /var/lib/apps/bin/dkload registry-latest.tgz"
-# Registering the DNS name
-ExecStartPost=/var/lib/apps/bin/dns-set 'registry' "${COREOS_PRIVATE_IPV4}"
+
 # Run registry container
 ExecStart=/usr/bin/docker run  --rm --name %n -p 80:5000 \
         -v /var/lib/apps-data/registry:/data -v /var/lib/apps/registry:/registry-conf \
         -e DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml \
         -e SETTINGS_FLAVOR=prod registry:latest
 ExecStop=-/usr/bin/docker stop %n
+# Registering the DNS name
+ExecStartPost=/bin/bash -c "/var/lib/apps/bin/dns-set 'registry' ${COREOS_PRIVATE_IPV4}"
 # Clean up
 ExecStopPost=-/var/lib/apps/bin/dns-delete 'registry'
 RestartSec=5

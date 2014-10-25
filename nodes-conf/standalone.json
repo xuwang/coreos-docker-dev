@@ -5,7 +5,6 @@
             "cloud_init":       [
                                 "00-etcd.yaml",
                                 "01-fleet.yaml",
-                                "02-unsecure-etcd.yaml",
                                 "03-docker.yaml",
                                 "04-skydns.yaml",
                                 "05-registry.yaml",

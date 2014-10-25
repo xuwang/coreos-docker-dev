@@ -5,7 +5,6 @@
             "cloud_init":       [
                                 "00-etcd.yaml",
                                 "01-fleet.yaml",
-                                "02-secure-etcd.yaml",
                                 "03-docker.yaml",
                                 "04-skydns.yaml",
                                 "10-files.yaml"
@@ -27,7 +26,6 @@
             "cloud_init":       [
                                 "00-etcd-follower.yaml",
                                 "01-fleet.yaml",
-                                "02-secure-etcd.yaml",
                                 "03-docker.yaml",
                                 "04-skydns.yaml",
                                 "10-files.yaml"
@@ -45,7 +43,6 @@
             "cloud_init":       [
                                 "00-etcd-follower.yaml",
                                 "01-fleet.yaml",
-                                "02-secure-etcd.yaml",
                                 "03-docker.yaml",
                                 "04-skydns.yaml",
                                 "10-files.yaml"

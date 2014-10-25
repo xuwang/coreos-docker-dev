@@ -1,6 +1,15 @@
 #cloud-config
 
-## This is a cloud-config for docker service and host-register service
+#
+# This is a cloud-config for docker service and host-register service
+# Note: the docker is running on it's own subnet 172.17.80.1/24
+# and no MASQ
+# 
+# To expose the docker subnet to vagrant host
+# add route:
+#   $ sudo route -n add 172.17.80.0/24 <vagrant vm ip>
+# e.g.
+#   $ sudo route -n add 172.17.80.0/24  172.17.8.101
 
 coreos:
     units:
@@ -8,13 +17,15 @@ coreos:
           command: start
           content: |
               .include /usr/lib/systemd/system/docker.service
-              
+            
               [Service]
               # Use our own dns, instead of the host's.
               EnvironmentFile=/var/lib/skydns/envvars
               ExecStart=
               ExecStart=/usr/bin/docker -d -s=btrfs -r=false -H fd:// \
-                  --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN}
+                  --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN} \
+                  --bip="172.17.80.1/24" \
+                  --ip-masq=false
         - name: docker-tcp.socket
           command: start
           enable: true

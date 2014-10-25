@@ -10,7 +10,9 @@ ExecStartPre=/var/lib/apps/nodeapp/envvars
 ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
 # dns register: round-robin-load-balanced CNAME
 ExecStartPre=/var/lib/apps/bin/dns-set x%i.nodeapp "%H.docker.local"
-ExecStart=/usr/bin/docker run  --rm --name %p-%i.service -p 8000:8000 $IMAGE
+ExecStart=/usr/bin/docker run  --rm --name %p-%i.service \
+		--env-file=/etc/environment \
+		-p 8000:8000 $IMAGE
 ExecStopPre=-/var/lib/apps/bin/dns-delete x%i.nodeapp 
 ExecStop=-/usr/bin/docker stop %p-%i.service
 RestartSec=5
