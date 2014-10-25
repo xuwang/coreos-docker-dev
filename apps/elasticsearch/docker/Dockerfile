@@ -10,7 +10,7 @@ RUN rpm --import /etc/pki/rpm-gpg/GPG-KEY-elasticsearch && \
 ADD ./run.sh /run.sh
 RUN chmod a+x /run.sh
 
-VOLUME /var/lib/elasticsearch/
+VOLUME /var/lib/elasticsearch
 USER elasticsearch
 CMD  ["/run.sh"]
 
