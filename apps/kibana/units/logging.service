@@ -6,7 +6,8 @@ User=core
 # Need ~core/.ssh/id_rsa for
 # setting up a ssh tunnel for "data transport security"
 #ExecStartPre=/bin/bash -c "ssh -f core@logstash.docker.local -L 5001:logstash.docker.local:5000 -N"
-ExecStart=/bin/bash -c "journalctl -o json -f | ssh core@logstash.docker.local 'ncat logstash.docker.local 5000'"
+#ExecStart=/bin/bash -c "journalctl -o json -f | ssh core@logstash.docker.local 'ncat logstash.docker.local 5000'"
+ExecStart=/bin/bash -c "journalctl -o json -f | ncat logstash.docker.local 5000"
 RestartSec=5
 Restart=always
 
