@@ -22,7 +22,6 @@ write_files:
         nameserver 127.0.0.1
         # or on the first node
         nameserver 172.17.8.101
-        nameserver 8.8.8.8
   - path: /etc//etc/sysctl.d/overcommit_memory.conf
     permissions: 0644
     owner: root

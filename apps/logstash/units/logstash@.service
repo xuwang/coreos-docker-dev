@@ -14,7 +14,6 @@ ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
 ExecStartPre=-/usr/bin/docker rm  %p-%i.service
 ExecStartPre=/var/lib/apps/bin/dns-set x%i.logstash "%H.docker.local"
 ExecStart=/usr/bin/docker run  --rm --name %p-%i.service -p 5000:5000  \
-	--link elasticsearch-%i.service:eslasticsearh \
 	-v /var/lib/apps/logstash/config:/var/lib/logstash/config \
 	$IMAGE logstash -f /var/lib/logstash/config/default.conf
 ExecStopPost=-/var/lib/apps/bin/dns-delete x%i.logstash 
