@@ -1,0 +1,26 @@
+[Unit]
+Description=NodeJS App
+Requires=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/express/envvars
+TimeoutStartSec=20min
+ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
+# dns register: round-robin-load-balanced CNAME
+ExecStartPre=/var/lib/apps/bin/dns-set x%i.nodeapp "%H.docker.local"
+ExecStart=/usr/bin/docker run  --rm --name %p-%i.service -p 8080:3000 \
+		--env-file=/etc/environment \
+		-e HELLO=Pacific \
+		-e HOST=VirtualBox \
+		-e HOSTNAME=%H \
+		-e CONTAINER=%p-%i.service \
+		$IMAGE
+ExecStopPost=-/var/lib/apps/bin/dns-delete x%i.nodeapp 
+ExecStop=-/usr/bin/docker stop %p-%i.service
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+X-Conflicts=nodeapp@*.service
