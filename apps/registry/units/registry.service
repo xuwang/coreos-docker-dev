@@ -8,7 +8,9 @@ After=skydns.service
 [Service]
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/registry/envvars
-ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:latest || /var/lib/apps/bin/dkload registry-latest.tgz"
+ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:latest \
+	|| /var/lib/apps/bin/dkload registry-latest.tgz \
+	|| docker pull registry"
 
 # Run registry container
 ExecStart=/usr/bin/docker run  --rm --name %n -p 80:5000 \
