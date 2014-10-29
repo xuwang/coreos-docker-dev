@@ -1,0 +1,12 @@
+JENKINS_HOME=/var/lib/apps-data/jenkins
+IMAGE=xuwang/jenkins:latest
+AGENT_IMAGE=maestrodev/build-agent:latest
+
+JENKINS_USERNAME=jenkins
+JENKINS_PASSWORD=jenkins
+JENKINS_MASTER=http://jenkins.docker.local:8080
+
+RUBYGEMS_API_KEY=xxxxx
+GEMINABOX=https://xxx:yyy@gems.acme.com
+PUPPETFORGE_USERNAME=john
+PUPPETFORGE_PASSWORD=doe

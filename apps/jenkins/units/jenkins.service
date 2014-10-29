@@ -1,0 +1,22 @@
+[Unit]
+Description=Jenkins
+Requires=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/jenkins/envvars
+TimeoutStartSec=20min
+ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
+ExecStartPre=/var/lib/apps/bin/dns-set jenkins "%H.docker.local"
+ExecStart=/usr/bin/docker run  --rm --name  %n -p 8080:8080 -p 50000:50000 \
+	-v /var/run/docker.sock:/var/run/docker.sock \
+	-v ${JENKINS_HOME}:/var/jenkins_home \
+	-u root $IMAGE
+ExecStopPost=-/var/lib/apps/bin/dns-delete jenkins 
+ExecStop=-/usr/bin/docker stop %n
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+#MachineOf=elasticsearch@*.service

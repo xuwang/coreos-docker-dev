@@ -1,0 +1,15 @@
+[Unit]
+Description=Jenkins Build Agent
+Requires=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/jenkins/envvars
+TimeoutStartSec=20min
+ExecStartPre=/var/lib/apps/bin/dkpull $AGENT_IMAGE
+ExecStart=/usr/bin/docker run  --rm --name %n --env-file=/var/lib/apps/jenkins/envvars $AGENT_IMAGE
+ExecStop=-/usr/bin/docker stop %n
+RestartSec=5
+Restart=always
+[X-Fleet]
