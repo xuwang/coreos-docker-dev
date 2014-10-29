@@ -18,7 +18,7 @@
         },
         "kube-2": {
             "description":      "This is Minion 1 on 10.120.0.2",
-            "cloud_init":       ["00-etcd.yaml","01-fleet.yaml","02-docker.yaml","10-files.yaml"],
+            "cloud_init":       ["00-etcd.yaml","01-fleet.yaml","02-docker.yaml","03-skydns.yaml","10-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.102",
             "subnet":           "172.17.8",
@@ -29,7 +29,7 @@
         },
         "kube-3": {
             "description":      "This is Minion 2 on 10.120.0.3",
-            "cloud_init":       ["00-etcd.yaml","01-fleet.yaml","02-docker.yaml","10-files.yaml"],
+            "cloud_init":       ["00-etcd.yaml","01-fleet.yaml","02-docker.yaml","03-skydns.yaml","10-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.103",
             "subnet":           "172.17.8",
