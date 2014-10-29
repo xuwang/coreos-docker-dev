@@ -38,7 +38,11 @@ coreos:
               ExecStartPre=-/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}
               ExecStart=/opt/bin/skydns
               # with etcd, skydns may not neet to sync with each other anymore:
-              # ExecStartPost=-/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
+              ExecStartPost=-/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
+              ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
+              # set the system resolver to use local skydns
+              ExecStartPost=/bin/bash -c "cp -f /etc/resolv.conf /etc/resolv.conf.system; cp -f /etc/resolv.conf.skydns /etc/resolv.conf"
+              ExecStopPost=/bin/bash -c "cp -f /etc/resolv.conf.system /etc/resolv.conf"
               # ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
               RestartSec=5
               Restart=always

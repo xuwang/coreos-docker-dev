@@ -29,6 +29,7 @@ coreos:
               
               [Install] 
               WantedBy=sockets.target
+              WantedBy=docker.service
         - name: host-register.service
           command: start
           content: |

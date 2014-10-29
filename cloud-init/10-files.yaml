@@ -13,15 +13,13 @@ write_files:
         LOCAL_DOMAIN_PATH=/skydns/local/docker
         SKYDNS_CONFIG='{"domain":"docker.local", "dns_addr":"0.0.0.0:53", "ttl":3600, "nameservers": ["8.8.8.8:53","8.8.4.4:53"]}'
         SKYDNS_CMD_REPO=https://github.com/xuwang/skydns-docker/releases/download/skydns-7025dba3834f/skydns
-  - path: /etc/resolv.conf
+  - path: /etc/resolv.conf.skydns
     permissions: 0644
     owner: root
     content: |
         domain docker.local
-        # if skydns runs locally
+        search docker.lcoal
         nameserver 127.0.0.1
-        # or on the first node
-        nameserver 172.17.8.101
   - path: /etc//etc/sysctl.d/overcommit_memory.conf
     permissions: 0644
     owner: root
