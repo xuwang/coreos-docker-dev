@@ -1,4 +1,4 @@
-FROM jenkins
+FROM jenkins:latest
 USER root
 # Install Docker 
 RUN apt-get update && apt-get install -qqy docker.io && \
