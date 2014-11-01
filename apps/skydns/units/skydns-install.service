@@ -1,12 +1,16 @@
 [Unit]
 Description=SkyDNS Installer
+Requires=systemd-resolved.service
+After=systemd-resolved.service
+Requires=etcd.service
+After=etcd.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=true
-EnvironmentFile=/etc/environment
-EnvironmentFile=/var/lib/apps/skydns/envvars
+EnvironmentFile=/var/lib/skydns/envvars
 ExecStart=-/bin/mkdir -p /opt/bin
-ExecStart=/bin/bash -c "[ -x /opt/bin/skydns ] || (curl -L -o /opt/bin/skydns ${SKYDNS_CMD_REPO} && chmod 755 /opt/bin/skydns)"
+ExecStart=/bin/bash -c "[[ -x /opt/bin/skydns ]] || \
+        curl -L -o /opt/bin/skydns ${SKYDNS_CMD_REPO} && chmod 755 /opt/bin/skydns; echo ok"
 # Set skydns configuration in etcd
-ExecStart=-/usr/bin/etcdctl set /skydns/config "${SKYDNS_CONFIG}"     
+ExecStart=-/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}

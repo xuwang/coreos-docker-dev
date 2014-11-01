@@ -10,8 +10,10 @@ coreos:
           content: |
               [Unit]
               Description=SkyDNS Installer
-              Requires=docker.service
-              After=docker.service
+              Requires=etcd.service
+              After=etcd.service
+              Requires=systemd-resolved.service
+              After=systemd-resolved.service
               
               [Service]
               Type=oneshot
@@ -20,6 +22,8 @@ coreos:
               ExecStart=-/bin/mkdir -p /opt/bin
               ExecStart=/bin/bash -c "[[ -x /opt/bin/skydns ]] || \
                       curl -L -o /opt/bin/skydns ${SKYDNS_CMD_REPO} && chmod 755 /opt/bin/skydns; echo ok"
+              # Set skydns configuration in etcd
+              ExecStart=-/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}
         - name: skydns.service
           command: start
           content: |
@@ -34,16 +38,13 @@ coreos:
               RestartSec=5
               EnvironmentFile=/etc/environment
               EnvironmentFile=/var/lib/skydns/envvars
-              # Set skydns configuration in etcd
-              ExecStartPre=-/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}
+              # make sure the skydns confit is set in etcd:
+              ExecStartPre=/bin/bash -c "etcdctl get /skydns/config"
               ExecStart=/opt/bin/skydns
               # with etcd, skydns may not neet to sync with each other anymore:
               ExecStartPost=-/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
               ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
               # set the system resolver to use local skydns
-              ExecStartPost=/bin/bash -c "cp -f /etc/resolv.conf /etc/resolv.conf.system; cp -f /etc/resolv.conf.skydns /etc/resolv.conf"
-              ExecStopPost=/bin/bash -c "cp -f /etc/resolv.conf.system /etc/resolv.conf"
-              # ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
-              RestartSec=5
-              Restart=always
+              ExecStartPost=/bin/bash -c "ln -sf /etc/resolv.conf.skydns /etc/resolv.conf"
+              ExecStopPost=/bin/bash -c "ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf"
 # end of cloud-config skydns
