@@ -1,0 +1,21 @@
+[Unit]
+Description=Woldpress
+Requires=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/wordpress/envvars
+TimeoutStartSec=20min
+ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
+ExecStartPre=/var/lib/apps/bin/dns-set wordpress "%H.docker.local"
+ExecStartPre=-/usr/bin/docker rm -f  %n
+# use 8080/4343 to avoid conflicts with local docker registry
+ExecStart=/usr/bin/docker run --rm --name %n -p 8080:80 -p 4343:443 -v /var/log $IMAGE
+ExecStopPost=-/var/lib/apps/bin/dns-delete wordpress 
+ExecStop=-/usr/bin/docker stop %n
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+#MachineOf=jenkins*.service
