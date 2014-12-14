@@ -16,7 +16,7 @@ NODES_CONF = File.join(MY_PATH, "nodes-conf", "kube.json")
 
 
 TEST_ROOT_CA_PATH = File.join(MY_PATH, "apps", "certs", "rootCA.pem")
-UPDATE_CHANNE = "alpha"
+UPDATE_CHANNE = "beta"
 
 Vagrant.configure("2") do |config|
 	config.vm.box = "coreos-%s" % UPDATE_CHANNE

@@ -2,7 +2,7 @@
     "nodes": {
         "etcd-101": {
             "description":      "This is the first dedicated etcd and dns node, and gateway for etcdctl/fleetctl/dns, should always up!",
-            "cloud_init":       ["00-etcd.yaml","01-fleet-etcd.yaml","02-docker.yaml","03-skydns.yaml","04-registry.yaml","10-files.yaml"],
+            "cloud_init":       ["00-etcd.yaml","01-fleet-etcd.yaml","03-docker.yaml","04-skydns.yaml","05-registry.yaml","10-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
             "subnet":           "172.17.8",
@@ -15,7 +15,7 @@
         },
         "etcd": {
             "description":      "Defines 2ed and 3rd dedicated etcd and dns nodes.",
-            "cloud_init":       ["00-etcd-follower.yaml","01-fleet-etcd.yaml","02-docker.yaml","03-skydns.yaml","04-skydns.yaml","10-files.yaml"],
+            "cloud_init":       ["00-etcd-follower.yaml","01-fleet-etcd.yaml","03-docker.yaml","04-skydns.yaml","10-files.yaml"],
             "domain":           "docker.local",
             "ids":              [102,103],
             "subnet":           "172.17.8",

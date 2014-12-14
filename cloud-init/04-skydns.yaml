@@ -3,7 +3,7 @@
 ##
 ## This is a cloud-config for skydns service
 ##
-coreos:
+#coreos:
     units:
         - name: skydns-install.service
           command: start

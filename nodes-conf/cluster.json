@@ -7,6 +7,7 @@
                                 "01-fleet.yaml",
                                 "03-docker.yaml",
                                 "04-skydns.yaml",
+                                "05-registry.yaml",
                                 "10-files.yaml"
                                 ],
             "ip":               "172.17.8.101",

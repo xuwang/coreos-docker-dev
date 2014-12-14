@@ -43,6 +43,7 @@ function dkpid() { docker inspect --format "{{ .State.Pid }}" $1 ; }
 function dkim() { docker inspect --format "{{ .Image }}" $1 ; }
 function dkst() { docker inspect --format "{{ .State.Running }}" $1 ; }
 function sdrit() { sudo docker run -i -t $1 bash ; }
-function nsa { sudo nsenter -p -u -m -i -n -t $(docker inspect -f "{{ .State.Pid }}" $1) ; }
+function nsa() { docker exec -it $1 bash ; }
+#function nsa { sudo nsenter -p -u -m -i -n -t $(docker inspect -f "{{ .State.Pid }}" $1) ; }
 
 alias pj='python -m json.tool'

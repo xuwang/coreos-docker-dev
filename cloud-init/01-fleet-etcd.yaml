@@ -4,7 +4,7 @@
 ## This is a fleet cloud-config for etcd node
 ##
 
-coreos:
+#coreos:
     fleet:
         public-ip: $private_ipv4
         metadata: "platform=m1.small,provider=aws,region=us-west-2,disk=ssd,role=etcd"

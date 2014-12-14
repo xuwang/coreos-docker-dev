@@ -2,7 +2,7 @@
 
 ## This is a cloud-config for docker service and host-register service
 
-coreos:
+#coreos:
     units:
         - name: docker.service
           command: start

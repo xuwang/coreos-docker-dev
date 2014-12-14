@@ -9,7 +9,7 @@ EnvironmentFile=/var/lib/apps/express/envvars
 TimeoutStartSec=20min
 ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
 # dns register: round-robin-load-balanced CNAME
-ExecStartPre=/var/lib/apps/bin/dns-set x%i.nodeapp "%H.docker.local"
+ExecStartPre=/var/lib/apps/bin/dns-set x%i.nodeapp $COREOS_PUBLIC_IPV4
 ExecStart=/usr/bin/docker run  --rm --name %p-%i.service -p 8080:3000 \
 		--env-file=/etc/environment \
 		-e HELLO=Pacific \
@@ -24,3 +24,4 @@ Restart=always
 
 [X-Fleet]
 X-Conflicts=nodeapp@*.service
+MachineMetadata=role=sites

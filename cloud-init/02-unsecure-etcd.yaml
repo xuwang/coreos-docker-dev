@@ -1,6 +1,6 @@
 #cloud-config
 
-coreos:
+#coreos:
     fleet:
         etcd_servers: "http://127.0.0.1:4001,http://172.17.8.101:4001,http://172.17.8.102:4001,http://172.17.8.103:4001"
     units:    

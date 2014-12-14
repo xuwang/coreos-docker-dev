@@ -8,7 +8,7 @@
 #   --key#/var/lib/apps/certs/etcd-client.key \
 #   https://127.0.0.1:4001/v2/keys/foo -XPUT -d value=bar -v
 
-coreos:
+#coreos:
     fleet:
         etcd_servers: "https://127.0.0.1:4001,https://172.17.8.101:4001,https://172.17.8.102:4001,https://172.17.8.103:4001"
         etcd_ca_file: "/var/lib/apps/certs/rootCA.pem"
@@ -45,8 +45,6 @@ write_files:
       Environment=ETCD_PEER_CA_FILE=/var/lib/apps/certs/rootCA.pem
       Environment=ETCD_PEER_CERT_FILE=/var/lib/apps/certs/etcd.crt
       Environment=ETCD_PEER_KEY_FILE=/var/lib/apps/certs/etcd.key
-
-write_files:
   - path: /run/systemd/system/skydns.service.d/30-certificates.conf
     permissions: 0644
     content: |
