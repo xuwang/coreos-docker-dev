@@ -24,4 +24,4 @@ Restart=always
 
 [X-Fleet]
 X-Conflicts=nodeapp@*.service
-MachineMetadata=role=sites
+MachineMetadata=role=docker

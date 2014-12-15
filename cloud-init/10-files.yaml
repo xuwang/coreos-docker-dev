@@ -5,10 +5,6 @@
 #
 
 write_files:
-  - path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
-    content: |
-        [Service]
-        Environment="DOCKER_OPTS=--insecure-registry 10.0.0.0/8 --insecure-registry 172.16.0.0/12 --insecure-registry 192.168.0.0/16"
   - path: /var/lib/skydns/envvars
     permissions: 0644
     owner: root
