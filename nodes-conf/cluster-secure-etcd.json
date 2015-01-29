@@ -1,7 +1,7 @@
 {
     "nodes": {
         "n1": {
-            "description":      "This is 1st node",
+            "description":      "This is 1st node with etcd TLS auth",
             "cloud_init":       ["leader.yaml", "files-secure-etcd.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
