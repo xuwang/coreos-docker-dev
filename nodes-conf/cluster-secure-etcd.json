@@ -1,8 +1,8 @@
 {
     "nodes": {
         "n1": {
-            "description":      "This is Master on 10.120.0.1",
-            "cloud_init":       ["leader.yaml", "files.yaml"],
+            "description":      "This is 1st node",
+            "cloud_init":       ["leader.yaml", "files-secure-etcd.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
             "subnet":           "172.17.8",
@@ -17,8 +17,8 @@
                                 ]
         },
         "n2": {
-            "description":      "This is Minion 1 on 10.120.0.2",
-            "cloud_init":       ["follower.yaml", "files.yaml"],
+            "description":      "This is 2ed node",
+            "cloud_init":       ["follower.yaml", "files-secure-etcd.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.102",
             "subnet":           "172.17.8",
@@ -28,8 +28,8 @@
                                 ]
         },
         "n3": {
-            "description":      "This is Minion 2 on 10.120.0.3",
-            "cloud_init":       ["follower.yaml", "files.yaml"],
+            "description":      "This is 3rd node",
+            "cloud_init":       ["follower.yaml", "files-secure-etcd.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.103",
             "subnet":           "172.17.8",

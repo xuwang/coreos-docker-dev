@@ -1,0 +1,125 @@
+#cloud-config
+
+##
+## This is a etcd cloud-config for singal node
+##
+
+coreos:
+    etcd:
+        addr: $private_ipv4:4001
+        peer-addr: $private_ipv4:7001
+        # runing a multi-node cluster with discovery mode:
+        # generate a new token for each unique cluster from https://discovery.etcd.io/new
+        # WARNING: replace each time you 'vagrant destroy'
+        #discovery: https://discovery.etcd.io/<token>
+        peers: "172.17.8.101:7001,172.17.8.102:7001,172.17.8.103:7001"
+    fleet:
+        public-ip: $private_ipv4
+        etcd_servers: "http://127.0.0.1:4001,http://172.17.8.101:4001,http://172.17.8.102:4001,http://172.17.8.103:4001"
+        metadata: "platform=m1.small,provider=aws,region=us-west-2,disk=ssd,role=etcd"
+    units:
+        - name: etcd.service
+          mask: true
+        - name: fleet.service
+          command: start
+        - name: docker.service
+          command: start
+          content: |
+              .include /usr/lib/systemd/system/docker.service          
+              [Service]
+              # Use our own dns, instead of the host's.
+              EnvironmentFile=/var/lib/skydns/envvars
+              ExecStart=
+              ExecStart=/usr/bin/docker -d -s=btrfs -r=false -H fd:// \
+                  --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN} \
+                  --insecure-registry 10.0.0.0/8 --insecure-registry 172.16.0.0/12 --insecure-registry 192.168.0.0/16
+        - name: docker-tcp.socket
+          command: start
+          enable: true
+          content: |
+              [Unit]
+              Description=Docker Socket for the API
+              
+              [Socket]
+              ListenStream=2375
+              Service=docker.service
+              BindIPv6Only=both
+              
+              [Install] 
+              WantedBy=sockets.target
+              WantedBy=docker.service
+        - name: skydns-install.service
+          command: start
+          content: |
+              [Unit]
+              Description=SkyDNS Installer
+              # This unit should NOT require etcd because etcd is masked on worker
+              # Requires=etcd.service
+              # After=etcd.service
+              Requires=systemd-resolved.service
+              After=systemd-resolved.service
+              
+              [Service]
+              Type=oneshot
+              RemainAfterExit=true
+              EnvironmentFile=/var/lib/skydns/envvars
+              ExecStart=-/bin/mkdir -p /opt/bin
+              ExecStart=/bin/bash -c "[[ -x /opt/bin/skydns ]] || \
+                      curl -L -o /opt/bin/skydns ${SKYDNS_CMD_REPO} && chmod 755 /opt/bin/skydns; echo ok"
+              # Set skydns configuration in etcd -- well, only needed do it on leader
+              # ExecStart=/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}
+        - name: skydns.service
+          command: start
+          content: |
+              [Unit]
+              Description=skydns
+              Requires=skydns-install.service
+              After=skydns-install.service
+              
+              [Service]  
+              Type=simple
+              Restart=always
+              RestartSec=5
+              EnvironmentFile=/etc/environment
+              EnvironmentFile=/var/lib/skydns/envvars
+              # make sure the skydns confit is set in etcd:
+              # ExecStartPre=/bin/bash -c "etcdctl get /skydns/config"
+              ExecStart=/opt/bin/skydns
+              # with etcd, skydns may not neet to sync with each other anymore:
+              ExecStartPost=-/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
+              ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
+              # set the system resolver to use local skydns
+              ExecStartPost=/bin/bash -c "ln -sf /etc/resolv.conf.skydns /etc/resolv.conf"
+              ExecStopPost=/bin/bash -c "ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf"
+        - name: host-register.service
+          command: start
+          content: |
+              # this unit keep host registered with dns very TTL defined in /var/lib/apps/skydns/envvars
+              # used as the basic health check of the vm
+              [Unit]
+              Description=Host DNS Register
+              Requires=docker.service
+              After=docker.service
+              
+              [Service]
+              EnvironmentFile=/etc/environment
+              EnvironmentFile=/var/lib/apps/skydns/envvars
+              ExecStart=/var/lib/apps/bin/dns-register %H ${COREOS_PRIVATE_IPV4}
+              ExecStop=/var/lib/apps/bin/dns-delete %H
+              Restart=always
+              RestartSec=5    
+        - name: setup-etcdctl-env.service
+          command: start
+          content: |       
+              [Unit]
+              Description=Setup etcdctl env vars
+              Wants=coreos-setup-environment.service
+              After=coreos-setup-environment.service
+              
+              [Service]
+              Type=oneshot
+              RemainAfterExit=true
+              ExecStart=/bin/bash -c "source /etc/profile.d/etcd-envvars.sh; env | grep -E 'ETCD|FLEETCTL' >> /etc/environment"
+              
+              [Install]
+              WantedBy=multi-user.target
