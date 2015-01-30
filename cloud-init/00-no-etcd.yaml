@@ -1,8 +1,0 @@
-#cloud-config
-# Don't run etcd on this node but use 172.17.8.101 as the etcd endpoint
-coreos:
-    units:
-        - name: etcd.service
-          mask: true
-        
-# end of cloud-config no-etcd
