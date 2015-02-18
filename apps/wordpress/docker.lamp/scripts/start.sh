@@ -42,4 +42,4 @@ if [ ! -f /var/www/wp-config.php ]; then
 	killall mysqld
 	sleep 10s
 fi
-supervisord -n
+supervisord -n -c /etc/supervisord.conf

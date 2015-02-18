@@ -26,11 +26,13 @@ EXPOSE 80 3306
 # exclude logs from image
 VOLUME /var/log
 # use dockerize for redirecting logs to stdout/stderr
-CMD dockerize \
-	-stderr /var/log/mysql/error.log \
-	-stderr /var/log/mysql.err \
-	-stdout /var/log/mysql.log \
-	-stdout /var/log/faillog \
-	-stdout /var/log/bootstrap.log \
-	-stdout /var/log/alternatives.log \
-	/start.sh
+#CMD dockerize \
+#	-stderr /var/log/mysql/error.log \
+#	-stderr /var/log/mysql.err \
+#	-stdout /var/log/mysql.log \
+#	-stdout /var/log/faillog \
+#	-stdout /var/log/bootstrap.log \
+#	-stdout /var/log/alternatives.log \
+#	/start.sh
+
+CMD /start.sh

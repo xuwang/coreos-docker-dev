@@ -54,4 +54,4 @@ ENDL
 fi
 
 # start all the services
-/usr/local/bin/supervisord -n
+supervisord -n -c /etc/supervisord.conf

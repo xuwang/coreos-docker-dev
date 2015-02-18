@@ -11,4 +11,5 @@ REPO="registry.$LOCAL_DOMAIN"
 
 # force update
 docker pull "${REPO}/$1" || docker pull $1
+docker rmi -f $1
 docker tag "${REPO}/$1" $1
