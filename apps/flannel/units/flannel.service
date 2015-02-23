@@ -1,0 +1,7 @@
+[Unit]
+	Requires=flannel-install.service
+	After=flannel-install.service
+[Service]
+	EnvironmentFile=/var/lib/apps/flannel/envvars
+	ExecStartPre=-/usr/bin/etcdctl set /coreos.com/network/config ${FLANNEL_CONF}
+	ExecStart=/opt/bin/flanneld

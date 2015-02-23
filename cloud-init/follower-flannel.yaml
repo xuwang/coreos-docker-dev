@@ -12,6 +12,7 @@ coreos:
         # generate a new token for each unique cluster from https://discovery.etcd.io/new
         # WARNING: replace each time you 'vagrant destroy'
         #discovery: https://discovery.etcd.io/<token>
+        peers: "172.17.8.101:7001,172.17.8.102:7001,172.17.8.103:7001"
     fleet:
         public-ip: $private_ipv4
         metadata: "platform=m1.small,provider=aws,region=us-west-2,disk=ssd,role=etcd"
@@ -19,35 +20,26 @@ coreos:
         - name: etcd.service
           command: start
         - name: fleet.service
-          command: start    
-        - name: setup-etcdctl-env.service
           command: start
-          content: |       
-              [Unit]
-              # set secure etcd envvars in  /etc/environment
-              # for using secure etcdctl and fleetctl in other units
-              Description=Setup etcdctl env vars
-              Wants=coreos-setup-environment.service
-              After=coreos-setup-environment.service
-              
-              [Service]
-              Type=oneshot
-              RemainAfterExit=true
-              ExecStart=/bin/bash -c "source /etc/profile.d/etcd-envvars.sh; env | grep -E 'ETCD|FLEETCTL' >> /etc/environment"
-              
-              [Install]
-              WantedBy=multi-user.target
         - name: docker.service
           command: start
-          content: |
-              .include /usr/lib/systemd/system/docker.service          
-              [Service]
-              # Use our own dns, instead of the host's.
-              EnvironmentFile=/var/lib/skydns/envvars
-              ExecStart=
-              ExecStart=/usr/bin/docker -d -s=btrfs -r=false -H fd:// \
-                  --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN} \
-                  --insecure-registry 10.0.0.0/8 --insecure-registry 172.16.0.0/12 --insecure-registry 192.168.0.0/16
+          drop-ins:
+            - name: 60-docker-wait-for-flannel-config.conf
+              content: |
+                  [Unit]
+                  After=flannel.service
+                  Requires=flannel.service
+                  [Service]
+                  # Use our own dns, instead of the host's.
+                  EnvironmentFile=/var/lib/skydns/envvars
+                  EnvironmentFile=/run/flannel/subnet.env
+                  ExecStart=
+                  ExecStart=/usr/bin/docker -d -H fd:// --bip=${FLANNEL_SUBNET} --mtu=${FLANNEL_MTU} \
+                      --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN} \
+                      --insecure-registry 10.0.0.0/8 --insecure-registry 172.16.0.0/12 --insecure-registry 192.168.0.0/16
+                  Restart=always
+                  RestartSec=5
+                  Restart=on-failure
         - name: docker-tcp.socket
           command: start
           enable: true
@@ -80,8 +72,8 @@ coreos:
               ExecStart=-/bin/mkdir -p /opt/bin
               ExecStart=/bin/bash -c "[[ -x /opt/bin/skydns ]] || \
                       curl -L -o /opt/bin/skydns ${SKYDNS_CMD_REPO} && chmod 755 /opt/bin/skydns; echo ok"
-              # Set skydns configuration in etcd
-              ExecStart=/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}
+              # Set skydns configuration in etcd -- well, only needed do it on leader
+              # ExecStart=/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}
         - name: skydns.service
           command: start
           content: |
@@ -112,8 +104,8 @@ coreos:
               # used as the basic health check of the vm
               [Unit]
               Description=Host DNS Register
-              Requires=docker.service
-              After=docker.service
+              Requires=etcd.service
+              After=etcd.service
               
               [Service]
               EnvironmentFile=/etc/environment
@@ -122,25 +114,28 @@ coreos:
               ExecStop=/var/lib/apps/bin/dns-delete %H
               Restart=always
               RestartSec=5
-        - name: registry.service
+        - name: flannel-install.service
           command: start
-          content: |             
-              [Unit]
-              Description=Docker Image Registry
-              Requires=docker.service
-              After=docker.service
+          content: |            
+              [Unit]         
+              Description=Flannel Installer
+              Requires=etcd.service
+              After=etcd.service
               
               [Service]
-              EnvironmentFile=/etc/environment
-              EnvironmentFile=/var/lib/apps/skydns/envvars
-              TimeoutStartSec=300
-              ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:latest || /var/lib/apps/bin/dkload registry-latest.tgz || docker pull registry:latest"
-              ExecStartPre=-/usr/bin/docker rm -f %n
-              ExecStart=/usr/bin/docker run  --rm --name %n -p 80:5000 \
-                      -v /var/lib/apps-data/registry:/data -v /var/lib/apps/registry:/registry-conf \
-                      -e DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml \
-                      -e SETTINGS_FLAVOR=prod registry:latest
-              ExecStartPost=/var/lib/apps/bin/dns-set 'registry' "%H.${LOCAL_DOMAIN}"
-              ExecStopPost=-/var/lib/apps/bin/dns-delete 'registry'
-              RestartSec=5
-              Restart=always
+              Type=oneshot
+              RemainAfterExit=true
+              EnvironmentFile=/var/lib/apps/flannel/envvars
+              ExecStart=/bin/bash -c "[[ -x /opt/bin/flanneld ]] || \
+                  (cd /tmp; curl -L ${FLANNEL_RELEASE_URL} | tar -xz) &&  \
+                  install /tmp/flannel-${FLANNEL_VERSION}/flanneld /opt/bin"
+        - name: flannel.service
+          command: start
+          content: |            
+              [Unit]
+              Requires=flannel-install.service
+              After=flannel-install.service
+              [Service]
+              EnvironmentFile=/var/lib/apps/flannel/envvars
+              ExecStartPre=-/usr/bin/etcdctl set /coreos.com/network/config ${FLANNEL_CONF}
+              ExecStart=/opt/bin/flanneld

@@ -19,35 +19,25 @@ coreos:
         - name: etcd.service
           command: start
         - name: fleet.service
-          command: start    
-        - name: setup-etcdctl-env.service
-          command: start
-          content: |       
-              [Unit]
-              # set secure etcd envvars in  /etc/environment
-              # for using secure etcdctl and fleetctl in other units
-              Description=Setup etcdctl env vars
-              Wants=coreos-setup-environment.service
-              After=coreos-setup-environment.service
-              
-              [Service]
-              Type=oneshot
-              RemainAfterExit=true
-              ExecStart=/bin/bash -c "source /etc/profile.d/etcd-envvars.sh; env | grep -E 'ETCD|FLEETCTL' >> /etc/environment"
-              
-              [Install]
-              WantedBy=multi-user.target
         - name: docker.service
           command: start
-          content: |
-              .include /usr/lib/systemd/system/docker.service          
-              [Service]
-              # Use our own dns, instead of the host's.
-              EnvironmentFile=/var/lib/skydns/envvars
-              ExecStart=
-              ExecStart=/usr/bin/docker -d -s=btrfs -r=false -H fd:// \
-                  --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN} \
-                  --insecure-registry 10.0.0.0/8 --insecure-registry 172.16.0.0/12 --insecure-registry 192.168.0.0/16
+          drop-ins:
+            - name: 60-docker-wait-for-flannel-config.conf
+              content: |
+                  [Unit]
+                  After=flannel.service
+                  Requires=flannel.service
+                  [Service]
+                  # Use our own dns, instead of the host's.
+                  EnvironmentFile=/var/lib/skydns/envvars
+                  EnvironmentFile=/run/flannel/subnet.env
+                  ExecStart=
+                  ExecStart=/usr/bin/docker -d -H fd:// --bip=${FLANNEL_SUBNET} --mtu=${FLANNEL_MTU} \
+                      --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN} \
+                      --insecure-registry 10.0.0.0/8 --insecure-registry 172.16.0.0/12 --insecure-registry 192.168.0.0/16
+                  Restart=always
+                  RestartSec=5
+                  Restart=on-failure
         - name: docker-tcp.socket
           command: start
           enable: true
@@ -112,8 +102,8 @@ coreos:
               # used as the basic health check of the vm
               [Unit]
               Description=Host DNS Register
-              Requires=docker.service
-              After=docker.service
+              Requires=etcd.service
+              After=etcd.service
               
               [Service]
               EnvironmentFile=/etc/environment
@@ -122,6 +112,7 @@ coreos:
               ExecStop=/var/lib/apps/bin/dns-delete %H
               Restart=always
               RestartSec=5
+              Restart=on-failure
         - name: registry.service
           command: start
           content: |             
@@ -144,3 +135,30 @@ coreos:
               ExecStopPost=-/var/lib/apps/bin/dns-delete 'registry'
               RestartSec=5
               Restart=always
+              Restart=on-failure
+        - name: flannel-install.service
+          command: start
+          content: |            
+              [Unit]         
+              Description=Flannel Installer
+              Requires=etcd.service
+              After=etcd.service
+              
+              [Service]
+              Type=oneshot
+              RemainAfterExit=true
+              EnvironmentFile=/var/lib/apps/flannel/envvars
+              ExecStart=/bin/bash -c "[[ -x /opt/bin/flanneld ]] || \
+                  (cd /tmp; curl -L ${FLANNEL_RELEASE_URL} | tar -xz) &&  \
+                  install /tmp/flannel-${FLANNEL_VERSION}/flanneld /opt/bin"
+        - name: flannel.service
+          command: start
+          content: |            
+              [Unit]
+              Requires=flannel-install.service
+              After=flannel-install.service
+              [Service]
+              EnvironmentFile=/var/lib/apps/flannel/envvars
+              ExecStartPre=-/usr/bin/etcdctl set /coreos.com/network/config ${FLANNEL_CONF}
+              ExecStart=/opt/bin/flanneld       
+

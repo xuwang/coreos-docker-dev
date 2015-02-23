@@ -1,0 +1,12 @@
+[Unit]
+Description=Flannel Installer
+Requires=etcd.service
+After=etcd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+EnvironmentFile=/var/lib/apps/flannel/envvars
+ExecStart=/bin/bash -c "[[ -x /opt/bin/flanneld ]] || \
+	(cd /tmp; curl -L ${FLANNEL_RELEASE_URL} | tar -xz) &&  \
+	install /tmp/flannel-${FLANNEL_VERSION}/flanneld /opt/bin"

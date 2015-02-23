@@ -109,7 +109,7 @@ coreos:
           command: start
           content: |             
               [Unit]
-              Description=Host DNS Register
+              Description=Docker Image Registry
               Requires=docker.service
               After=docker.service
               
