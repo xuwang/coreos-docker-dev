@@ -19,6 +19,7 @@ coreos:
         - name: etcd.service
           command: start
         - name: fleet.service
+          command: start
         - name: docker.service
           command: start
           drop-ins:
