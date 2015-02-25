@@ -10,6 +10,7 @@ CLOUD_INIT_PATH =  File.join(MY_PATH, "cloud-init")
 
 # Define the vm nodes in json
 NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
+#NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-flannel.json")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster.json")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-large.json")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-secure-etcd.json")
@@ -29,6 +30,8 @@ Vagrant.configure("2") do |config|
 	# add them to ssh-agent: 
 	#			 ssh-add <your_cluster_private_key>
 	config.ssh.forward_agent = true
+	# Don't generate new ssh key for each box because it will be override by coreos' update-ssh-keys on reboot
+	config.ssh.insert_key=false
 	%x( if [[ `ssh-add -l` != *insecure_private_key* ]];then ssh-add ~/.vagrant.d/insecure_private_key; fi )
 
 	config.vm.provider :vmware_fusion do |vb, override|
@@ -49,7 +52,7 @@ Vagrant.configure("2") do |config|
 	
 	
 	# config vm with the data from node_conf
-	def config_vm(config, node_name, node_id, node_conf, index)
+	def config_vm(config, node_name, node_id, node_conf)
 		config.vm.define vm_name = node_name do |config|
 			config.vm.network :private_network, ip: node_id
 			config.vm.hostname = node_name
@@ -58,7 +61,7 @@ Vagrant.configure("2") do |config|
 			ports = node_conf['ports']
 			ports.each do |port|
 				config.vm.network :forwarded_port,
-					host:	port['host'] + index,
+					host:	port['host'],
 					guest: 	port['guest'],
 					id:		port['id']
 			end
@@ -113,18 +116,8 @@ Vagrant.configure("2") do |config|
 		nodes_config.each do |node|
 			node_name = node[0]	# name of node
 			node_conf = node[1]	# content of node
-			# if this cluster, get all the node ids, must be in range of 1-254
-			node_ids = node_conf['ids']
-			if node_ids then
-				node_ids.each do | id |
-					name = "#{node_name}-%3d" % id
-					node_ip = "#{node_conf['subnet']}.#{id}"
-					config_vm(config, name, node_ip, node_conf, id)
-				end
-			else
-				node_ip = node_conf['ip']
-				config_vm(config, node_name, node_ip, node_conf, 0)
-			end
+			node_ip = node_conf['ip']
+			config_vm(config, node_name, node_ip, node_conf)
 		end
 	end
 end
