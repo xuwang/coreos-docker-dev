@@ -42,7 +42,6 @@ write_files:
         alias cleandkc="dkc -a --no-trunc| grep Exit | awk '{print \$1}' | xargs -L 1 -r docker rm"
         alias cleandkm="dkm -a --no-trunc | grep none | awk '{print \$3}' | xargs -L 1 -r docker rmi"
         alias cleandk="cleandkc && cleandkm"
-        alias killdk="dk rm -f $(docker ps -qa)"
         alias sd="sudo systemctl"
         alias sdl="sd list-units"
         alias sds="sd status"
