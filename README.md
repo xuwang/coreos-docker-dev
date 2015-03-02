@@ -2,37 +2,42 @@
 
 A docker application/service devevlopment environment on Vagrant/CoreOS with:
 
-* All the goodies come with CoreOS, i.e. ETCD, Fleet, Systemd, Journal, OS auto-updates etc.
+* All the goodies come with CoreOS, i.e. ETCD, Fleet, Flannel, Systemd, Journal, OS auto-updates etc.
 * A [SkyDNS][SkyDNS] service.
-* Support of a wildcard self-signed certificates, it's convient for https web/api.
+* Https support for web applicaitons with a wildcard self-signed certificate
 * Fleet units for applications/services:
     * private docker registry with https basic-auth
     * confd
     * nginx
     * haproxy
     * redis
-    * timer example
-etc.
+    * timer 
 
-It may started as:
-
-* Standalong one node system
-* A cluster of one etcd/skydns node and two fleet nodes  
-etc.
-
-Just link nodes.json to different configrations under nodes-conf dir.
+Full lists of apps are under apps directory. Some of them are still WIP. 
 
 ### Install dependencies
 
 * [VirtualBox][virtualbox] 4.3.10 or greater.
 * [Vagrant][vagrant] 1.6 or greater.
 
-### Clone this project and get system up and login
+### Cluster configuration
+
+Under nodes-conf directory you can find different size of cluster configurations and default service port mappings.  You can modify json files to change the defaults and then in Vagrant configuration, pick the one you will use:
+
+    NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
+    #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-flannel.json")
+    #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster.json")
+    #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-large.json")
+    #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-secure-etcd.json")
+
+
+### Clone this project and get system up and running
 
 	git clone https://github.com/xuwang/coreos-docker-dev.git
 	cd coreos-docker-dev
 	vagrant up
-    vagrant ssh
+        vagrant ssh
+        
 ### Clean it up
 
 	exit # the coreos vm
