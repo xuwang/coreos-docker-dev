@@ -167,7 +167,7 @@ coreos:
               [Service]
               ExecStartPre=-/usr/bin/etcdctl mkdir /coreos.com/network
               ExecStartPre=-/usr/bin/etcdctl mk /coreos.com/network/config '{"Network":"10.10.0.0/16", "SubnetLen": 24,"SubnetMin": "10.10.1.0","SubnetMax": "10.10.99.0"}'
-              ExecStart=/opt/bin/flanneld -iface=$public_ipv4
+              ExecStart=/opt/bin/flanneld -iface=$private_ipv4
               Restart=on-failure
               TimeoutSec=60
               RestartSec=10
