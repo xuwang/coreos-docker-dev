@@ -14,3 +14,7 @@ chmod 600 *.key
 
 echo "site.crt is generated:"
 openssl x509 -text -noout -in site.crt
+
+#see https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
+echo "generating dhparam.pem/2048 for strengthening the server security ..."
+openssl dhparam -out dhparam.pem 2048
