@@ -29,7 +29,7 @@ coreos:
               # Use our own dns, instead of the host's.
               EnvironmentFile=/var/lib/skydns/envvars
               ExecStart=
-              ExecStart=/usr/bin/docker -d -s=btrfs -H fd:// \
+              ExecStart=/usr/bin/docker -d \
                   --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN} \
                   --bip="172.17.1.1/24" \
                   --ip-masq=false \
