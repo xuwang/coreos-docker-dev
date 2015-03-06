@@ -1,16 +1,17 @@
 [Unit]
 Description=gitlab-redis
 Requires=docker.service
-After=docker.service
-Wants=etcd.service
-After=etcd.service
 
 [Service]
 EnvironmentFile=/etc/environment
-EnvironmentFile=/var/lib/apps/gitlab/envvars
+Environment="REDIS_IMAGE=dockerfile/redis:latest"
+Environment="REDIS_DATA=/var/lib/apps-data/gitlab/redis"
 TimeoutStartSec=0
 ExecStartPre=/var/lib/apps/bin/dkpull ${REDIS_IMAGE}
-ExecStart=/usr/bin/docker run  --rm --name %n ${REDIS_OPTS} ${REDIS_IMAGE}
-ExecStop=/usr/bin/docker stop %n
-RestartSec=5
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStart=/usr/bin/docker run  --rm --name %n -p 6379:6379 -v ${REDIS_DATA}:/data ${REDIS_IMAGE}
+ExecStartPost=/var/lib/apps/bin/dns-set gitlab-redis "%H.docker.local"
+ExecStop=-/usr/bin/docker stop %n
+ExecStopPost=-/var/lib/apps/bin/dns-delete gitlab-redis
+RestartSec=10
 Restart=always

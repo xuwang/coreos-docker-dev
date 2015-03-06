@@ -5,12 +5,23 @@ After=gitlab-redis.service
 
 [Service]
 EnvironmentFile=/etc/environment
-EnvironmentFile=/var/lib/apps/gitlab/envvars
+Environment="DB_IMAGE=sameersbn/postgresql:latest"
+# Note: cannot use NFS folder /var/lib/apps-data/gitlab/postgresql because "chown" will fail on MacOS/vagrant NFS folder
+Environment="DB_DATA=/var/lib/gitlab/postgresql"
 TimeoutStartSec=0
 ExecStartPre=/var/lib/apps/bin/dkpull ${DB_IMAGE}
-ExecStart=/usr/bin/docker run  --rm --name %n ${DB_OPTS} ${DB_IMAGE}
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStart=/usr/bin/docker run  --rm --name %n \
+	-e 'DB_NAME=gitlabhq_production' \
+	-e 'DB_USER=gitlab' \
+    -e 'DB_PASS=gitlab' \
+	-p 5432:5432 \
+	-v ${DB_DATA}:/var/lib/postgresql \
+	${DB_IMAGE}
+ExecStartPost=/var/lib/apps/bin/dns-set gitlab-db "%H.docker.local"
 ExecStop=/usr/bin/docker stop %n
-RestartSec=5
+ExecStopPost=-/var/lib/apps/bin/dns-delete gitlab-db
+RestartSec=10
 Restart=always
 
 [X-Fleet]
