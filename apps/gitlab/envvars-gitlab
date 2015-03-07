@@ -24,7 +24,8 @@ REDIS_PORT=6379
 #SSL_DHPARAM_PATH= /var/lib/apps/certs/dhparam.pem
 
 #GITLAB_HOST=gitlab.docker.local
-#GITLAB_PORT=8080
+GITLAB_PORT=8080
+GITLAB_SSH_PORT=10022
 
 #HOST UID and GID MAPPING
 # Setting to the mac user/group id for voiding vagrant sync nfs data folder permission error.

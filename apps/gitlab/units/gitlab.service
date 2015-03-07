@@ -13,7 +13,7 @@ ExecStartPre=/var/lib/apps/bin/dkpull ${GITLAB_IMAGE}
 ExecStartPre=-/usr/bin/docker rm %n
 ExecStart=/usr/bin/docker run  --rm --name %n --env-file="/var/lib/apps/gitlab/envvars-gitlab" \
     -h gitlab.docker.local \
-	-p 8080:80 -p 443 -p 22 \
+	-p 8080:80 -p 443:443 -p 10022:22 \
     -v ${GITLAB_DATA}:/home/git/data \
 	${GITLAB_IMAGE}
 ExecStartPost=/var/lib/apps/bin/dns-set gitlab ${COREOS_PRIVATE_IPV4}
