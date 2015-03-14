@@ -23,7 +23,7 @@ Full lists of apps are under [apps](https://github.com/xuwang/coreos-docker-dev/
 
 ### Cluster configuration
 
-Under [nodes-conf](https://github.com/xuwang/coreos-docker-dev/tree/master/node-conf) directory, you can find different size of cluster configurations and default service port mappings.  You can modify json files to change the defaults and then in Vagrant configuration, pick the one you will use:
+Under [nodes-conf](https://github.com/xuwang/coreos-docker-dev/tree/master/nodes-conf) directory, you can find different size of cluster configurations and default service port mappings.  You can modify json files to change the defaults and then in Vagrant configuration, pick the one you will use:
 
     NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
     #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-flannel.json")
