@@ -12,17 +12,18 @@ A docker application/service devevlopment environment on Vagrant/CoreOS with:
     * haproxy
     * redis
     * timer 
+    * flannel
 
-Full lists of apps are under apps directory. Some of them are still WIP. 
+Full lists of apps are under [apps](https://github.com/xuwang/coreos-docker-dev/tree/master/apps) directory. There is a working flannel cluster in which docker containers run on their own private network than that of the docker host. 
 
-### Install dependencies
+### Installation dependencies
 
 * [VirtualBox][virtualbox] 4.3.10 or greater.
 * [Vagrant][vagrant] 1.6 or greater.
 
 ### Cluster configuration
 
-Under nodes-conf directory you can find different size of cluster configurations and default service port mappings.  You can modify json files to change the defaults and then in Vagrant configuration, pick the one you will use:
+Under [nodes-conf](https://github.com/xuwang/coreos-docker-dev/tree/master/node-conf) directory, you can find different size of cluster configurations and default service port mappings.  You can modify json files to change the defaults and then in Vagrant configuration, pick the one you will use:
 
     NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
     #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-flannel.json")
@@ -30,13 +31,12 @@ Under nodes-conf directory you can find different size of cluster configurations
     #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-large.json")
     #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-secure-etcd.json")
 
-
 ### Clone this project and get system up and running
 
-	git clone https://github.com/xuwang/coreos-docker-dev.git
-	cd coreos-docker-dev
-	vagrant up
-        vagrant ssh
+    git clone https://github.com/xuwang/coreos-docker-dev.git
+    cd coreos-docker-dev
+    vagrant up
+    vagrant ssh
         
 ### Clean it up
 
