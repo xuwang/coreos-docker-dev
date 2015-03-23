@@ -1,7 +1,6 @@
-Run FleetUI on CoreOS
-=====================
+# Run FleetUI on CoreOS
 
-* Generate a pair of ssh key for fleetui
+* Generate ssh key for fleetui
 
         ssh-keygen -f /home/core/.ssh/id_rsa_fleetui -t rsa -C "fleetui@example.com"
         
