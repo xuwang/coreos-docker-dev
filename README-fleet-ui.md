@@ -18,7 +18,7 @@ Run FleetUI on CoreOS
 
   Replace the ETCD_PEER setting in envvars file, the fire up the fleet ui container:
 
-       cd unit && fleetctl start unit/fleet-ui.service
+       cd apps/fleet-ui/unit && fleetctl start fleet-ui.service
 
 * Go to browser, for example: localhost:3000
 
