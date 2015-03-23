@@ -16,6 +16,7 @@
                                 {"guest": 8080,  "host": 8080,	"id": "http"	},
                                 {"guest": 53,   "host": 5353,	"id": "dns"     },
                                 {"guest": 4001, "host": 4001,	"id": "etcd"	},
+                                {"guest": 3000, "host": 3000,	"id": "fleet-ui" },
                                 {"guest": 8888, "host": 8888,	"id": "app"     }
                                 ]
         }

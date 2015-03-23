@@ -1,0 +1,7 @@
+# this is a unit env file for fleet-ui
+# env for fleet-ui
+IMAGE=fleet-ui
+
+OPTS="-p 3000:3000 \
+    -e ETCD_PEER=172.17.8.101 \
+    -v ~/.ssh/id_rsa:/root/id_rsa"
