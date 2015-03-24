@@ -40,12 +40,21 @@ Under [nodes-conf](https://github.com/xuwang/coreos-docker-dev/tree/master/nodes
     vagrant status
     vagrant ssh <node name>
   
-Skydns service should be started automatically, as you can see in dns resolv.conf file:
+Skydns service should be started automatically:
 
-    core@n1 ~/share/apps $ more /etc/resolv.conf
-    domain docker.local
-    search docker.local
-    nameserver 127.0.0.1
+![skydns service status](images/skydns.png "skydns service status")
+
+    
+Networking on your machine might cause it not to start automatically. Try to start manually:
+
+    sudo systemctl start skydns.service
+ 
+Private registry should also be started automatically, again use systemctl command to rerify:
+
+    systemctl status registry
+
+ 
+The skydns and reigstry are two systemd units configured in cluster's cloud-init. Once these two services are ready, you can start other services.
 
 ### Start service units
 
@@ -56,14 +65,20 @@ Units are locaged under share/apps/<service>/units directory. In general, you ca
 
 For example, to start private registry:
 
-    cd share/apps/registry/units
-    fleetctl start registry.service
+    cd share/apps/redish/units
+    fleetctl start redis.service
 
-### Start fleetui
+To check status of fleet units:
+
+    fleetctl list-units
+    
+### Start fleet UI
 
     cd share/apps/fleet-ui/units
     fleetctl start fleet-ui.service
-    
+
+It can take very long for this service to come up on laptop. This one first pull a builder image and build the fleet-ui image on the fly.
+
 ### Clean it up
 
 	exit # the coreos vm
