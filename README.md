@@ -22,9 +22,16 @@ Full lists of apps are under [apps](https://github.com/xuwang/coreos-docker-dev/
 * [VirtualBox][virtualbox] 4.3.10 or greater.
 * [Vagrant][vagrant] 1.6 or greater.
 
+### Clone this project
+
+    git clone https://github.com/xuwang/coreos-docker-dev.git
+    cd coreos-docker-dev
+
+_Vagrant_ file controls the cluster provisioning. 
+
 ### Cluster configuration
 
-Under [nodes-conf](https://github.com/xuwang/coreos-docker-dev/tree/master/nodes-conf) directory, you can find different size of cluster configurations and default service port mappings.  You can modify json files to change the defaults and then in Vagrant configuration, pick the one you will use, for example, the cluster with flannel, with 3 nodes:
+Under [nodes-conf](https://github.com/xuwang/coreos-docker-dev/tree/master/nodes-conf) directory, you can find different size of cluster configurations and default service port mappings.  You can modify json files to change the defaults, and in Vagrant configuration, pick the one you will use, for example, the cluster with flannel, with 3 nodes:
 
     #NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
     NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-flannel.json")
@@ -32,13 +39,11 @@ Under [nodes-conf](https://github.com/xuwang/coreos-docker-dev/tree/master/nodes
     #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-large.json")
     #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-secure-etcd.json")
 
-### Clone this project and get system up and running
+### Start the cluster
 
-    git clone https://github.com/xuwang/coreos-docker-dev.git
-    cd coreos-docker-dev
     vagrant up
     vagrant status
-    vagrant ssh <node name>
+    vagrant ssh [<node name>]
   
 Skydns service should be started automatically:
 
@@ -49,24 +54,28 @@ Networking on your machine might cause it not to start automatically. Try to sta
 
     sudo systemctl start skydns.service
  
-Private registry should also be started automatically, again use systemctl command to rerify:
+Private registry should also be started automatically, again use the systemctl command to verity:
 
     systemctl status registry
 
  
-The skydns and reigstry are two systemd units configured in cluster's cloud-init. Once these two services are ready, you can start other services.
+The skydns and reigstry are two systemd units configured in the cluster's cloud-init. Once these two services are ready, you can start other services. 
+
+Registry container registers itself as 'registry.docker.local' in skydns.
 
 ### Start service units
 
-Units are locaged under share/apps/<service>/units directory. In general, you can start a service like so:
+Units are located under share/apps/<service>/units directory. In general, you can start a service like so:
 
     cd share/apps/<service>/units
     fleetctl start <name>.service
 
-For example, to start private registry:
+For example, to start redis server:
 
     cd share/apps/redish/units
     fleetctl start redis.service
+    
+When service is ready, it registers as 'redis.docker.local' in skydns.
 
 To check status of fleet units:
 
@@ -78,6 +87,15 @@ To check status of fleet units:
     fleetctl start fleet-ui.service
 
 It can take very long for this service to come up on laptop. This one first pull a builder image and build the fleet-ui image on the fly.
+
+    ore@n2 ~ $ flu
+    UNIT			MACHINE				ACTIVE		SUB
+    fleet-ui.service	659cd7c2.../172.17.8.102	active		running
+    redis.service		18050ac4.../172.17.8.103	activating	start-pre
+    
+In this example, the fleet service is running on 172.17.8.102. You can point your browser to 172.17.8.102:3000 to visualize what's running on the cluster:
+![fleet units](images/fleetui.png "fleet units")
+
 
 ### Clean it up
 
