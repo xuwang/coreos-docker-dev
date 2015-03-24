@@ -147,7 +147,7 @@ coreos:
               [Service]
               Type=oneshot
               RemainAfterExit=true
-              Environment=FLANNEL_RELEASE_URL='https://github.com/coreos/flannel/releases/download/v0.3.0/flannel-linux-amd64-0.3.0.tar.gz'
+              Environment=FLANNEL_RELEASE_URL='https://github.com/coreos/flannel/releases/download/v0.3.0/flannel-0.3.0-linux-amd64.tar.gz'
               Environment=FLANNEL_VERSION='0.3.0'
               ExecStart=-/bin/mkdir -p /opt/bin
               ExecStart=/bin/bash -c "[[ -x /opt/bin/flanneld ]] || \
