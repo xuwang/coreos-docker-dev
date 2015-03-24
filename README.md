@@ -27,7 +27,7 @@ Full lists of apps are under [apps](https://github.com/xuwang/coreos-docker-dev/
     git clone https://github.com/xuwang/coreos-docker-dev.git
     cd coreos-docker-dev
 
-_Vagrant_ file controls the cluster provisioning. 
+_Vagrantfile_ controls the cluster provisioning. The checked out git repo directory is shared as /home/core/share in each note, so you can put persistent data under /home/core/share. You will be asked for your password to enable the NFS sharing from the host.
 
 ### Cluster configuration
 
