@@ -86,9 +86,13 @@ To check status of fleet units:
     cd share/apps/fleet-ui/units
     fleetctl start fleet-ui.service
 
-It can take very long for this service to come up on laptop. This one first pull a builder image and build the fleet-ui image on the fly.
+It can take very long for this service to come up on laptop. This one first pull a builder image and build the fleet-ui image on the fly. To check status:
 
-    ore@n2 ~ $ flu
+    fleetctl status fleet-ui.service
+
+And when it is ready:
+
+    core@n2 ~ $ fleetctl list-units
     UNIT			MACHINE				ACTIVE		SUB
     fleet-ui.service	659cd7c2.../172.17.8.102	active		running
     redis.service		18050ac4.../172.17.8.103	activating	start-pre
@@ -96,11 +100,11 @@ It can take very long for this service to come up on laptop. This one first pull
 In this example, the fleet service is running on 172.17.8.102. You can point your browser to 172.17.8.102:3000 to visualize what's running on the cluster:
 ![fleet units](images/fleetui.png "fleet units")
 
-
 ### Clean it up
 
-	exit # the coreos vm
-	vagrant destroy
+exit coreos vm node and:
+
+    vagrant destroy
 
 [virtualbox]: https://www.virtualbox.org/
 [vagrant]: https://www.vagrantup.com/downloads.html
