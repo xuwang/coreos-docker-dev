@@ -72,7 +72,7 @@ Units are located under share/apps/<service>/units directory. In general, you ca
 
 For example, to start redis server:
 
-    cd share/apps/redish/units
+    cd share/apps/redis/units
     fleetctl start redis.service
     
 When service is ready, it registers as 'redis.docker.local' in skydns.
@@ -80,7 +80,7 @@ When service is ready, it registers as 'redis.docker.local' in skydns.
 To check status of fleet units:
 
     fleetctl list-units
-    
+
 ### Start fleet UI
 
     cd share/apps/fleet-ui/units
