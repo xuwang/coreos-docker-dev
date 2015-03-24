@@ -83,6 +83,8 @@ Vagrant.configure("2") do |config|
 
 			# To make the self-signed certs truesed for clients in docker, update the system bundled certs with the test rootCA.
 			# This should be done before docker.service starts so it can pick up the testing rootCA.
+			config.vm.provision :file, :source => "~/.vagrant.d/insecure_private_key", :destination => "/home/core/.ssh/id_rsa_fleetui"
+                        # Copy in vagrant private key so it can be used by fleetui container to check cluster status
 			config.vm.provision :file, :source => "#{TEST_ROOT_CA_PATH}", :destination => "/tmp/XXX-Dockerage.pem"
 			config.vm.provision :shell, \
 				:inline => "cd /etc/ssl/certs && ([[ -f XXX-Dockerage.pem ]] || (mv /tmp/XXX-Dockerage.pem . && update-ca-certificates))", \
