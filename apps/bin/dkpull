@@ -10,6 +10,6 @@ REPO="registry.$LOCAL_DOMAIN"
 #docker history ${1} > /dev/null 2>&1 || docker pull "${REPO}/$1"  || docker pull $1
 
 # force update
-docker pull "${REPO}/$1" || docker pull $1
 /var/lib/apps/bin/is_loaded $1 && docker rmi -f $1
+docker pull "${REPO}/$1" || docker pull $1
 docker tag "${REPO}/$1" $1

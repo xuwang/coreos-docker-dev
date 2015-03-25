@@ -8,8 +8,9 @@ EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/fleet-ui/envvars
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker rm %n
-ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded ${FLEETUI_IMAGE} || \
-    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ${BUILDER_IMAGE}"
+#ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded ${FLEETUI_IMAGE} || \
+#    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ${BUILDER_IMAGE}"
+ExecStartPre=/var/lib/apps/bin/dkpull ${FLEETUI_IMAGE}
 ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name %n ${OPTS} ${FLEETUI_IMAGE}"
 ExecStop=-/usr/bin/docker stop %n
 RestartSec=10

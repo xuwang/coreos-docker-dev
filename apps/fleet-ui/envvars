@@ -1,6 +1,5 @@
 # this is a unit env file for fleet-ui
 # env for fleet-ui
 BUILDER_IMAGE=xuwang/docker-fleetui-builder
-FLEETUI_IMAGE=fleet-ui
-OPTS="-p 3000:3000 \
-    -v /home/core/.ssh/id_rsa_fleetui:/root/id_rsa"
+FLEETUI_IMAGE=xuwang/fleet-ui
+OPTS="-p 3000:3000 -v /home/core/.ssh/id_rsa_fleetui:/root/id_rsa"
