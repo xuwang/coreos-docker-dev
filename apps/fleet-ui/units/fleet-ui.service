@@ -12,6 +12,8 @@ ExecStartPre=-/usr/bin/docker rm %n
 #    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ${BUILDER_IMAGE}"
 ExecStartPre=/var/lib/apps/bin/dkpull ${FLEETUI_IMAGE}
 ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name %n ${OPTS} ${FLEETUI_IMAGE}"
+ExecStartPost=/var/lib/apps/bin/dns-set %p $COREOS_PUBLIC_IPV4
+ExecStopPost=-/var/lib/apps/bin/dns-delete %p
 ExecStop=-/usr/bin/docker stop %n
 RestartSec=10
 Restart=always
