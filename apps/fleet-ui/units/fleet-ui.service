@@ -6,7 +6,7 @@ After=docker.service
 [Service]
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/fleet-ui/envvars
-TimeoutStartSec=0
+TimeoutStartSec=20min
 ExecStartPre=-/usr/bin/docker rm %n
 #ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded ${FLEETUI_IMAGE} || \
 #    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ${BUILDER_IMAGE}"
