@@ -1,6 +1,6 @@
 {
     "nodes": {
-        "e1": {
+        "n1": {
             "description":      "This is 1st etcd server",
             "cloud_init":       ["leader.yaml", "files.yaml"],
             "domain":           "docker.local",
@@ -17,7 +17,7 @@
                                 {"guest": 8888, "host": 8888,	"id": "app"     }
                                 ]
         },
-        "e2": {
+        "n2": {
             "description":      "This is 2ed etcd server",
             "cloud_init":       ["follower.yaml", "files.yaml"],
             "domain":           "docker.local",
@@ -28,7 +28,7 @@
                                 {"guest": 22,   "host": 2202,   "id": "ssh"     }
                                 ]
         },
-        "e3": {
+        "n3": {
             "description":      "This is 3rd etcd server",
             "cloud_init":       ["follower.yaml", "files.yaml"],
             "domain":           "docker.local",
@@ -39,7 +39,7 @@
                                 {"guest": 22,   "host": 2203,   "id": "ssh"     }
                                 ]
         },
-        "n1": {
+        "n4": {
             "description":      "This is a worker node",
             "cloud_init":       ["worker.yaml", "worker-files.yaml"],
             "domain":           "docker.local",
@@ -50,7 +50,7 @@
                                 {"guest": 22,   "host": 2204,   "id": "ssh"     }
                                 ]
         },
-        "n2": {
+        "n5": {
             "description":      "This is a worker node",
             "cloud_init":       ["worker.yaml", "worker-files.yaml"],
             "domain":           "docker.local",
@@ -61,7 +61,7 @@
                                 {"guest": 22,   "host": 2205,   "id": "ssh"     }
                                 ]
         },
-        "n3": {
+        "n6": {
             "description":      "This is a worker node",
             "cloud_init":       ["worker.yaml", "worker-files.yaml"],
             "domain":           "docker.local",
