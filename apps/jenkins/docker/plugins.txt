@@ -1,0 +1,7 @@
+greenballs:latest
+git-client:latest
+git:latest
+github:1.11
+gitlab-plugin:1.1.16
+docker-plugin:0.8
+dockerhub:1.0

@@ -7,16 +7,17 @@ After=docker.service
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/jenkins/envvars
 TimeoutStartSec=20min
+ExecStartPre=-/usr/bin/docker rm -f %n
 ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
-ExecStartPre=/var/lib/apps/bin/dns-set jenkins "%H.docker.local"
-ExecStartPre=-/usr/bin/docker rm -f  %n
-ExecStart=/usr/bin/docker run  --rm --name  %n -p 8080:8080 -p 50000:50000 \
-	-v /var/run/docker.sock:/var/run/docker.sock \
+ExecStart=/usr/bin/docker run --rm --name %n -p 8080:8080 \
 	-v ${JENKINS_HOME}:/var/jenkins_home \
-	-u root $IMAGE
-ExecStopPost=-/var/lib/apps/bin/dns-delete jenkins 
+	-v ${JENKINS_DATA}:/var/jenkins_data \
+	-v /var/run/docker.sock:/var/run/docker.sock \
+	-v /usr/bin/docker:/usr/bin/docker $IMAGE
+ExecStartPost=/var/lib/apps/bin/dns-set %p "%H.docker.local"
+ExecStopPost=-/var/lib/apps/bin/dns-delete %p 
 ExecStop=-/usr/bin/docker stop %n
-RestartSec=5
+RestartSec=15
 Restart=always
 
 [X-Fleet]

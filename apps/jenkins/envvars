@@ -1,4 +1,5 @@
 JENKINS_HOME=/var/lib/apps-data/jenkins
+JENKINS_DATA=/var/lib/apps-data/jenkins-data
 IMAGE=xuwang/jenkins:latest
 AGENT_IMAGE=maestrodev/build-agent:latest
 

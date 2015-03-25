@@ -1,9 +1,12 @@
-FROM jenkins:latest
-USER root
-# Install Docker 
-RUN apt-get update && apt-get install -qqy docker.io && \
-	ln -sf /usr/bin/docker.io /usr/local/bin/docker
-RUN  apt-get install -qqy python python-dev python-distribute python-pip
-RUN pip install awscli s3cmd
 
+FROM jenkins:1.596
+ 
+USER root
+RUN apt-get update \
+      && apt-get install -y sudo \
+      && rm -rf /var/lib/apt/lists/*
+RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
+ 
 USER jenkins
+COPY plugins.txt /usr/share/jenkins/plugins.txt
+RUN /usr/local/bin/plugins.sh /usr/share/jenkins/plugins.txt
