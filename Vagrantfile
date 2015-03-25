@@ -52,9 +52,9 @@ Vagrant.configure("2") do |config|
 	
 	
 	# config vm with the data from node_conf
-	def config_vm(config, node_name, node_id, node_conf)
+	def config_vm(config, node_name, node_conf)
 		config.vm.define vm_name = node_name do |config|
-			config.vm.network :private_network, ip: node_id
+			config.vm.network :private_network, ip: node_conf['ip']
 			config.vm.hostname = node_name
 		
 			# configures all forwarding ports in JSON array
@@ -118,8 +118,7 @@ Vagrant.configure("2") do |config|
 		nodes_config.each do |node|
 			node_name = node[0]	# name of node
 			node_conf = node[1]	# content of node
-			node_ip = node_conf['ip']
-			config_vm(config, node_name, node_ip, node_conf)
+			config_vm(config, node_name, node_conf)
 		end
 	end
 end
