@@ -11,8 +11,7 @@ The missing package manager for OS X.
 With Homebrew, it’s trivial to install Virtualbox which is a prerequisite to running vagrant on OSX.
 
 	brew update
-	brew tap phinze/homebrew-cask
-	brew install brew-cask
+	brew install caskroom/cask/brew-cask
 	brew cask install virtualbox
 
 ##Install [Vagrant][vagrant] 1.6 or greater

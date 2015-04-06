@@ -78,7 +78,7 @@ Vagrant.configure("2") do |config|
 			# enable NFS for sharing the host machine into the coreos-vagrant VM.
 			config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp,noatime']
 			config.vm.provision :shell, \
-				:inline => "ln -sf /home/core/share/apps /var/lib/apps && ln -sf /home/core/share/data /var/lib/apps-data", \
+				:inline => "ln -sf /home/core/share/apps /var/lib/ && ln -sf /home/core/share/apps-data /var/lib/", \
 				:privileged => true
 
 			# To make the self-signed certs truesed for clients in docker, update the system bundled certs with the test rootCA.
