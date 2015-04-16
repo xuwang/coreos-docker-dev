@@ -12,6 +12,8 @@ coreos:
         # generate a new token for each unique cluster from https://discovery.etcd.io/new
         # WARNING: replace each time you 'vagrant destroy'
         #discovery: https://discovery.etcd.io/<token>
+        name: "%H"
+        cluster-active-size: 3
     fleet:
         public-ip: $private_ipv4
         metadata: "platform=m1.small,provider=aws,region=us-west-2,disk=ssd,role=etcd"
@@ -23,7 +25,7 @@ coreos:
         - name: docker.service
           command: start
           content: |
-              .include /usr/lib/systemd/system/docker.service          
+              .include /usr/lib/systemd/system/docker.service
               [Service]
               # Use our own dns, instead of the host's.
               EnvironmentFile=/var/lib/skydns/envvars
