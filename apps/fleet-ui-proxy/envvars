@@ -1,0 +1,12 @@
+# this is a unit env file for nginx, the proxy service
+
+# env for fleet-ui-proxy
+DOCKER_IMAGE=dockerfile/nginx:latest
+
+DOCKER_OPTS="-p 8083:8083 \
+    -v /var/lib/etc/fleet-ui-proxy/sites-enabled:/etc/nginx/sites-enabled \
+    -v /var/lib/apps/fleet-ui-proxy/certs:/etc/nginx/certs \
+    -v /var/lib/apps-data/log/fleet-ui-proxy:/var/log/nginx"
+
+# Public facing ELB
+ELB=fleetui-elb

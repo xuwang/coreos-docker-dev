@@ -1,0 +1,25 @@
+[Unit]
+Description=Fleet UI proxy
+Wants=fleet-ui.service
+After=fleet-ui.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/fleet-ui-proxy/envvars
+TimeoutStartSec=0
+ExecStartPre=/usr/bin/docker pull ${DOCKER_IMAGE}
+# Run proxy container
+ExecStartPre=/usr/bin/bash -c "mkdir -p /var/lib/etc/fleet-ui-proxy/sites-enabled; \
+                sed \"s/FLEETUI/${COREOS_PRIVATE_IPV4}/\" \
+                /var/lib/apps/fleet-ui-proxy/sites-enabled/fleet-ui > /var/lib/etc/fleet-ui-proxy/sites-enabled/fleet-ui"
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStart=/usr/bin/sh -c "docker run --rm --name %n ${DOCKER_OPTS} ${DOCKER_IMAGE}"
+ExecStartPost=/var/lib/apps/bin/elb-register $ELB
+ExecStop=/usr/bin/docker stop %n
+ExecStopPost=/var/lib/apps/bin/elb-deregister $ELB
+RestartSec=10
+Restart=always
+
+[X-Fleet]
+MachineOf=fleet-ui.service
+MachineMetadata=role=admiral
