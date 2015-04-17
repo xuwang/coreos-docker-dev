@@ -17,6 +17,8 @@ coreos:
     fleet:
         public-ip: $private_ipv4
         metadata: "platform=m1.small,provider=aws,region=us-west-2,disk=ssd,role=etcd"
+        # see fleet issue https://github.com/coreos/fleet/issues/1106
+        etcd-request-timeout: 15
     units:
         - name: etcd.service
           command: start
