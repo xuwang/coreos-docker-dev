@@ -1,0 +1,122 @@
+#cloud-config
+
+##
+## This is a etcd cloud-config for singal node
+##
+
+coreos:
+    etcd2:
+        name: "%H"
+        advertise-client-urls: http://$private_ipv4:2379
+        initial-advertise-peer-urls: http://$private_ipv4:2380
+        # runing a multi-node cluster with discovery mode:
+        # generate a new token for each unique cluster from https://discovery.etcd.io/new
+        # WARNING: replace each time you 'vagrant destroy'
+        #discovery: https://discovery.etcd.io/<token>
+        initial-cluster: "%H=http://$private_ipv4:2380"
+        listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+        listen-peer-urls: http://$private_ipv4:2380
+    fleet:
+        public-ip: $private_ipv4
+        metadata: "platform=m1.small,provider=aws,region=us-west-2,disk=ssd,role=etcd"
+        # see fleet issue https://github.com/coreos/fleet/issues/1106
+        etcd-request-timeout: 15
+    units:
+        - name: etcd2.service
+          command: start
+        - name: fleet.service
+          command: start
+        - name: docker.service
+          command: start
+          content: |
+              .include /usr/lib/systemd/system/docker.service
+              [Service]
+              # Use our own dns, instead of the host's.
+              EnvironmentFile=/var/lib/skydns/envvars
+              ExecStart=
+              ExecStart=/usr/bin/docker -d \
+                  --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN} \
+                  --insecure-registry 10.0.0.0/8 --insecure-registry 172.16.0.0/12 --insecure-registry 192.168.0.0/16 --insecure-registry registry.docker.local
+        - name: docker-tcp.socket
+          command: start
+          enable: true
+          content: |
+              [Unit]
+              Description=Docker Socket for the API
+              
+              [Socket]
+              ListenStream=2375
+              Service=docker.service
+              BindIPv6Only=both
+              
+              [Install] 
+              WantedBy=sockets.target
+              WantedBy=docker.service
+        - name: skydns.service
+          command: start
+          content: |
+              [Unit]
+              Description=skydns
+              Requires=etcd2.service
+              After=etcd2.service
+              Requires=systemd-resolved.service
+              After=systemd-resolved.service
+              
+              [Service]  
+              Type=simple
+              Restart=always
+              RestartSec=5
+              EnvironmentFile=/etc/environment
+              EnvironmentFile=/var/lib/skydns/envvars
+              ExecStartPre=/bin/bash -c "[[ -x /opt/bin/skydns ]] || \
+                 /bin/mkdir -p /opt/bin && curl -L -o /opt/bin/skydns ${SKYDNS_CMD_REPO} && \
+                 chmod 755 /opt/bin/skydns; echo ok"
+              ExecStartPre=/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}
+              # make sure the skydns confit is set in etcd:
+              # ExecStartPre=/bin/bash -c "etcdctl get /skydns/config"
+              ExecStart=/opt/bin/skydns
+              # with etcd, skydns may not neet to sync with each other anymore:
+              ExecStartPost=-/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
+              ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
+              # set the system resolver to use local skydns
+              ExecStartPost=/bin/bash -c "ln -sf /etc/resolv.conf.skydns /etc/resolv.conf"
+              ExecStopPost=/bin/bash -c "ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf"
+        - name: host-register.service
+          command: start
+          content: |
+              # this unit keep host registered with dns very TTL defined in /var/lib/apps/skydns/envvars
+              # used as the basic health check of the vm
+              [Unit]
+              Description=Host DNS Register
+              Requires=docker.service
+              After=docker.service
+              
+              [Service]
+              EnvironmentFile=/etc/environment
+              EnvironmentFile=/var/lib/apps/skydns/envvars
+              ExecStart=/var/lib/apps/bin/dns-register %H ${COREOS_PRIVATE_IPV4}
+              ExecStop=/var/lib/apps/bin/dns-delete %H
+              Restart=always
+              RestartSec=5
+        - name: registry.service
+          command: start
+          content: |             
+              [Unit]
+              Description=Docker Image Registry
+              Requires=docker.service
+              After=docker.service
+              
+              [Service]
+              EnvironmentFile=/etc/environment
+              EnvironmentFile=/var/lib/apps/skydns/envvars
+              TimeoutStartSec=300
+              ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:latest || /var/lib/apps/bin/dkload registry-latest.tgz || docker pull registry:latest"
+              ExecStartPre=-/usr/bin/docker rm -f %n
+              ExecStart=/usr/bin/docker run  --rm --name %n -p 80:5000 \
+                      -v /var/lib/apps-data/registry:/data -v /var/lib/apps/registry:/registry-conf \
+                      -e DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml \
+                      -e SETTINGS_FLAVOR=prod registry:latest
+              ExecStartPost=/var/lib/apps/bin/dns-set 'registry' "%H.${LOCAL_DOMAIN}"
+              ExecStopPost=-/var/lib/apps/bin/dns-delete 'registry'
+              RestartSec=5
+              Restart=always
