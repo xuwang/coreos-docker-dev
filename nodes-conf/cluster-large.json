@@ -2,11 +2,11 @@
     "nodes": {
         "n1": {
             "description":      "This is 1st etcd server",
-            "cloud_init":       ["leader.yaml", "files.yaml"],
+            "cloud_init":       ["cluster.yaml", "files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
             "subnet":           "172.17.8",
-            "memory":           2048,
+            "memory":           1024,
             "ports":            [
                                 {"guest": 22,	"host": 2201,	"id": "ssh"     },
                                 {"guest": 443,	"host": 8443,	"id": "https"	},
@@ -19,22 +19,22 @@
         },
         "n2": {
             "description":      "This is 2ed etcd server",
-            "cloud_init":       ["follower.yaml", "files.yaml"],
+            "cloud_init":       ["cluster.yaml", "files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.102",
             "subnet":           "172.17.8",
-            "memory":           1024,
+            "memory":           512,
             "ports":            [
                                 {"guest": 22,   "host": 2202,   "id": "ssh"     }
                                 ]
         },
         "n3": {
             "description":      "This is 3rd etcd server",
-            "cloud_init":       ["follower.yaml", "files.yaml"],
+            "cloud_init":       ["cluster.yaml", "files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.103",
             "subnet":           "172.17.8",
-            "memory":           1024,
+            "memory":           512,
             "ports":            [
                                 {"guest": 22,   "host": 2203,   "id": "ssh"     }
                                 ]
@@ -45,7 +45,7 @@
             "domain":           "docker.local",
             "ip":               "172.17.8.104",
             "subnet":           "172.17.8",
-            "memory":           2048,
+            "memory":           512,
             "ports":            [
                                 {"guest": 22,   "host": 2204,   "id": "ssh"     }
                                 ]
@@ -56,7 +56,7 @@
             "domain":           "docker.local",
             "ip":               "172.17.8.105",
             "subnet":           "172.17.8",
-            "memory":           1024,
+            "memory":           512,
             "ports":            [
                                 {"guest": 22,   "host": 2205,   "id": "ssh"     }
                                 ]
@@ -67,7 +67,7 @@
             "domain":           "docker.local",
             "ip":               "172.17.8.106",
             "subnet":           "172.17.8",
-            "memory":           1024,
+            "memory":           512,
             "ports":            [
                                 {"guest": 22,   "host": 2206,   "id": "ssh"     }
                                 ]
