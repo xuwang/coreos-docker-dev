@@ -1,0 +1,16 @@
+#cloud-config
+
+##
+## This is a etcd cloud-config for singal node
+##
+
+coreos:
+    etcd2:
+        proxy: on
+        initial-cluster: "n1=http://172.17.8.101:2380,n2=http://172.17.8.102:2380,n3=http://172.17.8.103:2380"
+        listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+    fleet:
+        public-ip: $private_ipv4
+        metadata: "platform=m1.small,provider=aws,region=us-west-2,disk=ssd,role=etcd"
+        # see fleet issue https://github.com/coreos/fleet/issues/1106
+        etcd-request-timeout: 15

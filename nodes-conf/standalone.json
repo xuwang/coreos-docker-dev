@@ -3,8 +3,9 @@
         "n1": {
             "description":      "This is 1st node",
             "cloud_init":       [
-                                "standalone.yaml",
-                                "files.yaml"
+                                "01-standalone.yaml",
+                                "02-units.yaml",
+                                "09-files.yaml"
                                 ],
             "domain":           "docker.local",
             "ip":               "172.17.8.101",

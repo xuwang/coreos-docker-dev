@@ -1,19 +1,4 @@
-#cloud-config
-
-##
-## This is a etcd cloud-config for singal node
-##
-
-coreos:
-    etcd2:
-        proxy: on
-        initial-cluster: "n1=http://172.17.8.101:2380,n2=http://172.17.8.102:2380,n3=http://172.17.8.103:2380"
-        listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
-    fleet:
-        public-ip: $private_ipv4
-        metadata: "platform=m1.small,provider=aws,region=us-west-2,disk=ssd,role=etcd"
-        # see fleet issue https://github.com/coreos/fleet/issues/1106
-        etcd-request-timeout: 15
+#coreos:
     units:
         - name: etcd2.service
           command: start
@@ -22,7 +7,7 @@ coreos:
         - name: docker.service
           command: start
           content: |
-              .include /usr/lib/systemd/system/docker.service          
+              .include /usr/lib/systemd/system/docker.service
               [Service]
               # Use our own dns, instead of the host's.
               EnvironmentFile=/var/lib/skydns/envvars
@@ -50,6 +35,8 @@ coreos:
           content: |
               [Unit]
               Description=skydns
+              Requires=etcd2.service
+              After=etcd2.service
               Requires=systemd-resolved.service
               After=systemd-resolved.service
               
@@ -89,3 +76,26 @@ coreos:
               ExecStop=/var/lib/apps/bin/dns-delete %H
               Restart=always
               RestartSec=5
+        - name: registry.service
+          command: start
+          content: |             
+              [Unit]
+              Description=Docker Image Registry
+              Requires=docker.service
+              After=docker.service
+              ConditionHost=n1
+              
+              [Service]
+              EnvironmentFile=/etc/environment
+              EnvironmentFile=/var/lib/apps/skydns/envvars
+              TimeoutStartSec=300
+              ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:latest || /var/lib/apps/bin/dkload registry-latest.tgz || docker pull registry:latest"
+              ExecStartPre=-/usr/bin/docker rm -f %n
+              ExecStart=/usr/bin/docker run  --rm --name %n -p 80:5000 \
+                      -v /var/lib/apps-data/registry:/data -v /var/lib/apps/registry:/registry-conf \
+                      -e DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml \
+                      -e SETTINGS_FLAVOR=prod registry:latest
+              ExecStartPost=/var/lib/apps/bin/dns-set 'registry' "%H.${LOCAL_DOMAIN}"
+              ExecStopPost=-/var/lib/apps/bin/dns-delete 'registry'
+              RestartSec=5
+              Restart=always

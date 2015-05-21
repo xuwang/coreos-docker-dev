@@ -10,9 +10,10 @@ CLOUD_INIT_PATH =  File.join(MY_PATH, "cloud-init")
 
 # Define the vm nodes in json
 NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
-#NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-flannel.json")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster.json")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-large.json")
+#NODES_CONF = File.join(MY_PATH, "nodes-conf", "flannel.json")
+#NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-flannel.json")
 #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-secure-etcd.json")
 
 

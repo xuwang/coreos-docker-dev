@@ -2,7 +2,7 @@
     "nodes": {
         "n1": {
             "description":      "This is 1st etcd server",
-            "cloud_init":       ["cluster.yaml", "files.yaml"],
+            "cloud_init":       ["01-cluster.yaml", "02-units.yaml","09-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
             "subnet":           "172.17.8",
@@ -19,7 +19,7 @@
         },
         "n2": {
             "description":      "This is 2ed etcd server",
-            "cloud_init":       ["cluster.yaml", "files.yaml"],
+            "cloud_init":       ["01-cluster.yaml", "02-units.yaml","09-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.102",
             "subnet":           "172.17.8",
@@ -30,7 +30,7 @@
         },
         "n3": {
             "description":      "This is 3rd etcd server",
-            "cloud_init":       ["cluster.yaml", "files.yaml"],
+            "cloud_init":       ["01-cluster.yaml", "02-units.yaml","09-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.103",
             "subnet":           "172.17.8",
@@ -41,7 +41,7 @@
         },
         "n4": {
             "description":      "This is a worker node",
-            "cloud_init":       ["worker.yaml", "files.yaml"],
+            "cloud_init":       ["01-worker.yaml", "02-units.yaml","09-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.104",
             "subnet":           "172.17.8",
@@ -52,7 +52,7 @@
         },
         "n5": {
             "description":      "This is a worker node",
-            "cloud_init":       ["worker.yaml", "files.yaml"],
+            "cloud_init":       ["01-worker.yaml", "02-units.yaml","09-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.105",
             "subnet":           "172.17.8",
@@ -63,7 +63,7 @@
         },
         "n6": {
             "description":      "This is a worker node",
-            "cloud_init":       ["worker.yaml", "files.yaml"],
+            "cloud_init":       ["01-worker.yaml", "02-units.yaml","09-files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.106",
             "subnet":           "172.17.8",
