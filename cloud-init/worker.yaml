@@ -5,25 +5,18 @@
 ##
 
 coreos:
-    etcd:
-        addr: $private_ipv4:4001
-        peer-addr: $private_ipv4:7001
-        # runing a multi-node cluster with discovery mode:
-        # generate a new token for each unique cluster from https://discovery.etcd.io/new
-        # WARNING: replace each time you 'vagrant destroy'
-        #discovery: https://discovery.etcd.io/<token>
-        peers: "172.17.8.101:7001,172.17.8.102:7001,172.17.8.103:7001"
-        name: "%H"
-        cluster-active-size: 3
+    etcd2:
+        proxy: on
+        initial-cluster: "n1=http://172.17.8.101:2380,n2=http://172.17.8.102:2380,n3=http://172.17.8.103:2380"
+        listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
     fleet:
         public-ip: $private_ipv4
-        etcd_servers: "http://127.0.0.1:4001,http://172.17.8.101:4001,http://172.17.8.102:4001,http://172.17.8.103:4001"
         metadata: "platform=m1.small,provider=aws,region=us-west-2,disk=ssd,role=etcd"
         # see fleet issue https://github.com/coreos/fleet/issues/1106
         etcd-request-timeout: 15
     units:
-        - name: etcd.service
-          mask: true
+        - name: etcd2.service
+          command: start
         - name: fleet.service
           command: start
         - name: docker.service
@@ -95,19 +88,4 @@ coreos:
               ExecStart=/var/lib/apps/bin/dns-register %H ${COREOS_PRIVATE_IPV4}
               ExecStop=/var/lib/apps/bin/dns-delete %H
               Restart=always
-              RestartSec=5    
-        - name: setup-etcdctl-env.service
-          command: start
-          content: |       
-              [Unit]
-              Description=Setup etcdctl env vars
-              Wants=coreos-setup-environment.service
-              After=coreos-setup-environment.service
-              
-              [Service]
-              Type=oneshot
-              RemainAfterExit=true
-              ExecStart=/bin/bash -c "source /etc/profile.d/etcd-envvars.sh; env | grep -E 'ETCD|FLEETCTL' >> /etc/environment"
-              
-              [Install]
-              WantedBy=multi-user.target
+              RestartSec=5

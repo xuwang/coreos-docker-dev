@@ -41,7 +41,7 @@
         },
         "n4": {
             "description":      "This is a worker node",
-            "cloud_init":       ["worker.yaml", "worker-files.yaml"],
+            "cloud_init":       ["worker.yaml", "files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.104",
             "subnet":           "172.17.8",
@@ -52,7 +52,7 @@
         },
         "n5": {
             "description":      "This is a worker node",
-            "cloud_init":       ["worker.yaml", "worker-files.yaml"],
+            "cloud_init":       ["worker.yaml", "files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.105",
             "subnet":           "172.17.8",
@@ -63,7 +63,7 @@
         },
         "n6": {
             "description":      "This is a worker node",
-            "cloud_init":       ["worker.yaml", "worker-files.yaml"],
+            "cloud_init":       ["worker.yaml", "files.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.106",
             "subnet":           "172.17.8",
