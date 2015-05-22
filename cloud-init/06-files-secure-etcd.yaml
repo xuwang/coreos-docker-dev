@@ -1,0 +1,91 @@
+# files for ecure etcd   
+  - path: /etc/profile.d/etcd-envvars.sh
+    permissions: 0644
+    owner: root
+    content: |
+      ##########################################################
+      # Use secure etcd service
+      # these env vars are necessary for tools that talk to etcd
+      # 
+      # make sure this file has the right values and drop it
+      # under the /etc/profile.d
+      
+      # ETCD Client certs
+      #export ETCD_CERTFILE=/var/lib/apps/certs/etcd-client.crt
+      #export ETCD_KEYFILE=/var/lib/apps/certs/etcd-client.key
+      # ETCD_CAFILE is not required if the CA cert is already in system ca roots
+      #export ETCD_CAFILE=/var/lib/apps/certs/rootCA.pem
+      
+      # for etcdctl
+      export ETCDCTL_PEERS=https://127.0.0.1:2379
+      export ETCDCTL_CA_FILE=/var/lib/apps/certs/rootCA.pem
+      export ETCDCTL_CERT_FILE=/var/lib/apps/certs/etcd-client.crt
+      export ETCDCTL_KEY_FILE=/var/lib/apps/certs/etcd-client.key
+      
+      # for fleetctl. Note: FLEETCTL_ENDPOINT only take one url
+      export FLEETCTL_ENDPOINT="https://172.17.8.101:4001"
+      export FLEETCTL_ETCD_CERTFILE=$ETCD_CERT_FILE
+      export FLEETCTL_ETCD_KEYFILE=$ETCD_KEY_FILE
+      export FLEETCTL_ETCD_CA_FILE=$ETCD_CA_FILE
+  - path: /run/systemd/system/etcd2.service.d/30-certificates.conf
+    permissions: 0644
+    content: |
+      [Service]
+      # Server certs
+      Environment=ETCD_CLIENT_CERT_AUTH=true
+      Environment=ETCD_TRUSTED_CA_FILE=/var/lib/apps/certs/rootCA.pem
+      Environment=ETCD_CERT_FILE=/var/lib/apps/certs/etcd.crt
+      Environment=ETCD_KEY_FILE=/var/lib/apps/certs/etcd.key
+      # Peer certs
+      Environment=ETCD_PEER_CLIENT_CERT_AUTH=true
+      Environment=ETCD_PEER_TRUSTED_CA_FILE=/var/lib/apps/certs/rootCA.pem
+      Environment=ETCD_PEER_CERT_FILE=/var/lib/apps/certs/etcd.crt
+      Environment=ETCD_PEER_KEY_FILE=/var/lib/apps/certs/etcd.key
+  - path: /run/systemd/system/skydns.service.d/30-certificates.conf
+    permissions: 0644
+    content: |
+      [Service]
+      # ETCD certs
+      Environment=ETCD_TLSPEM=/var/lib/apps/certs/etcd-client.crt
+      Environment=ETCD_TLSKEY=/var/lib/apps/certs/etcd-client.key
+      Environment=ETCD_CACERT=/var/lib/apps/certs/rootCA.pem
+      # ETCD endpoints
+      Environment="ETCD_MACHINES=https://127.0.0.1:4001"
+  - path: /etc/fleet/fleet.conf
+    permissions: 0644
+    content: |     
+      # This config file is INI-formatted
+      
+      # Lower the logging threshold. Acceptable values are 0, 1, and 2. A higher
+      # value corresponds to a lower logging threshold.
+      # verbosity=0
+      
+      # Provide a custom set of etcd endpoints. The default value is determined
+      # by the underlying go-etcd library.
+      # Note: use https endpoints when etcd TLS auth is enabled
+      etcd_servers=["https://127.0.0.1:4001"]
+      
+      # Amount of time in seconds to allow a single etcd request before considering it failed.
+      # etcd_request_timeout=1.0
+      
+      # Provide TLS configuration when SSL certificate authentication is enabled in etcd endpoints
+      etcd_cafile="/var/lib/apps/certs/rootCA.pem"
+      etcd_keyfile="/var/lib/apps/certs/etcd-client.key"
+      etcd_certfile="/var/lib/apps/certs/etcd-client.crt"
+      
+      # IP address that should be published with any socket information. By default,
+      # no IP address is published.
+      # public_ip=""
+      
+      # Comma-delimited key/value pairs that are published to the fleet registry.
+      # This data can be referenced in unit files to affect scheduling decisions.
+      # An example could look like: metadata="region=us-west,az=us-west-1"
+      # metadata=""
+      
+      # An Agent will be considered dead if it exceeds this amount of time to
+      # communicate with the Registry. The agent will attempt a heartbeat at half
+      # of this value.
+      # agent_ttl="30s"
+      
+      # Interval at which the engine should reconcile the cluster schedule in etcd.
+      # engine_reconcile_interval=2

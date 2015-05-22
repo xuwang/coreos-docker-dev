@@ -1,0 +1,16 @@
+#coreos:
+#    units:
+        - name: setup-etcdctl-env.service
+          command: start
+          content: |       
+              [Unit]
+              # set secure etcd envvars in  /etc/environment
+              # for using secure etcdctl and fleetctl in other units
+              Description=Setup etcdctl env vars
+              Wants=coreos-setup-environment.service
+              After=coreos-setup-environment.service
+              
+              [Service]
+              Type=oneshot
+              RemainAfterExit=true
+              ExecStart=/bin/bash -c "source /etc/profile.d/etcd-envvars.sh; env | grep -E 'ETCD|FLEETCTL' >> /etc/environment"

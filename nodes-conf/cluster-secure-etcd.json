@@ -2,7 +2,8 @@
     "nodes": {
         "n1": {
             "description":      "This is 1st node with etcd TLS auth",
-            "cloud_init":       ["leader.yaml", "files-secure-etcd.yaml"],
+            "cloud_init":       ["01-cluster-secure-etcd.yaml", "02-units.yaml","03-units-secure-etcd.yaml",
+                                "05-files.yaml","06-files-secure-etcd.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
             "subnet":           "172.17.8",
@@ -19,7 +20,8 @@
         },
         "n2": {
             "description":      "This is 2ed node",
-            "cloud_init":       ["follower.yaml", "files-secure-etcd.yaml"],
+            "cloud_init":       ["01-cluster-secure-etcd.yaml", "02-units.yaml","03-units-secure-etcd.yaml",
+                                "05-files.yaml","06-files-secure-etcd.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.102",
             "subnet":           "172.17.8",
@@ -30,7 +32,8 @@
         },
         "n3": {
             "description":      "This is 3rd node",
-            "cloud_init":       ["follower.yaml", "files-secure-etcd.yaml"],
+            "cloud_init":       ["01-cluster-secure-etcd.yaml", "02-units.yaml","03-units-secure-etcd.yaml",
+                                "05-files.yaml","06-files-secure-etcd.yaml"],
             "domain":           "docker.local",
             "ip":               "172.17.8.103",
             "subnet":           "172.17.8",

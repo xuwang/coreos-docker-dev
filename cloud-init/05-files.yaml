@@ -67,5 +67,5 @@ write_files:
         function dkst() { docker inspect --format "{{ .State.Running }}" $1 ; }
         function sdrit() { sudo docker start-i -t $1 bash ; }
         function nsa { sudo nsenter -p -u -m -i -n -t $(docker inspect -f "{{ .State.Pid }}" $1) ; }
-# end of cloud-config files
+# end of files
         
