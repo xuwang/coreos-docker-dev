@@ -10,23 +10,17 @@
       # make sure this file has the right values and drop it
       # under the /etc/profile.d
       
-      # ETCD Client certs
-      #export ETCD_CERTFILE=/var/lib/apps/certs/etcd-client.crt
-      #export ETCD_KEYFILE=/var/lib/apps/certs/etcd-client.key
-      # ETCD_CAFILE is not required if the CA cert is already in system ca roots
-      #export ETCD_CAFILE=/var/lib/apps/certs/rootCA.pem
-      
       # for etcdctl
       export ETCDCTL_PEERS=https://127.0.0.1:2379
-      export ETCDCTL_CA_FILE=/var/lib/apps/certs/rootCA.pem
       export ETCDCTL_CERT_FILE=/var/lib/apps/certs/etcd-client.crt
       export ETCDCTL_KEY_FILE=/var/lib/apps/certs/etcd-client.key
+      export ETCDCTL_CA_FILE=/var/lib/apps/certs/rootCA.pem
       
       # for fleetctl. Note: FLEETCTL_ENDPOINT only take one url
-      export FLEETCTL_ENDPOINT="https://172.17.8.101:4001"
-      export FLEETCTL_ETCD_CERTFILE=$ETCD_CERT_FILE
-      export FLEETCTL_ETCD_KEYFILE=$ETCD_KEY_FILE
-      export FLEETCTL_ETCD_CA_FILE=$ETCD_CA_FILE
+      export FLEETCTL_ENDPOINT=$ETCDCTL_PEERS
+      export FLEETCTL_ETCD_CERTFILE=$ETCDCTL_CERT_FILE
+      export FLEETCTL_ETCD_KEYFILE=$ETCDCTL_KEY_FILE
+      export FLEETCTL_ETCD_CA_FILE=$ETCDCTL_CA_FILE
   - path: /run/systemd/system/etcd2.service.d/30-certificates.conf
     permissions: 0644
     content: |

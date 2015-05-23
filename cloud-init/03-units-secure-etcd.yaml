@@ -13,4 +13,4 @@
               [Service]
               Type=oneshot
               RemainAfterExit=true
-              ExecStart=/bin/bash -c "source /etc/profile.d/etcd-envvars.sh; env | grep -E 'ETCD|FLEETCTL' >> /etc/environment"
+              ExecStart=/bin/bash -c "source /etc/profile.d/etcd-envvars.sh; env | grep -E 'ETCDCTL|FLEETCTL' >> /etc/environment"
