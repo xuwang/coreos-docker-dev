@@ -2,7 +2,7 @@
 
 A docker application/service devevlopment environment on Vagrant/CoreOS with:
 
-* All the goodies come with CoreOS, i.e. ETCD, Fleet, Flannel, Systemd, Journal, OS auto-updates etc.
+* All the goodies come with CoreOS, i.e. Etcd2, Fleet, Flannel, Systemd, Journal, OS auto-updates etc.
 * A [SkyDNS][SkyDNS] service.
 * A [FleetUI](https://github.com/purpleworks/fleet-ui.git) service.
 * Https support for web applicaitons with a wildcard self-signed certificate
