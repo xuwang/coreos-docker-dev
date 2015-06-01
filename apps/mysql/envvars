@@ -1,2 +1,2 @@
-IMAGE=dockerfile/mysql:latest
-OPTS="-p 3360:3360  -v /var/lib/apps-data/mysql:/var/lib/mysql"
+IMAGE=mysql
+OPTS="-p 3306:3306 -e MYSQL_ROOT_PASSWORD=root"
