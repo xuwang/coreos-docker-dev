@@ -2,7 +2,7 @@
 
 # env for nginx
 DOCKER_LOCAL_IMAGE=registry.service:5000/test/nginx:latest
-DOCKER_IMAGE=dockerfile/nginx:latest
+DOCKER_IMAGE=nginx:latest
 
 DOCKER_OPTS="-p 443:443 -p 80:80 \
     -v /var/lib/apps/nginx/sites-enabled:/etc/nginx/sites-enabled \

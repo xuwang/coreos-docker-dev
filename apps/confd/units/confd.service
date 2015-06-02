@@ -6,8 +6,8 @@ Wants=etcd.service
 After=etcd.service
 
 [Service]
-EnvironmentFile=/var/lib/confd/envvars
-ExecStart=/bin/bash -c $CONFD_CMD $CONFD_OPTS
+EnvironmentFile=/var/lib/apps/confd/envvars
+ExecStart=/usr//bin/bash -c "${CONFD_CMD} ${CONFD_OPTS}"
 RestartSec=5
 Restart=always
 

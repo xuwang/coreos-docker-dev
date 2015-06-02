@@ -1,7 +1,7 @@
 # this is a unit env file for nginx, the proxy service
 
 # env for fleet-ui-proxy
-DOCKER_IMAGE=dockerfile/nginx:latest
+DOCKER_IMAGE=nginx:latest
 
 DOCKER_OPTS="-p 8083:8083 \
     -v /var/lib/etc/fleet-ui-proxy/sites-enabled:/etc/nginx/sites-enabled \
