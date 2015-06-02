@@ -1,0 +1,11 @@
+
+MySQL storage:
+
+/var/lib/data/mysql: this is the VM's local file system.
+/var/lib/apps-data: this is a symlink to /home/core/shared/apps-data
+
+This MySQL container mounts the VM's /var/lib/data/mysql to /var/lib/mysql. 
+
+To keep data persistent, /var/lib/data/mysql is backedup to /var/lib/apps-data/mysql
+
+See units/mysql.service file for details.

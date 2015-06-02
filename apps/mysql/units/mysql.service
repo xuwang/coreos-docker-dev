@@ -9,11 +9,15 @@ After=skydns.service
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/apps/mysql/envvars
 TimeoutStartSec=0
-ExecStartPre=/usr/bin/docker pull $IMAGE
+ExecStartPre=/var/lib/apps/bin/dkpull $IMAGE
+# Restore MySQL from NFS to local disk
+ExecStartPre=/bin/bash -c "if [ -d /var/lib/apps-data/mysql ]; then mkdir -p /var/lib/data/mysql && rsync -avz /var/lib/apps-data/mysql/ /var/lib/data/mysql; fi"
 ExecStart=/usr/bin/docker run  --rm --name %n $OPTS $IMAGE
-ExecStop=/usr/bin/docker stop %n
 # Registering the DNS name
 ExecStartPost=/bin/bash -c "/var/lib/apps/bin/dns-set 'mysql' ${COREOS_PRIVATE_IPV4}"
+ExecStop=/usr/bin/docker stop %n
+# Backup to NFS
+ExecStopPost=/bin/bash -c "if [ -d /var/lib/data/mysql ]; then rsync -avz /var/lib/data/mysql/ /var/lib/apps-data/mysql; fi"
 # Clean up
 ExecStopPost=-/var/lib/apps/bin/dns-delete 'mysql'
 RestartSec=5
