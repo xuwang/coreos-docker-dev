@@ -1,5 +1,6 @@
 # env for redis.service
 
-IMAGE='dockerfile/redis:latest'
+IMAGE=redis
 
-OPTS='-v /var/lib/apps-data/redis:/data -p 6379:6379'
+# /var/lib/data/redis is on VM's local disk. Back it up if you destroy the VM.
+OPTS='-v /var/lib/data/redis:/data -p 6379:6379'

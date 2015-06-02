@@ -11,6 +11,7 @@ A docker application/service devevlopment environment on Vagrant/CoreOS with:
     * confd
     * nginx
     * haproxy
+    * mysql
     * redis
     * timer 
     * flannel
@@ -70,16 +71,37 @@ Units are located under share/apps/<service>/units directory. In general, you ca
     cd share/apps/<service>/units
     fleetctl start <name>.service
 
-For example, to start redis server:
+For example, to start mysql server:
 
-    cd share/apps/redis/units
-    fleetctl start redis.service
+    cd share/apps/mysql/units
+    fleetctl start mysql.service
     
 When service is ready, it registers as 'redis.docker.local' in skydns.
 
 To check status of fleet units:
 
     fleetctl list-units
+
+To check service log, for example, mysql:
+
+    journalctl -f -u mysql.service 
+
+Skydns domain name is cluster.local. To check skydns:
+
+    core@n1 ~/share $ els /skydns
+    /skydns/config
+    /skydns/local
+    /skydns/local/docker
+    /skydns/local/docker/dns
+    /skydns/local/docker/dns/ns
+    /skydns/local/docker/dns/ns/xca8538abbd0f48d0a5382b6560294dab
+    /skydns/local/docker/n1
+    /skydns/local/docker/registry
+    /skydns/local/docker/mysql 
+
+You should be able to test mysql:
+
+    ncat mysql 3306
 
 ### Start fleet UI
 

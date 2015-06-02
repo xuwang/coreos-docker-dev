@@ -10,6 +10,10 @@ TimeoutStartSec=0
 ExecStartPre=/usr/bin/docker pull $IMAGE
 ExecStartPre=-/usr/bin/docker rm %n
 ExecStart=/usr/bin/sh -c "/usr/bin/docker run  --rm --name %n $OPTS $IMAGE"
+# Registry with skydns
+ExecStartPost=/bin/bash -c "/var/lib/apps/bin/dns-set 'mysql' ${COREOS_PRIVATE_IPV4}"
 ExecStop=/usr/bin/docker stop %n
+# Deregistry with skydns
+ExecStopPost=-/var/lib/apps/bin/dns-delete 'redis'
 RestartSec=5
 Restart=always
