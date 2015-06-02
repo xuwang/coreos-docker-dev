@@ -1,0 +1,3 @@
+Pulling registry image can take long time. 
+Run "dksave registry" will save registry image tarball as /var/lib/apps-data/images/tarballs/registry.tgz. 
+When Vagrant starts CoreOS, docker pull will use the registry tarball image if it exists. 
