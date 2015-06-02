@@ -28,14 +28,16 @@ Full lists of apps are under [apps](https://github.com/xuwang/coreos-docker-dev/
     git clone https://github.com/xuwang/coreos-docker-dev.git
     cd coreos-docker-dev
 
-_Vagrantfile_ controls the cluster provisioning. The checked out git repo directory is shared as /home/core/share in each note, so you can put persistent data under /home/core/share. You will be asked for your password to enable the NFS sharing from the host.
+_Vagrantfile_ controls the cluster provisioning. The checked out git repo directory is shared as /home/core/share in each node, so you can put persistent data under /home/core/share. 
+You will be asked for your password to enable the NFS sharing from the host.
 
 ### Cluster configuration
 
-Under [nodes-conf](https://github.com/xuwang/coreos-docker-dev/tree/master/nodes-conf) directory, you can find different size of cluster configurations and default service port mappings.  You can modify json files to change the defaults, and in Vagrant configuration, pick the one you will use, for example, the cluster with flannel, with 3 nodes:
+Under [nodes-conf](https://github.com/xuwang/coreos-docker-dev/tree/master/nodes-conf) directory, you can find different size of cluster configurations and default service port mappings.  You can modify json files to change the defaults, and in Vagrant configuration, pick the one you will use. The default is one node cluster. Note you will  need a powerful ldaptop in
+order to run 3 notes cluster-large.json configuration. Memory allocation used by each node can be adjusted in <type>.json file.
 
-    #NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
-    NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-flannel.json")
+    NODES_CONF = File.join(MY_PATH, "nodes-conf", "standalone.json")
+    #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-flannel.json")
     #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster.json")
     #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-large.json")
     #NODES_CONF = File.join(MY_PATH, "nodes-conf", "cluster-secure-etcd.json")
@@ -50,7 +52,6 @@ Skydns service should be started automatically:
 
 ![skydns service status](images/skydns.png "skydns service status")
 
-    
 Networking on your machine might cause it not to start automatically. Try to start manually:
 
     sudo systemctl start skydns.service
@@ -59,6 +60,9 @@ Private registry should also be started automatically, again use the systemctl c
 
     systemctl status registry
 
+To save a copy of the registry so it won't try to pull from dockerhub next reboot:
+
+   dksave registry
  
 The skydns and reigstry are two systemd units configured in the cluster's cloud-init. Once these two services are ready, you can start other services. 
 
@@ -76,13 +80,13 @@ For example, to start mysql server:
     cd share/apps/mysql/units
     fleetctl start mysql.service
     
-When service is ready, it registers as 'redis.docker.local' in skydns.
+When service is ready, it registers as 'mysql.docker.local' in skydns.
 
 To check status of fleet units:
 
     fleetctl list-units
 
-To check service log, for example, mysql:
+To tail a service log, for example, mysql:
 
     journalctl -f -u mysql.service 
 
@@ -117,14 +121,14 @@ And when it is ready:
     core@n2 ~ $ fleetctl list-units
     UNIT			MACHINE				ACTIVE		SUB
     fleet-ui.service	659cd7c2.../172.17.8.102	active		running
-    redis.service		18050ac4.../172.17.8.103	activating	start-pre
+    mysql.service		18050ac4.../172.17.8.103	activating	start-pre
     
 In this example, the fleet service is running on 172.17.8.102. You can point your browser to 172.17.8.102:3000 to visualize what's running on the cluster:
 ![fleet units](images/fleetui.png "fleet units")
 
 ### Clean it up
 
-exit coreos vm node and:
+Exit coreos vm node and:
 
     vagrant destroy
 
