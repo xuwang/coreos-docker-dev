@@ -1,14 +1,39 @@
 #!/usr/bin/bash
-# Written by xuwang@gmail.com
-# The script runs on CoreOS to pretty print a command's JOSON output using toolbox's python -m json.tool command
-# Example: ./ppjson curl -s localhost:2379/v2/members
+# pretty-print commaon etcd API commands
+# Example: ./ppjson members
 
 command="$@"
-if [ "X$command" = "X" ]
-then
- echo "Missing command."
-else
-$command > /home/core/output.$$
-toolbox -q python -m json.tool /media/root/home/core/output.$$
-fi
-rm -rf /home/core/output.$$
+
+# Output directory shared into the toolbox
+outputFile=/home/core/output.$$
+toolboxFile=/media/root/$outputFile
+
+help(){
+    echo "Usage:./ppjson [members|leader|store|version][command with JSON output]"
+    exit 0
+}
+case "$command" in
+    member|members )
+        curl -L -s localhost:2379/v2/members > $outputFile
+        ;;
+    leader|self|store)
+        curl -L -s localhost:2379/v2/stats/$command > $outputFile
+        ;;
+    version)
+        curl -L -s localhost:2379/version
+        echo ""
+        ;;
+   h|help)
+   
+       help
+       ;;
+    *)
+       if [ ! -z $command ];
+       then
+           $command > /home/core/output.$$
+       else
+           help
+       fi
+       ;;
+esac
+[ -f $outputFile ] && toolbox -q python -m json.tool $toolboxFile && rm $outputFile
