@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+# Written by xuwang@gmail.com
+# The script runs on CoreOS to pretty print a command's JOSON output using toolbox's python -m json.tool command
+# Example: ./ppjson curl -s localhost:2379/v2/members
+
+command="$@"
+if [ "X$command" = "X" ]
+then
+ echo "Missing command."
+else
+$command > /home/core/output.$$
+toolbox -q python -m json.tool /media/root/home/core/output.$$
+fi
+rm -rf /home/core/output.$$
