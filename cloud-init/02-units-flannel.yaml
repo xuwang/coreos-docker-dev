@@ -4,46 +4,20 @@
           command: start
         - name: fleet.service
           command: start
-        - name: flannel-install.service
+        - name: flanneld.service
           command: start
-          content: |            
-              [Unit]         
-              Description=Flannel Installer
-              
-              [Service]
-              Type=oneshot
-              RemainAfterExit=true
-              Environment=FLANNEL_RELEASE_URL='https://github.com/coreos/flannel/releases/download/v0.3.0/flannel-0.3.0-linux-amd64.tar.gz'
-              Environment=FLANNEL_VERSION='0.3.0'
-              ExecStart=-/bin/mkdir -p /opt/bin
-              ExecStart=/bin/bash -c "[[ -x /opt/bin/flanneld ]] || \
-                  (cd /tmp; curl -L ${FLANNEL_RELEASE_URL} | tar -xz &&  \
-                  install /tmp/flannel-${FLANNEL_VERSION}/flanneld /opt/bin)"
-        - name: flannel.service
-          command: start
-          content: |            
-              [Unit]
-              Description=Flannel is an etcd backed overlay network for containers
-              Requires=flannel-install.service
-              After=flannel-install.service
-              Requires=etcd2.service
-              After=etcd2.service
-              ConditionFileIsExecutable=/opt/bin/flanneld
-              
-              [Service]
-              ExecStartPre=-/usr/bin/etcdctl mkdir /coreos.com/network
-              ExecStartPre=-/usr/bin/etcdctl mk /coreos.com/network/config '{"Network":"10.10.0.0/16", "SubnetLen": 24,"SubnetMin": "10.10.1.0","SubnetMax": "10.10.99.0"}'
-              ExecStart=/opt/bin/flanneld -iface=$private_ipv4
-              Restart=on-failure
-              TimeoutSec=60
-              RestartSec=10
+          drop-ins:
+            - name: 50-network-config.conf
+              content: |
+                  [Service]
+                  ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{ "Network": "10.1.0.0/16" }'
         - name: docker.service
           command: start
           drop-ins:
             - name: 60-docker-wait-for-flannel-config.conf
               content: |
                   [Unit]
-                  Requires=flannel.service
+                  Requires=flanneld.service
                   After=flannel.service
                   ConditionFileNotEmpty=/run/flannel/subnet.env
                   [Service]
