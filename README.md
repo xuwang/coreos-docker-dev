@@ -23,6 +23,11 @@ Full lists of apps are under [apps](https://github.com/xuwang/coreos-docker-dev/
 * [VirtualBox][virtualbox] 4.3.10 or greater.
 * [Vagrant][vagrant] 1.6 or greater.
 
+Or
+
+* [VirtualBox][virtualbox] 5.0 or greater.
+* [Vagrant][vagrant] 1.7.4 or greater.
+
 ### Clone this project
 
     git clone https://github.com/xuwang/coreos-docker-dev.git
