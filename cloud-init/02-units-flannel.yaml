@@ -10,8 +10,9 @@
             - name: 50-network-config.conf
               content: |
                   [Service]
-                  ExecStartPre=/bin/bash -c "while ! etcdctl cluster-health > /dev/null; do echo waiting etcd2; sleep 2; done"
-                  ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{ "Network": "10.1.0.0/16" }'
+                  ExecStartPre=/bin/bash -c "until etcdctl cluster-health > /dev/null; \
+                      do echo waiting etcd2; sleep 2; done; \
+                      /usr/bin/etcdctl set /coreos.com/network/config '{ \"Network\": \"10.1.0.0/16\" }'"
         - name: docker.service
           command: start
           drop-ins:
