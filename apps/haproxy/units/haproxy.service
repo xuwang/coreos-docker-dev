@@ -1,7 +1,7 @@
 [Unit]
 Description=Haproxy
 Requires=docker.service
-After=dokcer.service
+After=docker.service
 
 [Service]
 EnvironmentFile=/etc/environment
