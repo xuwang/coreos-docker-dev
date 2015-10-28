@@ -5,7 +5,7 @@ After=gitlab-db.service
 
 [Service]
 EnvironmentFile=/etc/environment
-Environment="GITLAB_IMAGE=sameersbn/gitlab:7.8.1"
+Environment="GITLAB_IMAGE=quay.io/sameersbn/gitlab:8.1.2"
 # Note: cannot use NFS folder /var/lib/apps-data/gitlab/data because "chown" will fail on MacOS/vagrant NFS folder
 Environment="GITLAB_DATA=/var/lib/gitlab/data"
 TimeoutStartSec=0
