@@ -26,6 +26,7 @@ REDIS_PORT=6379
 #GITLAB_HOST=gitlab.docker.local
 GITLAB_PORT=8080
 GITLAB_SSH_PORT=10022
+GITLAB_SECRETS_DB_KEY_BASE=4dd4e6639e4e522788fc23d22b3c5a9e83e1e82f
 
 #HOST UID and GID MAPPING
 # Setting to the mac user/group id for voiding vagrant sync nfs data folder permission error.
