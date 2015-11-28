@@ -60,14 +60,12 @@
               RestartSec=5
               EnvironmentFile=/etc/environment
               EnvironmentFile=/var/lib/skydns/envvars
-              ExecStartPre=/bin/bash -c "[[ -x /opt/bin/skydns ]] || \
-                 /bin/mkdir -p /opt/bin && curl -L -o /opt/bin/skydns ${SKYDNS_CMD_REPO} && \
-                 chmod 755 /opt/bin/skydns; echo ok"
+              ExecStartPre=/usr/bin/docker pull skynetservices/skydns
               ExecStartPre=/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}
-              # make sure the skydns confit is set in etcd:
+              # make sure the skydns config is set in etcd:
               # ExecStartPre=/bin/bash -c "etcdctl get /skydns/config"
-              ExecStart=/opt/bin/skydns
-              # with etcd, skydns may not neet to sync with each other anymore:
+              ExecStart=/usr/bin/docker run --net host skynetservices/skydns
+              # with etcd, skydns may not need to sync with each other anymore:
               ExecStartPost=-/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
               ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
               # set the system resolver to use local skydns

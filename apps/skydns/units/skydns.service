@@ -1,7 +1,9 @@
+# Skydns is started from cloud-init. This unit is only needed if you 
+# you want to run it under fleet.
 [Unit]
 Description=skydns
-Requires=skydns-install.service
-After=skydns-install.service
+Requires=etcd2.service
+After=etcd2.service
 Requires=systemd-resolved.service
 After=systemd-resolved.service
 
@@ -11,9 +13,11 @@ Restart=always
 RestartSec=5
 EnvironmentFile=/etc/environment
 EnvironmentFile=/var/lib/skydns/envvars
-# make sure the skydns confit is set in etcd:
+ExecStartPre=/usr/bin/docker pull skynetservices/skydns
+ExecStartPre=/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}
+# make sure the skydns config is set in etcd:
 ExecStartPre=/bin/bash -c "etcdctl get /skydns/config"
-ExecStart=/opt/bin/skydns
+ExecStart=/usr/bin/docker run --net host skynetservices/skydns
 # with etcd, skydns may not neet to sync with each other anymore:
 ExecStartPost=-/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
 ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns
