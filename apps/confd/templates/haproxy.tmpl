@@ -1,23 +1,121 @@
 global
+    log /dev/log  local0
+    log /dev/log  local1 notice
+    pidfile /var/run/haproxy.pid
     maxconn 256
+    tune.ssl.default-dh-param 2048
+    ssl-server-verify none
+    server-state-base /var/lib/haproxy/states
 
 defaults
-    mode http
-    timeout connect 5000ms
-    timeout client 50000ms
-    timeout server 50000ms
+    mode   http
+    balance roundrobin
+    # make sure log-format is on a single line
+    log-format {"type":"haproxy","timestamp":%Ts,"http_status":%ST,"http_request":"%r","remote_addr":"%ci","bytes_read":%B,"upstream_addr":"%si","backend_name":"%b","retries":%rc,"bytes_uploaded":%U,"upstream_response_time":"%Tr","upstream_connect_time":"%Tc","session_duration":"%Tt","termination_state":"%ts"}
+    option log-health-checks
+    option dontlognull
+    option forwardfor
+    option http-keep-alive
+    option redispatch
+    timeout connect 5s
+    timeout client 20s
+    timeout server 20s
+    timeout tunnel 1h
+    timeout queue  30s
+   
+    errorfile 400 /usr/local/etc/haproxy/errors/400.http
+    errorfile 403 /usr/local/etc/haproxy/errors/403.http
+    errorfile 408 /usr/local/etc/haproxy/errors/408.http
+    errorfile 500 /usr/local/etc/haproxy/errors/500.http
+    errorfile 502 /usr/local/etc/haproxy/errors/502.http
+    errorfile 503 /usr/local/etc/haproxy/errors/503.http
+    errorfile 504 /usr/local/etc/haproxy/errors/504.http
+
+    stats enable
+    stats refresh 30s
+    stats show-node
+    stats show-legends
+    stats realm Strictly\ Private
+    stats auth admin:"$ADMIN_PASSWD"
+    stats uri /admin?stats
+    stats realm Haproxy\ Statistics
 
 frontend http-in
     bind *:80
-    default_backend nodeapp
+    http-request set-header X-Forwarded-Port %[dst_port]
+    reqadd X-Forwarded-Proto:\ http
+    log global
+    option httplog
+    option forwardfor
+  
+    {{range $service := ls "/http-services"}}
+    {{$key := printf "/http-services/%s/domain" $service}} {{if exists $key}}
+    acl host_{{$service}} hdr(host) -i {{getv $key}}
+    {{end}}
+    {{$key := printf "/http-services/%s/url_reg" $service}} {{if exists $key}}
+    acl host_{{$service}} url_reg -i {{getv $key}}
+    {{end}}  
+    acl {{$service}}_health path_beg /ping
+    {{end}}
+    {{range $service := ls "/http-services"}}
+    use_backend {{$service}} if host_{{$service}}
+    use_backend {{$service}} if {{$service}}_health
+    {{end}}
 
-backend nodeapp
-    mode http
-    balance roundrobin
-{{ range $server := .confd_prod_service_nodeapp }}
-    server {{ $server.Value }} maxconn 32
-{{ end }}
+frontend https-in
+    bind *:443 ssl crt /etc/ssl/private
+    reqadd X-Forwarded-Proto:\ https
+    option http-server-close
+    log global
+    option httplog
+    option forwardfor
+  
+    {{range $service := ls "/http-services"}}
+    {{$key := printf "/http-services/%s/domain" $service}} {{if exists $key}}
+    acl host_{{$service}} hdr(host) -i {{getv $key}}
+    {{end}}
+    {{$key := printf "/http-services/%s/url_reg" $service}}  {{if exists $key}}
+    acl host_{{$service}} url_reg -i {{getv $key}}
+    {{end}}  
+    acl {{$service}}_health path_beg /ping
+    {{end}}
+    {{range $service := ls "/http-services"}}
+    use_backend {{$service}} if host_{{$service}}
+    use_backend {{$service}} if {{$service}}_health
+    {{end}}
 
-listen admin
-    bind *:8080
-    stats enable
+{{range $service := ls "/http-services"}}
+backend {{$service}}
+    balance leastconn
+    load-server-state-from-file local
+    {{$ssl := printf "/http-services/%s/sslpass" $service}} 
+    {{range $upstream := ls (printf "/http-services/%s/upstreams" $service)}}
+    {{if exists $ssl}}
+    stick-table type binary len 32 size 30k expire 30m
+
+    acl clienthello req_ssl_hello_type 1
+    acl serverhello rep_ssl_hello_type 2
+
+    tcp-request inspect-delay 5s
+    tcp-request content accept if clienthello
+
+    tcp-response content accept if serverhello
+    stick on payload_lv(43,1) if clienthello
+    stick store-response payload_lv(43,1) if serverhello
+    redirect scheme https if !{ ssl_fc }
+    server {{$upstream}} {{printf "/http-services/%s/upstreams/%s" $service $upstream | getv}} check ssl
+    {{else}}
+    redirect scheme https if !{ ssl_fc }
+    server {{$upstream}} {{printf "/http-services/%s/upstreams/%s" $service $upstream | getv}} check
+    {{end}}
+    {{end}}
+{{end}}
+
+{{range $name := ls "/tcp-services"}}
+listen {{$name}}
+    mode tcp
+    bind {{printf "/tcp-services/%s/ports" $name | getv}}
+    {{range $upstream := ls (printf "/tcp-services/%s/upstreams" $name)}}
+    server {{$upstream}} {{printf "/tcp-services/%s/upstreams/%s" $name $upstream | getv}} check
+    {{end}}
+{{end}}

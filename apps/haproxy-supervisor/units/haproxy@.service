@@ -1,0 +1,21 @@
+[Unit]
+Description=Haproxy
+Requires=docker.service
+After=dokcer.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/haproxy/envvars
+# Allow longer timeout to pull the image
+TimeoutStartSec=10min
+ExecStartPre=-/usr/bin/docker rm -f %p-%i.service
+ExecStartPre=/usr/bin/docker pull $IMAGE
+ExecStart=/usr/bin/sh -c "/usr/bin/docker run --rm --name %p-%i.service ${DOCKER_OPTS} $IMAGE"
+ExecStopPost=-/usr/bin/docker rm -f %p-%i.service
+TimeoutStopSec=3
+RestartSec=3
+Restart=always
+
+[X-Fleet]
+X-Conflicts=haproxy@*.service
+Global=true

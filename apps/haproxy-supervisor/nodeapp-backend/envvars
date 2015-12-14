@@ -1,0 +1,2 @@
+IMAGE=xushanf/nodeapp:latest
+HOST_PORT=8000

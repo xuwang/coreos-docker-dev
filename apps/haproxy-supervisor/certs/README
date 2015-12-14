@@ -1,0 +1,2 @@
+# generate crt and then generate like so site.pem
+cat site.crt site.key > site.pem

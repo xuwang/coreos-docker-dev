@@ -1,0 +1,24 @@
+[Unit]
+Description=NodeJS App
+Requires=docker.service
+After=docker.service
+
+[Service]
+Environment="HOME=/home/core"
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/haproxy-supervisor/nodeapp-backend/envvars
+TimeoutStartSec=600
+ExecStartPre=/usr/bin/docker pull $IMAGE
+ExecStartPre=-/usr/bin/docker rm %p-%i.service
+ExecStart=/usr/bin/docker run --rm --name %p-%i.service \
+        --env-file=/etc/environment \
+        -p ${HOST_PORT}:8000 $IMAGE
+ExecStartPost=/var/lib/apps/bin/confd-register -m -t http -d nodeapp.example.com -n %p-%i -u ${COREOS_PRIVATE_IPV4}:${HOST_PORT}
+ExecStop=/usr/bin/docker stop %p-%i.service
+ExecStopPost=/var/lib/apps/bin/confd-register -r -t http -d nodeapp.example.com -n %p-%i
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+X-Conflicts=nodeapp@*.service
+Global=true

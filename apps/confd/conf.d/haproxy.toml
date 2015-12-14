@@ -1,7 +1,14 @@
 [template]
-src 		    = "haproxy.tmpl"
-dest 		    = "/var/lib/apps/haproxy/haproxy.cfg"
-keys 		    = [ "/confd/prod/service/nodeapp" ]
+prefix = "haproxy-discover"
+keys = [
+  "http-services",
+  "tcp-services"
+]
+src    = "haproxy.tmpl"
+dest   = "/var/lib/apps-data/haproxy/haproxy.cfg"
 
-# should have used fleetctl start/stop
-reload_cmd  	= "/usr/bin/docker stop haproxy.service"
+# Check engerated {{.src}}. The check returns 2 because of "no-listeners" even though the format is valid. Grep the Configuration file has no error to get return 0
+check_cmd = "docker run -v /var/lib/apps-data/haproxy/certs:/etc/ssl/private  --rm -v /var/lib/apps-data/haproxy/{{.src}}:/tmp/haproxy.cfg dockerhub.itlab.stanford.edu/core/haproxy  haproxy -f /tmp/haproxy.cfg -c | grep 'Configuration file has no error'"
+
+# Graceful reload haproxy; 
+reload_cmd = "container=$(docker ps | grep -Eo 'haproxy-[[:digit:]].service'); if [ ! -z $container ]; then docker exec supervisorctl restart haproxy; fi"
