@@ -1,10 +1,10 @@
 ## Running HAproxy on CoreOS cluster with confd (etcd backend)
 
-* [Dockerfile](https://github.com/xuwang/coreos-docker-dev/tree/master/apps/haproxy-supervisor/docker)
-* Confd is used to manage upstream server changes
-* Haproxy runs under supervisor. Confd reload haproxy using supervisorctl restart haproxy
-* The restart utilizes itpable to minimize downtime [True Zero Downtime HAProxy Reloads](http://engineeringblog.yelp.com/2015/04/true-zero-downtime-haproxy-reloads.html)
-* Run in Vagrant environment so you can try it out.
+* Here is the [Dockerfile](https://github.com/xuwang/coreos-docker-dev/tree/master/apps/haproxy-supervisor/docker) based from Dockerhub official haproxy. 
+* We use Confd to manage upstream service/server changes
+* Haproxy runs under supervisor. Confd reloads haproxy using _supervisorctl restart haproxy_.
+* The restart script [haproxy-iptable-wrappers.sh](https://github.com/xuwang/coreos-docker-dev/blob/master/apps/haproxy-supervisor/docker/haproxy-iptable-wrapper.sh) utilizes itpable to minimize downtime [True Zero Downtime HAProxy Reloads](http://engineeringblog.yelp.com/2015/04/true-zero-downtime-haproxy-reloads.html).
+* Run on CoreOS environment, but should work in any etcd/sytemd/docker supported environment.
   
 ## Quick start 
 
@@ -126,20 +126,21 @@
 * Edit /etc/hosts
 
   Since we are running a Vagrant CoreOS box, to make it easier to access the server on the host, let's put container IP in /etc/hosts on the host machine.
-
-    $ ping n1.docker.local
-    PING n1.docker.local (172.17.8.101) 56(84) bytes of data.
-    ...
-
+ 
+ ```
+  $ ping n1.docker.local
+  PING n1.docker.local (172.17.8.101) 56(84) bytes of data.
+  ...
+  ```
   On another terminal that's outside of your Vagrant box, edit host's /etc/hosts file so it looks like:
 
-
-    72.17.8.101 haproxy.docker.local
-    172.17.8.101 nodeapp.docker.local
-    172.17.8.101 default.docker.local
+  ```
+  172.17.8.101 haproxy.docker.local
+  172.17.8.101 nodeapp.docker.local
+  172.17.8.101 default.docker.local
+  ```
 
 * Access the server behind HAProxy, head to https://nodeapp.docker.local:8443/
-
 
 * Point your browser to https://haproxy.docker.local:8443/admin?stats. The login name is _admin_, the password is _helloworld_.
 
