@@ -138,6 +138,8 @@
     172.17.8.101 nodeapp.docker.local
     172.17.8.101 default.docker.local
 
+* Access the server behind HAProxy, head to https://nodeapp.docker.local:8443/
+
 
 * Point your browser to https://haproxy.docker.local:8443/admin?stats. The login name is _admin_, the password is _helloworld_.
 
