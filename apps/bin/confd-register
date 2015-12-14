@@ -1,0 +1,81 @@
+#!/bin/bash -e
+#
+# Register with confd for HAproxy conf.
+#
+# Xu Wang <xuwang@gmail.com>
+
+while getopts ":rmsd:u:t:n:" OPTION
+do
+    case $OPTION in
+        r)
+          action="REMOVE"
+          ;;
+        m)
+          action="MODIFY"
+          ;;
+        d)
+          domain="$OPTARG"
+          ;;
+        n)
+          node_name=$OPTARG
+          ;;
+        u)
+          upstream=$OPTARG
+          ;;
+        t)
+          haproxy_mode=$OPTARG
+          ;;
+        s)
+          sslpass=1
+          ;;
+        ?)
+          echo "$0 -r|-m|-s -t <http|tcp> -d <domain> -n <node> -u <IP:port>"
+          exit
+          ;;
+    esac
+done
+echo "number: $#"
+if [ $# -le 6 ];
+then
+  echo "$0 -r|-m|-s -d <domain> -t <http|tcp> -n <node_name> -u <IP:port>"
+  exit 1
+fi
+if ! host $domain 2>&1 > /dev/null; then
+  echo "$domain doesn't exist.".
+  exit 1
+fi
+
+# etcd path
+if [[ "$haproxy_mode" != "tcp" ]] && [[ "$haproxy_mode" != "http" ]];
+then
+  echo "Invalid haproxy mode: $haproxy_mode."
+  exit 1
+else
+  PREFIX=/haproxy-discover/${haproxy_mode}-services
+  if ! etcdctl ls $PREFIX > /dev/null 2>&1; then
+    etcdctl mkdir $PREFIX
+  fi 
+fi
+
+# get service name from domain name
+service=${domain/.*/}
+
+if [ "$action" = "MODIFY" ];
+then
+  if [[ -z $service ]] || [[ -z $node_name ]] || [[ -z $upstream ]];
+  then
+    echo "domain, nodename and upstream cannot be empty"
+    exit 1
+  else
+    etcdctl set $PREFIX/$service/domain $domain
+    [[ $sslpass ]] && etcdctl set $PREFIX/$service/sslpass 1
+    etcdctl set $PREFIX/$service/upstreams/$node_name $upstream
+  fi
+elif [ $action = "REMOVE" ]
+then
+    etcdctl rm $PREFIX/$service/upstreams/$node_name
+    # Test if this is the last node, remove the entire $PREFIX/$service/
+else
+    echo "Unknow action."
+fi
+exit 0
