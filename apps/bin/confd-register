@@ -40,10 +40,10 @@ then
   echo "$0 -r|-m|-s -d <domain> -t <http|tcp> -n <node_name> -u <IP:port>"
   exit 1
 fi
-if ! host $domain 2>&1 > /dev/null; then
-  echo "$domain doesn't exist.".
-  exit 1
-fi
+#if ! host $domain 2>&1 > /dev/null; then
+#  echo "$domain doesn't exist.".
+#  exit 1
+#fi
 
 # etcd path
 if [[ "$haproxy_mode" != "tcp" ]] && [[ "$haproxy_mode" != "http" ]];

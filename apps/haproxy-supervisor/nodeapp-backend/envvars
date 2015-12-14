@@ -1,2 +1,2 @@
-IMAGE=xushanf/nodeapp:latest
+IMAGE=xueshanf/docker-nodeapp:latest
 HOST_PORT=8000
