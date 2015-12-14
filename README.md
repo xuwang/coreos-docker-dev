@@ -11,6 +11,7 @@ A docker application/service devevlopment environment on Vagrant/CoreOS with:
     * confd
     * nginx
     * haproxy
+    * haproxy-supervisor
     * mysql
     * redis
     * timer 
