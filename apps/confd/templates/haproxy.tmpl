@@ -84,7 +84,7 @@ frontend https-in
     use_backend {{$service}}
     use_backend {{$service}} if {{$service}}_health
     {{end}}
-    default_backend default.docker.local
+    default_backend default
 
 {{range $service := ls "/http-services"}}
 backend {{$service}}
