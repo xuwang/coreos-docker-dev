@@ -78,6 +78,7 @@
 
 3. Confd noticied the change and generated haproxy.cfg based on haproxy template (see /var/lib/apps/confd/templates)
 
+    ```
     $  more /var/lib/apps-data/haproxy/haproxy.cfg
     global
         log /dev/log  local0
@@ -116,20 +117,21 @@
     
     backend default
          server nodeapp-1 172.17.8.101:8000 check
+    ```
 
-The generated haproxy.cfg does SSL-termination. For applications that need SSL pass-through, you can set a flag when register the app. See nodeapp unit for details.
+  The generated haproxy.cfg does SSL-termination. For applications that need SSL pass-through, you can set a flag when register the app. See nodeapp unit for details.
 
 ## Test 
 
 * Edit /etc/hosts
 
-Since we are running a Vagrant CoreOS box, to make it easier to access the server on the host, let's put container IP in /etc/hosts on the host machine.
+  Since we are running a Vagrant CoreOS box, to make it easier to access the server on the host, let's put container IP in /etc/hosts on the host machine.
 
     $ ping n1.docker.local
     PING n1.docker.local (172.17.8.101) 56(84) bytes of data.
     ...
 
-On another terminal that's outside of your Vagrant box, edit host's /etc/hosts file so it looks like:
+  On another terminal that's outside of your Vagrant box, edit host's /etc/hosts file so it looks like:
 
 
     72.17.8.101 haproxy.docker.local
