@@ -61,6 +61,7 @@ frontend http-in
     use_backend {{$service}} if host_{{$service}}
     use_backend {{$service}} if {{$service}}_health
     {{end}}
+    default_backend default
 
 frontend https-in
     bind *:443 ssl crt /etc/ssl/private
@@ -80,9 +81,10 @@ frontend https-in
     acl {{$service}}_health path_beg /ping
     {{end}}
     {{range $service := ls "/http-services"}}
-    use_backend {{$service}} if host_{{$service}}
+    use_backend {{$service}}
     use_backend {{$service}} if {{$service}}_health
     {{end}}
+    default_backend default.docker.local
 
 {{range $service := ls "/http-services"}}
 backend {{$service}}

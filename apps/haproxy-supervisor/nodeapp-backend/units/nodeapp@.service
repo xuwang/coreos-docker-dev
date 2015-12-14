@@ -13,9 +13,11 @@ ExecStartPre=-/usr/bin/docker rm %p-%i.service
 ExecStart=/usr/bin/docker run --name %p-%i.service \
         --env-file=/etc/environment \
         -p ${HOST_PORT}:8000 $IMAGE
-ExecStartPost=/var/lib/apps/bin/confd-register -m -t http -d nodeapp.example.com -n %p-%i -u ${COREOS_PRIVATE_IPV4}:${HOST_PORT}
+ExecStartPost=/var/lib/apps/bin/confd-register -m -t http -d nodeapp.docker.local -n %p-%i -u ${COREOS_PRIVATE_IPV4}:${HOST_PORT}
+ExecStartPost=/var/lib/apps/bin/confd-register -m -t http -d default.docker.local -n %p-%i -u ${COREOS_PRIVATE_IPV4}:${HOST_PORT}
 ExecStop=/usr/bin/docker stop %p-%i.service
-ExecStopPost=/var/lib/apps/bin/confd-register -r -t http -d nodeapp.example.com -n %p-%i
+ExecStopPost=/var/lib/apps/bin/confd-register -r -t http -d nodeapp.docker.local -n %p-%i
+ExecStopPost=/var/lib/apps/bin/confd-register -r -t http -d default.docker.local -n %p-%i
 RestartSec=5
 Restart=always
 
