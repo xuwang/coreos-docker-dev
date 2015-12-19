@@ -7,7 +7,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get install -y procp
     && rm -rf /var/lib/apt/lists/*
 
 ADD haproxy-supervisor.conf /etc/supervisor/conf.d/haproxy.conf
-ADD haproxy-iptable-wrapper.sh /usr/local/sbin/haproxy-iptable-wrapper.sh
 ADD haproxy.cfg /etc/haproxy/haproxy.cfg
 ADD entrypoint.sh /usr/local/sbin/entrypoint.sh
 RUN chmod 755 /usr/local/sbin/entrypoint.sh; chmod 755 /usr/local/sbin/haproxy-iptable-wrapper.sh
