@@ -5,8 +5,12 @@ case ${1} in
   start|reload|restart)
     case ${1} in
       start)
-      exec /usr/bin/supervisord -nc /etc/supervisor/supervisord.conf
-      ;;
+          exec /usr/bin/supervisord -nc /etc/supervisor/supervisord.conf
+          ;;
+      restart)
+          # Find haproxy pid, terminate it and supervisor will restart a new one
+          pkill -x haproxy
+          ;;
     esac
     ;;
   help)
