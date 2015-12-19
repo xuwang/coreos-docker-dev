@@ -11,4 +11,4 @@ dest   = "/var/lib/apps-data/haproxy/haproxy.cfg"
 check_cmd = "docker run -v /var/lib/apps-data/haproxy/certs:/etc/ssl/private  --rm -v /var/lib/apps-data/haproxy/{{.src}}:/tmp/haproxy.cfg xuwang/haproxy-supervisor haproxy -f /tmp/haproxy.cfg -c | grep 'Configuration file has no error'"
 
 # Graceful reload haproxy; 
-reload_cmd = "container=$(docker ps | grep -Eo 'haproxy-[[:digit:]].service'); if [ ! -z $container ]; then docker exec $container supervisorctl restart haproxy; fi"
+reload_cmd = "container=$(docker ps | grep -Eo 'haproxy-[[:digit:]].service'); if [ ! -z $container ]; then docker exec $container entrypoing.sh restart; fi"

@@ -9,7 +9,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get install -y procp
 ADD haproxy-supervisor.conf /etc/supervisor/conf.d/haproxy.conf
 ADD haproxy.cfg /etc/haproxy/haproxy.cfg
 ADD entrypoint.sh /usr/local/sbin/entrypoint.sh
-RUN chmod 755 /usr/local/sbin/entrypoint.sh; chmod 755 /usr/local/sbin/haproxy-iptable-wrapper.sh
+RUN chmod 755 /usr/local/sbin/entrypoint.sh
 
 # TODO: container needs to be able to access host etcd port.
 #ADD confd-supervisor.conf /etc/supervisor/conf.d/confd.conf
