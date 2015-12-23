@@ -3,7 +3,7 @@ MAINTAINER Xu Wang <xuwang@gmail.com>
 
 ENV CONFD_VERSION=v0.11.0
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get install -y procps supervisor curl iptables \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get install -y procps supervisor curl iptables socat \
     && rm -rf /var/lib/apt/lists/*
 
 ADD haproxy-supervisor.conf /etc/supervisor/conf.d/haproxy.conf
