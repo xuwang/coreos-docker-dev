@@ -43,7 +43,7 @@
     $ cd /var/lib/apps/haproxy-supervisor/nodeapp-backend/units
     fleetctl start nodeapp@1.service
     $ cd /var/lib/apps/confd/units
-    fleectl start confd@1.service
+    fleetctl start confd@1.service
     $ cd  /var/lib/apps/haproxy-supervisor/units
     fleetctl start haproxy@1.service
     ```
