@@ -1,0 +1,12 @@
+#!/bin/env bash
+
+token=$(curl -s https://gitlab.docker.local:8443/api/v3/session --data 'login=root&password=5iveL!fe' | jq -r '.private_token')
+
+curl -s --header "PRIVATE-TOKEN: $token" \
+    --data-urlencode "email=test@example.com" \
+    --data-urlencode "name=Test Me" \
+    --data-urlencode "username=test" \
+    --data-urlencode "password=test&test" \
+    --data-urlencode "confirm=false" \
+    https://gitlab.docker.local:8443/api/v3/users
+echo ""
