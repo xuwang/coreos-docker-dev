@@ -1,0 +1,15 @@
+[Unit]
+Description=confd
+Wants=etcd2.service
+After=etcd2.service
+
+[Service]
+EnvironmentFile=/var/lib/apps/confd/envvars
+ExecStartPre=/bin/bash -c "[ -x ${CONFD_CMD} ] || (curl -L -o ${CONFD_CMD} ${CONFD_CMD_REPO} && chmod 755 ${CONFD_CMD})"
+ExecStartPre=/bin/bash -c "mkdir -p ${CONFD_DST}"
+ExecStart=/usr//bin/bash -c "${CONFD_CMD} ${CONFD_OPTS}"
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+X-Conflicts=confd@*.service

@@ -3,13 +3,13 @@ MAINTAINER Xu Wang <xuwang@gmail.com>
 
 ENV CONFD_VERSION=v0.11.0
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get install -y procps supervisor curl iptables \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get install -y procps supervisor curl iptables socat \
     && rm -rf /var/lib/apt/lists/*
 
 ADD haproxy-supervisor.conf /etc/supervisor/conf.d/haproxy.conf
-ADD haproxy-iptable-wrapper.sh /usr/local/sbin/haproxy-iptable-wrapper.sh
+ADD haproxy.cfg /etc/haproxy/haproxy.cfg
 ADD entrypoint.sh /usr/local/sbin/entrypoint.sh
-RUN chmod 755 /usr/local/sbin/entrypoint.sh; chmod 755 /usr/local/sbin/haproxy-iptable-wrapper.sh
+RUN chmod 755 /usr/local/sbin/entrypoint.sh
 
 # TODO: container needs to be able to access host etcd port.
 #ADD confd-supervisor.conf /etc/supervisor/conf.d/confd.conf

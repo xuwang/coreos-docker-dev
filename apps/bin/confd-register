@@ -46,15 +46,18 @@ fi
 #fi
 
 # etcd path
+for i in tcp http
+do
+  PREFIX=/haproxy-discover/${i}-services
+  if ! etcdctl ls $PREFIX > /dev/null 2>&1; then
+    etcdctl mkdir $PREFIX
+  fi
+done
+
 if [[ "$haproxy_mode" != "tcp" ]] && [[ "$haproxy_mode" != "http" ]];
 then
   echo "Invalid haproxy mode: $haproxy_mode."
   exit 1
-else
-  PREFIX=/haproxy-discover/${haproxy_mode}-services
-  if ! etcdctl ls $PREFIX > /dev/null 2>&1; then
-    etcdctl mkdir $PREFIX
-  fi 
 fi
 
 # get service name from domain name

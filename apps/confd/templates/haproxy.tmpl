@@ -6,10 +6,13 @@ global
     tune.ssl.default-dh-param 2048
     ssl-server-verify none
     server-state-base /var/lib/haproxy/states
+    stats socket /var/lib/haproxy/states/socket
+    server-state-file /var/lib/haproxy/states/server_state
 
 defaults
     mode   http
     balance roundrobin
+    load-server-state-from-file global
     # make sure log-format is on a single line
     log-format {"type":"haproxy","timestamp":%Ts,"http_status":%ST,"http_request":"%r","remote_addr":"%ci","bytes_read":%B,"upstream_addr":"%si","backend_name":"%b","retries":%rc,"bytes_uploaded":%U,"upstream_response_time":"%Tr","upstream_connect_time":"%Tc","session_duration":"%Tt","termination_state":"%ts"}
     option log-health-checks
@@ -61,6 +64,7 @@ frontend http-in
     use_backend {{$service}} if host_{{$service}}
     use_backend {{$service}} if {{$service}}_health
     {{end}}
+    default_backend default
 
 frontend https-in
     bind *:443 ssl crt /etc/ssl/private
@@ -83,11 +87,11 @@ frontend https-in
     use_backend {{$service}} if host_{{$service}}
     use_backend {{$service}} if {{$service}}_health
     {{end}}
+    default_backend default
 
 {{range $service := ls "/http-services"}}
 backend {{$service}}
     balance leastconn
-    load-server-state-from-file local
     {{$ssl := printf "/http-services/%s/sslpass" $service}} 
     {{range $upstream := ls (printf "/http-services/%s/upstreams" $service)}}
     {{if exists $ssl}}
