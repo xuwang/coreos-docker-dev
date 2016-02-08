@@ -33,3 +33,14 @@ if all gitlab services are up and running, open https://172.17.8.101:8443 and lo
 	username: root
 	password: 5iveL!fe
 
+add a gitlab user.
+
+
+Setup Git
+======================
+Add following lines to $HOME/.ssh/config:
+		Host gitlab.docker.local
+    	IdentityFile ~/.ssh/id_rsa
+    	Port 10022
+
+Add id_rsa.pub to your gitlib user account
