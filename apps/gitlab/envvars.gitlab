@@ -13,8 +13,11 @@ REDIS_HOST=gitlab-redis
 REDIS_PORT=6379
 
 #EMAIL
-#SMTP_USER=dockerage@gmail.com
-#SMTP_PASS=PASSWORD
+SMTP_HOST=smtp.mailgun.org
+GITLAB_EMAIL=admin@mg.dockerage.com
+GITLAB_EMAIL_REPLY_TO=admin@mg.dockerage.com
+SMTP_USER=XXXXXX@mg.dockerage.com
+SMTP_PASS=XXXXXXXX
 
 #SSL
 GITLAB_HTTPS=true
