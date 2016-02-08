@@ -76,8 +76,13 @@ Vagrant.configure("2") do |config|
 				end
 			end
 
-			# enable NFS for sharing the host machine into the coreos-vagrant VM.
+			# enable NFS for sharing the host machine into the coreos-vagrant VM
 			config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp,noatime']
+			# note: many example application containers would require nfs volume to be "no_root_squash"
+			#       e.g. chown on app dir is required.
+			#       on mac os no_root_squash is not supported, instead using -maproot=0:0
+			config.nfs.map_uid = 0
+			config.nfs.map_gid = 0
 			config.vm.provision :shell, \
 				:inline => "ln -sf /home/core/share/apps /var/lib/ && ln -sf /home/core/share/apps-data /var/lib/", \
 				:privileged => true
