@@ -1,17 +1,15 @@
 [Unit]
 Description=gitlab-redis
 Requires=docker.service
+After=docker.service
 
 [Service]
 EnvironmentFile=/etc/environment
-Environment="REDIS_IMAGE=redis:3.0"
-# For testing purpose only. Data inside of Vagrant is not persistent. 
-# # Note: cannot use shared folder /var/lib/apps-data/gitlab/postgresql because "chown" will fail on MacOS/vagrant NFS folder
-Environment="REDIS_DATA=/var/lib/gitlab/redis"
+EnvironmentFile=/var/lib/apps/gitlab/envvars
 TimeoutStartSec=0
 ExecStartPre=/var/lib/apps/bin/dkpull ${REDIS_IMAGE}
 ExecStartPre=-/usr/bin/docker rm %n
-ExecStart=/usr/bin/docker run  --rm --name %n -p 6379:6379 -v ${REDIS_DATA}:/data ${REDIS_IMAGE}
+ExecStart=/usr/bin/sh -c "/usr/bin/docker run --rm --name %n ${DOCKER_REDIS_OPTS} ${REDIS_IMAGE}"
 ExecStartPost=/var/lib/apps/bin/dns-set gitlab-redis "%H.docker.local"
 ExecStop=-/usr/bin/docker stop %n
 ExecStopPost=-/var/lib/apps/bin/dns-delete gitlab-redis

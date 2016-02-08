@@ -1,1 +1,16 @@
 # See https://github.com/sameersbn/docker-gitlab
+DB_IMAGE=sameersbn/postgresql:latest
+DB_DATA=/var/lib/apps-data/gitlab/postgresql
+DOCKER_DB_OPTS=-p 5432:5432 -v ${DB_DATA}:/var/lib/postgresql
+
+REDIS_IMAGE=redis:3.0
+REDIS_DATA=/var/lib/apps-data/gitlab/redis
+DOCKER_REDIS_OPTS=-p 6379:6379 -v ${REDIS_DATA}:/data
+
+GITLAB_IMAGE=quay.io/sameersbn/gitlab:8.4.3
+DOCKER_GITLAB_OPTS="-p 8080:80 -p 8443:443 -p 10022:22 \
+    -v /var/lib/apps-data/gitlab/data:/home/git/data \
+    -v /var/lib/apps/certs/site.crt:/home/git/data/certs/gitlab.crt \
+    -v /var/lib/apps/certs/site.key:/home/git/data/certs/gitlab.key \
+    -v /var/lib/apps/certs/dhparam.pem:/home/git/data/certs/dhparam.pem " 
+
