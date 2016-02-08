@@ -7,7 +7,9 @@ GitLab in a Box
 Before you start
 =================================
 
-Modify *envvars.gitlab* to configure SMTP host, user, password for sending sign-up confirmation email.
+Copy *envvars.smtp.tmpl* to *envvars.smtp* and modify *envvars.smtp* to 
+configure SMTP host, user, password for sending sign-up confirmation email.
+
 Postgres and Redis data are persist in *apps-data/gitlab* directory.
 
 Start GitLab Services
