@@ -50,7 +50,8 @@
               ExecStartPre=/var/lib/apps/bin/set-skydns-config ${SKYDNS_CONFIG}
               # make sure the skydns config is set in etcd:
               # ExecStartPre=/bin/bash -c "etcdctl get /skydns/config"
-              ExecStart=/usr/bin/docker run --net host skynetservices/skydns
+              ExecStartPre=-/usr/bin/docker rm -f %n
+              ExecStart=/usr/bin/docker run --net host --name %n --rm skynetservices/skydns
               # with etcd, skydns may not need to sync with each other anymore:
               ExecStartPost=-/var/lib/apps/bin/dns-set x%m.ns.dns ${COREOS_PRIVATE_IPV4}
               ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.ns.dns

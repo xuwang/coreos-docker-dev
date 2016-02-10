@@ -19,6 +19,7 @@ write_files:
         domain docker.local
         search docker.local
         nameserver 127.0.0.1
+        nameserver 8.8.8.8
   - path: /etc//etc/sysctl.d/overcommit_memory.conf
     permissions: 0644
     owner: root
