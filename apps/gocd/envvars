@@ -1,0 +1,11 @@
+# See https://github.com/gocd/gocd-docker
+GOCD_IMAGE=gocd/gocd-server:16.1.0
+GOCD_OPTS="-p 8153:8153"
+#    -v /var/lib/apps-data/gocd/etc:/etc/go \
+#    -v /var/lib/apps-data/gocd/go-server:/var/lib/go-server \
+#    -v /var/lib/apps-data/gocd/log/go-server:/var/log/go-server"
+
+GOCD_AGENT_IMAGE=gocd/gocd-agent:16.1.0
+GOCD_AGENT_OPTS="-e GO_SERVER=gocd.docker.local"
+#    -v /var/lib/apps-data/gocd/etc:/etc/go \
+#    -v /var/lib/apps-data/gocd/log/go-agent:/var/log/go-agent"

@@ -1,0 +1,18 @@
+GoCD in a Box
+=================================
+
+* [GoCD-Docker](https://github.com/gocd/gocd-docker)
+* [GoCD Documentation](https://www.go.cd/documentation/user/current/)
+
+
+Start GitLab Services
+======================
+    cd units
+    fleetctl start *
+
+check service status and get the gitlab service ip:
+
+    fleetctl list-units
+    ping gocd.docker.local
+
+open http://gocd.docker.local:8153 or http://172.17.8.101:8153

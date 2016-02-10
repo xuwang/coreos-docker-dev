@@ -1,0 +1,17 @@
+[Unit]
+Description=gocd agent
+Requires=gocd.service
+After=gocd.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/gocd/envvars
+TimeoutStartSec=0
+ExecStartPre=/var/lib/apps/bin/dkpull ${GOCD_AGENT_IMAGE}
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStart=/usr/bin/sh -c "/usr/bin/docker run --rm --name %n ${GOCD_AGENT_OPTS} ${GOCD_AGENT_IMAGE}"
+ExecStartPost=/var/lib/apps/bin/dns-set gocd-agent $COREOS_PUBLIC_IPV4
+ExecStop=-/usr/bin/docker stop %n
+ExecStopPost=-/var/lib/apps/bin/dns-delete gocd-agent
+RestartSec=10
+Restart=always
