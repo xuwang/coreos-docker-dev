@@ -20,11 +20,6 @@ fleetctl start gitlab-redis.service
 fleetctl start gitlab-db.service
 fleetctl start gitlab.service	
 ```
-or simply:
-
-```shell
-fleetctl start -no-block *
-```
 
 check service status and get the gitlab service ip:
 
