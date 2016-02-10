@@ -8,7 +8,9 @@ GoCD in a Box
 Start GitLab Services
 ======================
     cd units
-    fleetctl start *
+    fleetctl start gocd.service
+    # wait for http://172.17.8.101:8153 is up
+    fleetctl start gocd-agent.service
 
 check service status and get the gitlab service ip:
 
