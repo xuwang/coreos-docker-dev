@@ -9,12 +9,10 @@ EnvironmentFile=/var/lib/apps/gitlab/envvars
 TimeoutStartSec=0
 ExecStartPre=/var/lib/apps/bin/dkpull ${DB_IMAGE}
 ExecStartPre=-/usr/bin/docker rm %n
-ExecStart=/usr/bin/sh -c "/usr/bin/docker run --rm --name %n --env-file=/var/lib/apps/gitlab/envvars.gitlab ${DOCKER_DB_OPTS} ${DB_IMAGE}"
-ExecStartPost=/var/lib/apps/bin/dns-set gitlab-db "%H.docker.local"
+ExecStart=/usr/bin/sh -c "/usr/bin/docker run --rm --name %n \
+    --env-file=/var/lib/apps/gitlab/envvars.gitlab ${DOCKER_DB_OPTS} ${DB_IMAGE}"
+ExecStartPost=/var/lib/apps/bin/dns-set gitlab-db ${COREOS_PRIVATE_IPV4}
 ExecStop=/usr/bin/docker stop %n
 ExecStopPost=-/var/lib/apps/bin/dns-delete gitlab-db
 RestartSec=10
 Restart=always
-
-#[X-Fleet]
-#MachineOf=gitlab-redis.service

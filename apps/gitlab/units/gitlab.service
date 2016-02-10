@@ -15,6 +15,3 @@ ExecStart=/usr/bin/sh -c "/usr/bin/docker run --rm --name %n \
 ExecStartPost=/var/lib/apps/bin/dns-set gitlab ${COREOS_PRIVATE_IPV4}
 ExecStop=-/usr/bin/docker stop %n
 ExecStopPost=-/var/lib/apps/bin/dns-delete gitlab
-
-[X-Fleet]
-MachineOf=gitlab-db.service
