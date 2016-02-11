@@ -79,3 +79,10 @@ docker exec -it gitlab-runner.service gitlab-runner register
         ruby:2.1
         Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
 ```
+## Setup Slack Integration
+
+### Create and get a slack incoming webhook at:
+    *https://dockerage.slack.com/apps/manage/custom-integrations*
+
+### Setup gitlab slack service for a project:
+    *https://gitlab.docker.local:8443/<user>/<project>/services/slack/edit*
