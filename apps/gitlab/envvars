@@ -20,6 +20,7 @@ RUNNER_IMAGE=gitlab/gitlab-runner:latest
 RUNNER_DATA=/var/lib/apps-data/gitlab/runner
 RUNNER_CONF=/var/lib/apps-data/gitlab/runner-config
 DOCKER_RUNNER_OPTS=-v ${RUNNER_DATA}:/home/gitlab-runner \
+    --privileged=true \
     -v ${RUNNER_CONF}:/etc/gitlab-runner \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /var/lib/apps/certs/rootCA.pem:/etc/gitlab-runner/certs/ca.crt

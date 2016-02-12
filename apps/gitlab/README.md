@@ -59,25 +59,23 @@ fleetctl start gitlab-runner
     Get *registration token* on page:
         https://gitlab.docker.local:8443/admin/runners
 
+for example:
+    Registration token is 9TqrzAmKzHSvggmLYDKo
+
 
 ```shell
-docker exec -it gitlab-runner.service gitlab-runner register
-        Running in system-mode.
+docker exec gitlab-runner.service gitlab-runner register -n \
+  --url https://gitlab.docker.local:8443/ci \
+  --registration-token 9TqrzAmKzHSvggmLYDKo \
+  --executor docker \
+  --description "Dind Runner" \
+  --docker-image "gitlab/dind:latest" \
+  --tag-list "docker,dind" \
+  --docker-wait-for-services-timeout 300 \
+  --docker-privileged
 
-        Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com/ci):
-        https://gitlab.docker.local:8443/ci
-        Please enter the gitlab-ci token for this runner:
-        *registration token*
-        Please enter the gitlab-ci description for this runner:
-        [xxxxxxxxx]: runner-shared
-        Please enter the gitlab-ci tags for this runner (comma separated):
-        shell,ssh,docker,ruby
-        Registering runner... succeeded                     runner=XXXX
-        Please enter the executor: docker, docker-ssh, virtualbox, ssh, shell, parallels:
-        docker
-        Please enter the default Docker image (eg. ruby:2.1):
-        ruby:2.1
-        Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
+Registering runner... succeeded                     runner=9TqrzAmK
+Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
 ```
 ## Setup Slack Integration
 
@@ -86,3 +84,6 @@ docker exec -it gitlab-runner.service gitlab-runner register
 
 ### Setup gitlab slack service for a project:
     *https://gitlab.docker.local:8443/<user>/<project>/services/slack/edit*
+
+### Example .gitlab-ci.yml 
+See *apps/nodeapp/docker/.gitlab-ci.yml*

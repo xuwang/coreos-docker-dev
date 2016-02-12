@@ -1,12 +1,14 @@
 concurrent = 1
 
 [[runners]]
-  name = "runner-01"
+  name = "Dind Runner"
   url = "https://gitlab.docker.local:8443/ci"
-  token = "667c131c919b3b6f653f12e3b2f032"
+  token = "20a6bf832be557b53728918d7dc4f5"
   tls-ca-file = ""
   executor = "docker"
+  environment = ["DOCKER_DAEMON_ARGS=--insecure-registry registry.docker.local"]
   [runners.docker]
-    image = "ruby:2.1"
-    privileged = false
+    image = "gitlab/dind:latest"
+    privileged = true
     volumes = ["/cache"]
+    wait_for_services_timeout=300
