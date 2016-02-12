@@ -16,6 +16,7 @@ DOCKER_GITLAB_OPTS="-p 8080:80 -p 8443:443 -p 10022:22 \
     -v /var/lib/apps/certs/rootCA.pem:/home/git/data/certs/ca.crt \
     -v /var/lib/apps/certs/dhparam.pem:/home/git/data/certs/dhparam.pem " 
 
+# See https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/docker.md
 RUNNER_IMAGE=gitlab/gitlab-runner:latest
 RUNNER_DATA=/var/lib/apps-data/gitlab/runner
 RUNNER_CONF=/var/lib/apps-data/gitlab/runner-config
@@ -24,3 +25,15 @@ DOCKER_RUNNER_OPTS=-v ${RUNNER_DATA}:/home/gitlab-runner \
     -v ${RUNNER_CONF}:/etc/gitlab-runner \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /var/lib/apps/certs/rootCA.pem:/etc/gitlab-runner/certs/ca.crt
+
+# See https://gitlab.com/gitlab-org/gitlab-runner-docker-cleanup
+CLEANER_IMAGE=quay.io/gitlab/gitlab-runner-docker-cleanup
+DOCKER_CLEANER_OPTS= --privileged=true \
+    -v ${RUNNER_CONF}:/etc/gitlab-runner \
+    -v /var/run/docker.sock:/var/run/docker.sock 
+    -e LOW_FREE_SPACE=10G \
+    -e EXPECTED_FREE_SPACE=20G \
+    -e LOW_FREE_FILES_COUNT=1048576 \
+    -e EXPECTED_FREE_FILES_COUNT=2097152 \
+    -e DEFAULT_TTL=5m \
+    -e USE_DF=1

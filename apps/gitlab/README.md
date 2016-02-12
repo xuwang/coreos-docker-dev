@@ -12,6 +12,8 @@ configure SMTP host, user, password for sending sign-up confirmation email.
 
 Postgres and Redis data are persist in *apps-data/gitlab* directory.
 
+*NOTE* running gitlab with ci runner needs a large vbox with large memory, e.g. 4096M
+
 ## Start GitLab Services
 
 ```shell
@@ -53,7 +55,8 @@ Add id_rsa.pub to your gitlib user account on *https://gitlab.docker.local:8443/
 
 ```shell
 cd units
-fleetctl start gitlab-runner
+fleetctl start gitlab-runner.service
+fleetctl start gitlab-cleaner.service
 ```
 ### Register the runner:
     Get *registration token* on page:
@@ -62,6 +65,18 @@ fleetctl start gitlab-runner
 for example:
     Registration token is 9TqrzAmKzHSvggmLYDKo
 
+Using shell executor:
+
+```shell
+$ sudo gitlab-runner register -n \
+  --url https://gitlab.docker.local:8443/ci \
+  --token 9TqrzAmKzHSvggmLYDKo \
+  --executor shell \
+  --description "Shell Runner" \
+  --tag-list "shell"
+```
+
+Or using docker executor:
 
 ```shell
 docker exec gitlab-runner.service gitlab-runner register -n \
