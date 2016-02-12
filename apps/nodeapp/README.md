@@ -10,7 +10,7 @@ Start the cluster and login:
     vagrant up
     vagrant ssh n1
 
-### Build nadeapp image
+### Build nodeapp image
     cd share/apps/nodeapp
     docker build -t <user>/nodeapp docker
     docker push <user>/nodeapp:latest
