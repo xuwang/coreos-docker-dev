@@ -88,7 +88,7 @@
               EnvironmentFile=/etc/environment
               EnvironmentFile=/var/lib/apps/skydns/envvars
               TimeoutStartSec=300
-              ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:2.2.1 || docker pull registry:2.2.1"
+              ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:2.2.1 || /var/lib/apps/bin/dkload registry-2.2.1.tgz || docker pull registry:2.2.1"
               ExecStartPre=-/usr/bin/docker rm -f %n
               ExecStart=/usr/bin/docker run  --rm --name %n -p 443:5000 \
                       -v /var/lib/apps/certs:/certs \

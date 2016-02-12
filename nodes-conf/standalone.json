@@ -10,7 +10,7 @@
             "domain":           "docker.local",
             "ip":               "172.17.8.101",
             "subnet":           "172.17.8",
-            "memory":           2048,
+            "memory":           4096,
             "ports":            [
                                 {"guest": 22,	"host": 2201,	"id": "ssh"     },
                                 {"guest": 443,	"host": 8443,	"id": "https"	},
