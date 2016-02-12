@@ -104,11 +104,14 @@
               TimeoutStartSec=300
               ExecStartPre=/usr/bin/bash -c "/var/lib/apps/bin/is_loaded registry:latest || /var/lib/apps/bin/dkload registry.tgz || docker pull registry:2.2.1 && docker tag -f registry:2.2.1 registry:latest"
               ExecStartPre=-/usr/bin/docker rm -f %n
-              ExecStart=/usr/bin/docker run  --rm --name %n -p 80:5000 \
+              ExecStart=/usr/bin/docker run  --rm --name %n -p 443:5000 \
+                      -v /var/lib/apps/certs:/certs \
+                      -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/site.crt \
+                      -e REGISTRY_HTTP_TLS_KEY=/certs/site.key \
                       -v /var/lib/apps-data/registry:/var/lib/registry \
                       -v /var/lib/apps/registry/config.yml:/etc/docker/registry/config.yml \
-                      registry:latest
-              ExecStartPost=/var/lib/apps/bin/dns-set 'registry' "%H.${LOCAL_DOMAIN}"
+                      registry:2.2.1
+              ExecStartPost=/var/lib/apps/bin/dns-set 'registry' ${COREOS_PRIVATE_IPV4}
               ExecStopPost=-/var/lib/apps/bin/dns-delete 'registry'
               RestartSec=5
               Restart=always
