@@ -65,19 +65,6 @@ fleetctl start gitlab-cleaner.service
 for example:
     Registration token is 9TqrzAmKzHSvggmLYDKo
 
-Using shell executor:
-
-```shell
-$ sudo gitlab-runner register -n \
-  --url https://gitlab.docker.local:8443/ci \
-  --token 9TqrzAmKzHSvggmLYDKo \
-  --executor shell \
-  --description "Shell Runner" \
-  --tag-list "shell"
-```
-
-Or using docker executor:
-
 ```shell
 docker exec gitlab-runner.service gitlab-runner register -n \
   --url https://gitlab.docker.local:8443/ci \
