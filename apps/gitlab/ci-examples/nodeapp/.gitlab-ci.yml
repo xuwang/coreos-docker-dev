@@ -1,21 +1,27 @@
-image: gitlab/dind:latest
-
-before_script:
-  # need to setup private registry's ca.crt for docker push/pull
-  - mkdir -p /etc/docker/certs.d/registry.docker.local/
-  - cp certs/ca.crt /etc/docker/certs.d/registry.docker.local/ca.crt
-  - docker info
+stages:
+  - build
+  - test
+  - deploy
 
 build_image:
   stage: build
+  tags:
+    - shell
   script:
     - docker build -t registry.docker.local/nodeapp:latest .
     - docker push registry.docker.local/nodeapp:latest
-    # testing
-    - docker rmi registry.docker.local/nodeapp:latest
+test_image:
+    stage: build
+    script:
     - docker pull registry.docker.local/nodeapp:latest
-    - docker run -d -p 8000:8000 --name nodeapp registry.docker.local/nodeapp:latest
+    - docker run -d -p 8000:8000 --name nodeapp-test registry.docker.local/nodeapp:latest
     - sleep 5
     - curl -s localhost:8000
-    - docker kill nodeapp
-    - docker rm -f nodeapp
+    - docker kill nodeapp-test
+    - docker rm -f nodeapp-test
+deploy_nodeapp:
+    stage: deploy
+    script:
+        - cd /var/lib/apps/nodeapp/units
+        - fleetctl stop nodeapp@1.service
+        - fleetctl start nodeapp@1.service

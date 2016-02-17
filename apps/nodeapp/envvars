@@ -1,1 +1,2 @@
-IMAGE=xueshanf/nodeapp:latest
+IMAGE=registry.docker.local/nodeapp:latest
+DOCKER_OPTS="-p 8088:8000"

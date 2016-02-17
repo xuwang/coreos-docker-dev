@@ -3,7 +3,6 @@
 * [GitLab Documentation](https://about.gitlab.com/documentation/)
 * [Docker-GitLab](https://github.com/sameersbn/docker-gitlab)
 * [GitLab CI](http://doc.gitlab.com/ce/ci/)
-* [Docker-GitLab-Runner](https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/docker.md)
 
 ## Before you start##
 
@@ -49,18 +48,54 @@ Add following lines to $HOME/.ssh/config on you host machine:
 ```
 Add id_rsa.pub to your gitlib user account on *https://gitlab.docker.local:8443/profile/keys*
 
-## Setup Gitlab CI Runner
 
+## Setup Gitlab CI Runner: Use CoreOS vbox as the runner machine
+See [gitlab-ci-multi-runner](https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/linux-manually.md)
+
+### Install
+```shell
+  sudo wget -O /opt/bin/gitlab-ci-multi-runner \
+    https://gitlab-ci-multi-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-ci-multi-runner-linux-amd64
+  sudo chmod 755 /opt/bin/gitlab-ci-multi-runner
+  sudo useradd --comment 'GitLab Runner' --create-home gitlab-runner --shell /bin/bash -G docker
+  sudo /opt/bin/gitlab-ci-multi-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+```
+
+### Register the Shell Runner
+Get *registration token* on page:
+  https://gitlab.docker.local:8443/admin/runners
+
+for example:
+    Registration token is 9TqrzAmKzHSvggmLYDKo
+
+```shell
+  sudo /opt/bin/gitlab-ci-multi-runner register  -n \
+    --url https://gitlab.docker.local:8443/ci \
+    --registration-token 9TqrzAmKzHSvggmLYDKo \
+    --executor shell \
+    --description "Shell Runner" \
+    --tag-list "shell,ssh"
+
+Registering runner... succeeded                     runner=9TqrzAmK
+Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
+```
+
+### Start Shell Runner
+  sudo /opt/bin/gitlab-ci-multi-runner start
+
+## Setup Gitlab CI Runner: Use Runner-Docker
+See [Docker-GitLab-Runner](https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/docker.md)
+ 
 ### Start the runner unit:
 
 ```shell
 cd units
-fleetctl start gitlab-runner.service
+fleetctl start gitlab-docker-runner.service
 fleetctl start gitlab-cleaner.service
 ```
-### Register the runner:
-    Get *registration token* on page:
-        https://gitlab.docker.local:8443/admin/runners
+### Register  runner:
+Get *registration token* on page:
+  https://gitlab.docker.local:8443/admin/runners
 
 for example:
     Registration token is 9TqrzAmKzHSvggmLYDKo
@@ -79,13 +114,16 @@ docker exec gitlab-runner.service gitlab-runner register -n \
 Registering runner... succeeded                     runner=9TqrzAmK
 Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
 ```
-## Setup Slack Integration
 
-### Create and get a slack incoming webhook at:
+## Example .gitlab-ci.yml 
+See *apps/nodeapp/docker/.gitlab-ci.yml*
+
+# Setup Slack Integration
+
+## Create and get a slack incoming webhook at:
     *https://dockerage.slack.com/apps/manage/custom-integrations*
 
-### Setup gitlab slack service for a project:
     *https://gitlab.docker.local:8443/<user>/<project>/services/slack/edit*
 
-### Example .gitlab-ci.yml 
+## Example .gitlab-ci.yml 
 See *apps/nodeapp/docker/.gitlab-ci.yml*
