@@ -6,7 +6,7 @@ After=systemd-resolved.service
 
 [Service]
 Type=oneshot
-RemainAfterExit=true
+# RemainAfterExit=true
 EnvironmentFile=/var/lib/apps/gitlab/envvars
 ExecStart=-/bin/mkdir -p /opt/bin
 ExecStart=/bin/bash -c "[[ -x /opt/bin/gitlab-ci-multi-runner ]] \

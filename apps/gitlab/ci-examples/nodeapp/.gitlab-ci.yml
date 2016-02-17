@@ -11,7 +11,7 @@ build_image:
     - docker build -t registry.docker.local/nodeapp:latest .
     - docker push registry.docker.local/nodeapp:latest
 test_image:
-    stage: build
+    stage: test
     script:
     - docker pull registry.docker.local/nodeapp:latest
     - docker run -d -p 8000:8000 --name nodeapp-test registry.docker.local/nodeapp:latest
@@ -25,3 +25,5 @@ deploy_nodeapp:
         - cd /var/lib/apps/nodeapp/units
         - fleetctl stop nodeapp@1.service
         - fleetctl start nodeapp@1.service
+        - sleep 10
+        - fleetctl status nodeapp@1.service
