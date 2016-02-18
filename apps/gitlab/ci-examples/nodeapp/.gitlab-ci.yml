@@ -10,6 +10,7 @@ build_image:
   script:
     - docker build -t registry.docker.local/nodeapp:latest .
     - docker push registry.docker.local/nodeapp:latest
+
 test_image:
     stage: test
     script:
@@ -19,11 +20,13 @@ test_image:
     - curl -s localhost:8000
     - docker kill nodeapp-test
     - docker rm -f nodeapp-test
+    
 deploy_nodeapp:
     stage: deploy
     script:
         - cd /var/lib/apps/nodeapp/units
         - fleetctl stop nodeapp@1.service
+        - sleep 10
         - fleetctl start nodeapp@1.service
         - sleep 10
         - fleetctl status nodeapp@1.service
