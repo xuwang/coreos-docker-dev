@@ -1,4 +1,4 @@
-FROM haproxy:1.6.2
+FROM haproxy:1.6.3
 MAINTAINER Xu Wang <xuwang@gmail.com>
 
 ENV CONFD_VERSION=v0.11.0
