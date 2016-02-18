@@ -16,3 +16,6 @@ ExecStop=/usr/bin/docker stop %n
 ExecStopPost=-/var/lib/apps/bin/dns-delete gitlab-db
 RestartSec=10
 Restart=always
+
+[X-Fleet]
+MachineOf=gitlab-redis.service

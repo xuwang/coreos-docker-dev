@@ -10,11 +10,11 @@ Type=oneshot
 EnvironmentFile=/var/lib/apps/gitlab/envvars
 ExecStart=-/bin/mkdir -p /opt/bin
 ExecStart=/bin/bash -c "[[ -x /opt/bin/gitlab-ci-multi-runner ]] \
-    || wget -O /opt/bin/gitlab-ci-multi-runner \
+    || wget -q -O /opt/bin/gitlab-ci-multi-runner \
         https://gitlab-ci-multi-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-ci-multi-runner-linux-amd64 \
     && chmod 755 /opt/bin/gitlab-ci-multi-runner; echo ok"
 ExecStart=-/bin/bash -c "getent passwd gitlab-runner; \
-    if [ $? -eq 0 ]; then \
+    if [ $? -ne 0 ]; then \
     /sbin/useradd --comment 'GitLab Runner' --create-home gitlab-runner --shell /bin/bash -G docker; fi"
 ExecStart=-/opt/bin/gitlab-ci-multi-runner register  -n \
   --url https://gitlab.docker.local:8443/ci \
