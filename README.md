@@ -9,6 +9,7 @@ A docker application/service devevlopment environment on Vagrant/CoreOS with:
 * Fleet units for applications/services:
     * private docker registry with https basic-auth
     * confd
+    * gitlab with ci
     * nginx
     * haproxy
     * haproxy-supervisor
