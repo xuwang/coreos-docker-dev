@@ -1,6 +1,8 @@
 stages:
   - build
+  - cleanup_build
   - test
+  - cleanup_test
   - deploy
 
 build_image:
@@ -10,23 +12,47 @@ build_image:
   script:
     - docker build -t registry.docker.local/nodeapp:latest .
     - docker push registry.docker.local/nodeapp:latest
-
+    
+cleanup_build_job:
+  stage: cleanup_build
+  tags:
+    - shell
+  script:
+    - docker rmi registry.docker.local/nodeapp:latest
+  # the iamge night not be build or
+  # it might be still in use by prod container if they share the same host.
+  allow_failure: true
+  when: always
+    
 test_image:
-    stage: test
-    script:
+  stage: test
+  tags:
+    - shell
+  script:
     - docker pull registry.docker.local/nodeapp:latest
     - docker run -d -p 8000:8000 --name nodeapp-test registry.docker.local/nodeapp:latest
     - sleep 5
     - curl -s localhost:8000
+    
+cleanup_test_job:
+  stage: cleanup_test
+  tags:
+    - shell
+  script:
     - docker kill nodeapp-test
     - docker rm -f nodeapp-test
+  allow_failure: true
+  when: always
+    
     
 deploy_nodeapp:
-    stage: deploy
-    script:
-        - cd /var/lib/apps/nodeapp/units
-        - fleetctl stop nodeapp@1.service
-        - sleep 10
-        - fleetctl start nodeapp@1.service
-        - sleep 10
-        - fleetctl status nodeapp@1.service
+  stage: deploy
+  tags:
+    - shell
+  script:
+    - cd /var/lib/apps/nodeapp/units
+    - fleetctl stop nodeapp@1.service
+    - sleep 10
+    - fleetctl start nodeapp@1.service
+    - sleep 10
+    - fleetctl status nodeapp@1.service
