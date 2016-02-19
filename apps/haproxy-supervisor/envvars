@@ -1,7 +1,7 @@
 HAPROXY_CFG=/var/lib/apps-data/haproxy
 IMAGE=xuwang/haproxy-supervisor
 DOCKER_OPTS=-p 8080:80 -p 8443:443 \
-        --env ADMIN_PASSWD=helloworld \
+        --env ADMIN_PASSWD=admin \
         -v /var/lib/apps-data/haproxy/certs:/etc/ssl/private \
         -v ${HAPROXY_CFG}:/etc/haproxy:ro \
         -v /var/lib/apps-data/haproxy/log:/var/log/supervisor \

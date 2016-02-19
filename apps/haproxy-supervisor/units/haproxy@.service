@@ -2,6 +2,7 @@
 Description=Haproxy
 Requires=docker.service
 After=dokcer.service
+After=confd@%i.service
 
 [Service]
 EnvironmentFile=/etc/environment
@@ -13,7 +14,7 @@ ExecStartPre=/usr/bin/docker pull $IMAGE
 ExecStartPre=/usr/bin/sh -c "mkdir -p /var/lib/apps-data/haproxy/certs; \
         cat /var/lib/apps/certs/site.crt /var/lib/apps/certs/site.key \
         > /var/lib/apps-data/haproxy/certs/site.pem"
-ExecStart=/usr/bin/sh -c "/usr/bin/docker run --rm --name %p-%i.service ${DOCKER_OPTS} $IMAGE"
+ExecStart=/usr/bin/sh -c "/usr/bin/docker run --rm -h %p-%i-${COREOS_PRIVATE_IPV4} --name %p-%i.service ${DOCKER_OPTS} $IMAGE"
 ExecStartPost=/var/lib/apps/bin/dns-set x%m.${APP_NAME} ${COREOS_PRIVATE_IPV4}
 ExecStop=-/usr/bin/docker stop %n
 ExecStopPost=-/var/lib/apps/bin/dns-delete x%m.${APP_NAME}
@@ -23,4 +24,5 @@ RestartSec=10
 Restart=always
 
 [X-Fleet]
-X-Conflicts=haproxy@*.service
+Conflicts=haproxy@*.service
+MachineOf=confd@%i.service
