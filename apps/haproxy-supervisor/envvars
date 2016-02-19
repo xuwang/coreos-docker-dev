@@ -4,7 +4,7 @@ DOCKER_OPTS=-p 8080:80 -p 8443:443 \
         --env ADMIN_PASSWD=helloworld \
         -v /var/lib/apps-data/haproxy/certs:/etc/ssl/private \
         -v ${HAPROXY_CFG}:/etc/haproxy:ro \
-        -v /var/lib/apps-data/haproxy/log:/dev/log \
+        -v /var/lib/apps-data/haproxy/log:/var/log/supervisor \
         -v /var/lib/apps-data/haproxy/states:/var/lib/haproxy/states
 APP_NAME=nodeapp
 
