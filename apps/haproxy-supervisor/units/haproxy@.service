@@ -10,6 +10,9 @@ EnvironmentFile=/var/lib/apps/haproxy-supervisor/envvars
 TimeoutStartSec=10min
 ExecStartPre=-/usr/bin/docker rm -f %p-%i.service
 ExecStartPre=/usr/bin/docker pull $IMAGE
+ExecStartPre=/usr/bin/sh -c "mkdir -p /var/lib/apps-data/haproxy/certs; \
+        cat /var/lib/apps/certs/site.crt /var/lib/apps/certs/site.key \
+        > /var/lib/apps-data/haproxy/certs/site.pem"
 ExecStart=/usr/bin/sh -c "/usr/bin/docker run --rm --name %p-%i.service ${DOCKER_OPTS} $IMAGE"
 ExecStartPost=/var/lib/apps/bin/dns-set x%m.${APP_NAME} ${COREOS_PRIVATE_IPV4}
 ExecStop=-/usr/bin/docker stop %n
