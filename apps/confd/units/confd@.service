@@ -13,4 +13,4 @@ RestartSec=5
 Restart=always
 
 [X-Fleet]
-X-Conflicts=confd@*.service
+Conflicts=confd@*.service
