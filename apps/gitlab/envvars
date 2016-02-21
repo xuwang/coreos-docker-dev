@@ -14,7 +14,12 @@ DOCKER_GITLAB_OPTS="-p 8080:80 -p 8443:443 -p 10022:22 \
     -v /var/lib/apps/certs/site.crt:/home/git/data/certs/gitlab.crt \
     -v /var/lib/apps/certs/site.key:/home/git/data/certs/gitlab.key \
     -v /var/lib/apps/certs/rootCA.pem:/home/git/data/certs/ca.crt \
-    -v /var/lib/apps/certs/dhparam.pem:/home/git/data/certs/dhparam.pem " 
+    -v /var/lib/apps/certs/dhparam.pem:/home/git/data/certs/dhparam.pem \
+    --env-file=/var/lib/apps/gitlab/envvars.smtp \
+    --env-file=/var/lib/apps/gitlab/envvars.gitlab" 
+		
+# If using s3fs as backing, add volume mapping:
+#   -v /var/lib/apps/envvars.s3fs:/etc/supervisor/conf.d/s3fs.conf \
 
 # For runner registration, see gitlab-ci-runner-installer.service. 
 # Is there a way to get this token from API??

@@ -1,0 +1,29 @@
+; The below sample program section shows all possible program subsection values,
+; create one or more 'real' program: sections to be able to control them under
+; supervisor.
+
+[program:s3fs]
+# s3 credentials
+environment=AWSACCESSKEYID=$AWSACCESSKEYID,AWSSECRETACCESSKEY=$AWSSECRETACCESSKEY,S3_BUCKETNAME=$S3_BUCKETNAME
+command=/usr/bin/s3fs $S3_BUCKETNAME ${HOME} -o use_cache=/tmp -o allow_other -o umask=0002 -o use_rrs -f
+autostart=true                 ; start at supervisord start (default: true)
+autorestart=true       				 ; whether/when to restart (default: unexpected)
+;startsecs=1                   ; number of secs prog must stay running (def. 1)
+;startretries=3                ; max # of serial start failures (default 3)
+exitcodes=0,2                  ; 'expected' exit codes for process (default 0,2)
+;stopsignal=QUIT               ; signal used to kill process (default TERM)
+;stopwaitsecs=10               ; max num secs to wait b4 SIGKILL (default 10)
+;stopasgroup=false             ; send stop signal to the UNIX process group (default false)
+;killasgroup=false             ; SIGKILL the UNIX process group (def false)
+user=root                      ; setuid to this UNIX account to run the program
+;redirect_stderr=true          ; redirect proc stderr to stdout (default false)
+;stdout_logfile=${GITLAB_LOG_DIR}/supervisor/%(program_name)s.log      ; stdout log path, NONE for none; default AUTO
+;stdout_logfile_maxbytes=1MB   ; max # logfile bytes b4 rotation (default 50MB)
+;stdout_logfile_backups=10     ; # of stdout logfile backups (default 10)
+;stdout_capture_maxbytes=1MB   ; number of bytes in 'capturemode' (default 0)
+;stdout_events_enabled=false   ; emit events on stdout writes (default false)
+;stderr_logfile=${GITLAB_LOG_DIR}/supervisor/%(program_name)s.log       ; stderr log path, NONE for none; default AUTO
+;stderr_logfile_maxbytes=1MB   ; max # logfile bytes b4 rotation (default 50MB)
+;stderr_logfile_backups=10     ; # of stderr logfile backups (default 10)
+;stderr_capture_maxbytes=1MB   ; number of bytes in 'capturemode' (default 0)
+;stderr_events_enabled=false   ; emit events on stderr writes (default false)
