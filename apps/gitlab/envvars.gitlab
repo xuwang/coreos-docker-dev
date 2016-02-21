@@ -16,9 +16,9 @@ REDIS_PORT=6379
 GITLAB_HTTPS=true
 GITLAB_HTTPS_ONLY=true
 SSL_SELF_SIGNED=true
-SSL_CERTIFCATE_PATH=/home/git/certs/gitlab.crt
+SSL_CERTIFICATE_PATH=/home/git/certs/gitlab.crt
 SSL_KEY_PATH=/home/git/certs/gitlab.key
-SSL_CA_CERTIFCATES_PATH=/home/git/certs/ca.crt
+SSL_CA_CERTIFICATES_PATH=/home/git/certs/ca.crt
 SSL_DHPARAM_PATH=/home/git/certs/dhparam.pem
 
 #External URL/SSH links, don't impact internal server ports.
