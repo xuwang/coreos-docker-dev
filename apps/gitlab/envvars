@@ -18,8 +18,9 @@ DOCKER_GITLAB_OPTS="-p 8080:80 -p 8443:443 -p 10022:22 \
     --env-file=/var/lib/apps/gitlab/envvars.smtp \
     --env-file=/var/lib/apps/gitlab/envvars.gitlab" 
 		
-# If using s3fs as backing, add volume mapping:
-#   -v /var/lib/apps/envvars.s3fs:/etc/supervisor/conf.d/s3fs.conf \
+# If using s3fs as backing, build and use the gitlab-s3fs image from docker dir;
+# and remove volume /home/git/data mapping and add following volume mapping:
+#   -v /var/lib/apps/gitlab/envvars.s3fs:/etc/supervisor/conf.d/s3fs.conf \
 
 # For runner registration, see gitlab-ci-runner-installer.service. 
 # Is there a way to get this token from API??
