@@ -28,3 +28,9 @@ GITLAB_PORT=8443
 GITLAB_SSH_PORT=10022
 
 GITLAB_SECRETS_DB_KEY_BASE=4dd4e6639e4e522788fc23d22b3c5a9e83e1e82f
+
+
+# Use s3fs backing
+GITLAB_REPOS_DIR=/home/git/s3fs/repositories
+GITLAB_BUILDS_DIR=/home/git/s3fs/builds
+#GITLAB_BACKUP_DIR=/home/git/s3fs/backups

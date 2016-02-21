@@ -1,7 +1,7 @@
 [program:s3fs]
 # s3 credentials and s3 bucket "s3fs-gitlab-bucket" is pre-created
 environment=AWSACCESSKEYID=%(ENV_AWSACCESSKEYID)s,AWSSECRETACCESSKEY=%(ENV_AWSSECRETACCESSKEY)s
-command=/usr/bin/s3fs s3fs-gitlab-bucket /home/git/data -o use_cache=/tmp -o allow_other -o umask=0002 -o nonempty -o use_rrs -f
+command=/usr/bin/s3fs s3fs-gitlab-bucket /home/git/s3fs -o use_cache=/tmp -o allow_other -o umask=0002 -o nonempty -o use_rrs -f
 priority=5										; start before others try to use /home/git/data
 autostart=true								; start at supervisord start (default: true)
 autorestart=true							; whether/when to restart (default: unexpected)
