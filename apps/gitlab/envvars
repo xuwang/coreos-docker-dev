@@ -7,14 +7,22 @@ REDIS_IMAGE=redis:3.0
 REDIS_DATA=/var/lib/apps-data/gitlab/redis
 DOCKER_REDIS_OPTS=-p 6379:6379 -v ${REDIS_DATA}:/data
 
-#GITLAB_IMAGE=quay.io/sameersbn/gitlab:8.4.3
-GITLAB_IMAGE=sameersbn/gitlab:8.4.3
+#GITLAB_IMAGE=quay.io/sameersbn/gitlab:8.4.4
+GITLAB_IMAGE=sameersbn/gitlab:8.4.4
 DOCKER_GITLAB_OPTS="-p 8080:80 -p 8443:443 -p 10022:22 \
     -v /var/lib/apps-data/gitlab/data:/home/git/data \
     -v /var/lib/apps/certs/site.crt:/home/git/data/certs/gitlab.crt \
     -v /var/lib/apps/certs/site.key:/home/git/data/certs/gitlab.key \
     -v /var/lib/apps/certs/rootCA.pem:/home/git/data/certs/ca.crt \
-    -v /var/lib/apps/certs/dhparam.pem:/home/git/data/certs/dhparam.pem " 
+    -v /var/lib/apps/certs/dhparam.pem:/home/git/data/certs/dhparam.pem \
+    --env-file=/var/lib/apps/gitlab/envvars.smtp \
+    --env-file=/var/lib/apps/gitlab/envvars.gitlab" 
+		
+# If using s3fs as backend, super slooooooooooooooow
+# build and use the gitlab-s3fs image from docker dir;
+# and remove volume /home/git/data mapping and add following run options:
+#   -v /var/lib/apps/gitlab/supervisor.s3fs:/etc/supervisor/conf.d/s3fs.conf \
+#   -cap-add mknod --cap-add sys_admin --device /dev/fuse \
 
 # For runner registration, see gitlab-ci-runner-installer.service. 
 # Is there a way to get this token from API??

@@ -16,6 +16,10 @@ REDIS_PORT=6379
 GITLAB_HTTPS=true
 GITLAB_HTTPS_ONLY=true
 SSL_SELF_SIGNED=true
+#SSL_CERTIFICATE_PATH=/home/git/data/certs/gitlab.crt
+#SSL_KEY_PATH=/home/git/data/certs/gitlab.key
+#SSL_CA_CERTIFICATES_PATH=/home/git/data/certs/ca.crt
+#SSL_DHPARAM_PATH=/home/git/data/certs/dhparam.pem
 
 #External URL/SSH links, don't impact internal server ports.
 GITLAB_HOST=gitlab.docker.local
@@ -24,3 +28,12 @@ GITLAB_PORT=8443
 GITLAB_SSH_PORT=10022
 
 GITLAB_SECRETS_DB_KEY_BASE=4dd4e6639e4e522788fc23d22b3c5a9e83e1e82f
+
+
+# Use s3fs backing, slooooooooooooooow
+#GITLAB_REPOS_DIR=/home/git/s3fs/data/repositories
+#GITLAB_BUILDS_DIR=/home/git/s3fs/data/builds
+#GITLAB_BACKUP_DIR=/home/git/s3fs/data/backup
+#GITLAB_SHARED_DIR=/home/git/s3fs/data/shared
+#GITLAB_ARTIFACTS_DIR=/home/git/s3fs/data/shared/artifacts
+#GITLAB_LFS_OBJECTS_DIR=/home/git/s3fs/data/shared/lfs-objects

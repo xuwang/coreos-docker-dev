@@ -22,4 +22,4 @@ RestartSec=5
 Restart=always
 
 [X-Fleet]
-X-Conflicts=nodeapp@*.service
+Conflicts=nodeapp@*.service
