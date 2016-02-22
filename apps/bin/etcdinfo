@@ -1,0 +1,31 @@
+#!/usr/bin/bash
+
+command="$@"
+
+help(){
+    echo "Usage: etcdinfo [members|leader|store|version][command with JSON output]"
+    exit 0
+}
+case "$command" in
+    member|members )
+        curl -L -s localhost:2379/v2/members | jq '[.]' 
+        ;;
+    leader|self|store)
+        curl -L -s localhost:2379/v2/stats/$command | jq '[.]'
+        ;;
+    version)
+        curl -L -s localhost:2379/version
+        echo ""
+        ;;
+   h|help)
+       help
+       ;;
+    *)
+       if [ ! -z $command ];
+       then
+           $command | jq '[.]'
+       else
+           help
+       fi
+       ;;
+esac
