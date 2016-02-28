@@ -22,7 +22,7 @@ UPDATE_CHANNE = "beta"
 
 Vagrant.configure("2") do |config|
 	config.vm.box = "coreos-%s" % UPDATE_CHANNE
-	config.vm.box_version = ">= 877.1.0"
+	config.vm.box_version = ">= 899.8.0"
 	config.vm.box_url = "http://%s.release.core-os.net/amd64-usr/current/coreos_production_vagrant.json" % UPDATE_CHANNE
 
 	# To enable ssh agent fowarding and
