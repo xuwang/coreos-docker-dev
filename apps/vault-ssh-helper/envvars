@@ -1,0 +1,6 @@
+# env file for vault installer
+        
+SSH_HELP_CMD=/opt/bin/vault-ssh-helper
+SSH_HELPER_REPO=https://releases.hashicorp.com/vault-ssh-helper/0.1.1/vault-ssh-helper_0.1.1_linux_amd64.zip
+SSH_HELPER_CONF=/var/lib/apps/vault-ssh-helper/ssh-helper.hcl
+PAM_SSHD_CONF=/var/lib/apps/vault-ssh-helper/pam-sshd

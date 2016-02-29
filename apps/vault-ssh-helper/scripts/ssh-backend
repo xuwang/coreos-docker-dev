@@ -1,0 +1,4 @@
+vault write ssh/roles/core \
+    key_type=otp \
+    default_user=core \
+    cidr_list=172.17.8.0/24

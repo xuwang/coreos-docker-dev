@@ -1,0 +1,13 @@
+[Unit]
+Description=vault
+Wants=install-vault.service
+After=install-vault.service
+
+[Service]
+EnvironmentFile=/var/lib/apps/vault/envvars
+ExecStart=/bin/bash -c "${VAULT_CMD} server ${VAULT_OPTS}"
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+Conflicts=vault@*.service

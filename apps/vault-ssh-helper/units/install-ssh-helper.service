@@ -1,0 +1,17 @@
+[Unit]
+Description=Install Vault SSH helper
+Wants=install-vault.service
+After=install-vault.service
+
+[Service]
+EnvironmentFile=/var/lib/apps/vault-ssh-helper/envvars
+ExecStartPre=/bin/bash -c "[ -x ${SSH_HELPER_CMD} ] || \
+  (cd /tmp; mkdir -p $(dirname ${SSH_HELPER_CMD}) && curl -s -L -O ${SSH_HELPER_REPO} && \
+   unzip -o $(basename ${SSH_HELPER_CMD_REPO}) -d $(dirname ${SSH_HELPER_CMD}) && \
+   chmod 755 ${SSH_HELPER_CMD} && rm $(basename ${SSH_HELP_CMD_REPO}))"
+ExecStart=/bin/bash -c "mkdir -p /etc/vault-ssh-helper.d/ && \
+    cp ${SSH_HELPER_CONF} /etc/vault-ssh-helper.d && \
+    cp ${PAM_SSHD_CONF} /etc/pam.d/sshd"
+
+[X-fleet]
+Global=true

@@ -1,0 +1,6 @@
+# env file for vault installer
+        
+VAULT_HOME=/var/lib/apps/vault
+VAULT_CMD=/opt/bin/vault
+VAULT_CMD_REPO=https://releases.hashicorp.com/vault/0.5.1/vault_0.5.1_linux_amd64.zip
+VAULT_OPTS= -config /var/lib/apps/vault/vault.hcl

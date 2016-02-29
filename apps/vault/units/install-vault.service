@@ -1,0 +1,14 @@
+[Unit]
+Description=Install Vault
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+EnvironmentFile=/var/lib/apps/vault/envvars
+ExecStart=/bin/bash -c "[ -x ${VAULT_CMD} ] || \
+  (cd /tmp; mkdir -p $(dirname ${VAULT_CMD}) && curl -s -L -O ${VAULT_CMD_REPO} && \
+   unzip -o $(basename ${VAULT_CMD_REPO}) -d $(dirname ${VAULT_CMD}) && \
+   chmod 755 ${VAULT_CMD} && rm $(basename ${VAULT_CMD_REPO}))"
+
+[X-Fleet]
+Global=true
