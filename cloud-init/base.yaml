@@ -63,6 +63,7 @@ write_files:
         alias flm="f list-machines"
         alias flu="f list-units"
         alias fsh="f ssh"
+        alias v="vault"
         function dkip() { docker inspect --format "{{ .NetworkSettings.IPAddress }}" $1 ; }
         function dkid() { docker inspect --format "{{ .ID }}" $1 ; }
         function dkim() { docker inspect --format "{{ .Image }}" $1 ; }
