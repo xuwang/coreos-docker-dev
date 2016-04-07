@@ -23,3 +23,5 @@ ExecStart=-/opt/bin/gitlab-ci-multi-runner register  -n \
   --description "Shell Runner" \
   --tag-list "shell,ssh"
 ExecStart=-/opt/bin/gitlab-ci-multi-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+ExecStart=-/opt/bin/gitlab-ci-multi-runner start
+ExecStart=-/opt/bin/gitlab-ci-multi-runner status
