@@ -7,8 +7,8 @@ REDIS_IMAGE=redis:3.0
 REDIS_DATA=/var/lib/apps-data/gitlab/redis
 DOCKER_REDIS_OPTS=-p 6379:6379 -v ${REDIS_DATA}:/data
 
-#GITLAB_IMAGE=quay.io/sameersbn/gitlab:8.4.4
-GITLAB_IMAGE=sameersbn/gitlab:8.4.4
+#GITLAB_IMAGE=quay.io/sameersbn/gitlab:8.5.8
+GITLAB_IMAGE=sameersbn/gitlab:8.5.8
 DOCKER_GITLAB_OPTS="-p 8080:80 -p 8443:443 -p 10022:22 \
     -v /var/lib/apps-data/gitlab/data:/home/git/data \
     -v /var/lib/apps/certs/site.crt:/home/git/data/certs/gitlab.crt \
