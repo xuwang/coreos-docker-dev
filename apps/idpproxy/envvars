@@ -1,0 +1,23 @@
+# Build idpproxy in ../docker
+IDP_IMAGE=xuwang/idpproxy:latest
+IDP_DATA=/var/lib/apps-data/idpproxy
+
+IDP_OPTS="-p 80:80 -p 443:443 \
+    -v /var/lib/apps/idpproxy/etc/cert:/var/simplesamlphp/cert \
+    -v /var/lib/apps/idpproxy/etc/config.d/config.php:/var/simplesamlphp/config/config.php \
+    -v /var/lib/apps/idpproxy/etc/config.d/authsources.php:/var/simplesamlphp/config/authsources.php \
+    -v /var/lib/apps/idpproxy/etc/metadata:/var/simplesamlphp/metadata \
+    -v /var/lib/apps/idpproxy/etc/httpd-conf.d:/etc/httpd/conf.d \
+    -v /var/lib/apps-data/idpproxy/logs:/var/log/httpd" 
+
+# https://hub.docker.com/_/mysql/
+DB_SERVICE_NAME=idp-db
+DB_IMAGE=mysql
+DB_OPTS=-p 3306:3306  \
+	-e MYSQL_ROOT_PASSWORD=rootpass \
+	-e MYSQL_DATABASE=saml \
+	-e MYSQL_USER=idpproxy \
+	-e MYSQL_PASSWORD=idproxypass \
+	-v /var/lib/apps/idpproxy/etc/mysql/conf:/etc/mysql/conf.d \
+	-v /var/lib/apps/idpproxy/etc/mysql/initdb.d:/docker-entrypoint-initdb.d \
+	-v /var/lib/apps-data/idpproxy/mysql:/var/lib/mysql

@@ -1,0 +1,22 @@
+[Unit]
+Description=IdP Project
+Requires=docker.service
+After=docker.service
+Requires=idp-db.service
+After=idp-db.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/idpproxy/envvars
+TimeoutStartSec=20min
+ExecStartPre=-/usr/bin/docker rm -f %n
+#ExecStartPre=/var/lib/apps/bin/dkpull $IDP_IMAGE
+ExecStart=/bin/bash -c "docker run   --env-file=/var/lib/apps/idpproxy/envvars.idp --rm --name %n $IDP_OPTS $IDP_IMAGE"
+ExecStartPost=/var/lib/apps/bin/dns-set idpproxy ${COREOS_PRIVATE_IPV4}
+ExecStopPost=-/var/lib/apps/bin/dns-delete idpproxy
+ExecStop=-/usr/bin/docker stop %n
+RestartSec=5
+Restart=always
+
+[X-Fleet]
+X-Conflicts=idpproxy@*.service

@@ -1,0 +1,20 @@
+[Unit]
+Description=MySQL DB for IdPProxy
+Requires=docker.service
+After=docker.service
+Wants=skydns.service
+After=skydns.service
+
+[Service]
+EnvironmentFile=/etc/environment
+EnvironmentFile=/var/lib/apps/idpproxy/envvars
+TimeoutStartSec=0
+ExecStartPre=/var/lib/apps/bin/dkpull $DB_IMAGE
+ExecStart=/bin/bash -c "docker run  --rm --name %n $DB_OPTS $DB_IMAGE"
+# Registering the DNS name
+ExecStartPost=/bin/bash -c "/var/lib/apps/bin/dns-set $DB_SERVICE_NAME ${COREOS_PRIVATE_IPV4}"
+ExecStop=/usr/bin/docker stop %n
+# Clean up
+ExecStopPost=-/var/lib/apps/bin/dns-delete $DB_SERVICE_NAME
+RestartSec=5
+Restart=always

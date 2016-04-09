@@ -1,0 +1,8 @@
+ENV_IDP=https://idp.example.com/
+ENV_URL=https://idpproxy.example.com
+ENV_ENTITY_ID=https://idpproxy.example.com/
+ENV_DOMAIN=idpproxy.example.com
+DB_NAME=saml
+DB_USERNAME=idpproxy
+DB_PASSWORD=idpproxypass
+DB_HOSTNAME=idp-db.docker.local
