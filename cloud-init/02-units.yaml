@@ -12,7 +12,7 @@
               # Use our own dns, instead of the host's.
               EnvironmentFile=/var/lib/skydns/envvars
               ExecStart=
-              ExecStart=/usr/bin/docker -d \
+              ExecStart=/usr/bin/docker daemon \
                   --dns=$private_ipv4 --dns-search=${LOCAL_DOMAIN} \
                   --insecure-registry 10.0.0.0/8 --insecure-registry 172.16.0.0/12 --insecure-registry 192.168.0.0/16 --insecure-registry registry.docker.local
         - name: docker-tcp.socket
