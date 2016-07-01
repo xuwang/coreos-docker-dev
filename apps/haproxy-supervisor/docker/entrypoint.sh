@@ -1,7 +1,8 @@
-#!/bin/bash
+#!/bin/sh
+mkdir -p /var/log/supervisor
 case ${1} in
   start)
-    exec /usr/bin/supervisord -nc /etc/supervisor/supervisord.conf
+    exec /usr/bin/supervisord -nc /etc/supervisord.conf
     ;;
   reload|restart)
     # Save server state
